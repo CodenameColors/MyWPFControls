@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.452
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyGridEditor", "PropertyGridEditor.csproj", "{4A4FC4F0-7007-46B7-9401-BD5D405C6362}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropGridTester", "..\PropGridTester\PropGridTester.csproj", "{114B3535-EC32-44F6-8887-200872B255AB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PropertyEditor", "PropertyEditor", "{BEB7A2D6-5126-4DD6-B39F-BA40B022BC6D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FIleImportRow", "FIleImportRow", "{DD160E72-9AF4-4DEF-8E0B-27ED61E40D2A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scale_Move_Rotate", "Scale_Move_Rotate", "{41D06509-66E6-4917-A1E8-C03928DEFD8B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMRControl", "..\SMRControl\SMRControl.csproj", "{77686EB6-5E6A-4F46-8E4A-EC7521223E7B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMRTester", "..\SMRTester\SMRTester.csproj", "{B9BD04ED-5654-4FE3-9A1D-B69B28F4659B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileImportRow", "..\FileImportRow\FileImportRow.csproj", "{A7764F98-CF42-4DC2-AD8F-00D25B240E2F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4A4FC4F0-7007-46B7-9401-BD5D405C6362}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A4FC4F0-7007-46B7-9401-BD5D405C6362}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A4FC4F0-7007-46B7-9401-BD5D405C6362}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A4FC4F0-7007-46B7-9401-BD5D405C6362}.Release|Any CPU.Build.0 = Release|Any CPU
+		{114B3535-EC32-44F6-8887-200872B255AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{114B3535-EC32-44F6-8887-200872B255AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{114B3535-EC32-44F6-8887-200872B255AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{114B3535-EC32-44F6-8887-200872B255AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77686EB6-5E6A-4F46-8E4A-EC7521223E7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77686EB6-5E6A-4F46-8E4A-EC7521223E7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77686EB6-5E6A-4F46-8E4A-EC7521223E7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77686EB6-5E6A-4F46-8E4A-EC7521223E7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9BD04ED-5654-4FE3-9A1D-B69B28F4659B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9BD04ED-5654-4FE3-9A1D-B69B28F4659B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9BD04ED-5654-4FE3-9A1D-B69B28F4659B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9BD04ED-5654-4FE3-9A1D-B69B28F4659B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7764F98-CF42-4DC2-AD8F-00D25B240E2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7764F98-CF42-4DC2-AD8F-00D25B240E2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7764F98-CF42-4DC2-AD8F-00D25B240E2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7764F98-CF42-4DC2-AD8F-00D25B240E2F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4A4FC4F0-7007-46B7-9401-BD5D405C6362} = {BEB7A2D6-5126-4DD6-B39F-BA40B022BC6D}
+		{114B3535-EC32-44F6-8887-200872B255AB} = {BEB7A2D6-5126-4DD6-B39F-BA40B022BC6D}
+		{77686EB6-5E6A-4F46-8E4A-EC7521223E7B} = {41D06509-66E6-4917-A1E8-C03928DEFD8B}
+		{B9BD04ED-5654-4FE3-9A1D-B69B28F4659B} = {41D06509-66E6-4917-A1E8-C03928DEFD8B}
+		{A7764F98-CF42-4DC2-AD8F-00D25B240E2F} = {DD160E72-9AF4-4DEF-8E0B-27ED61E40D2A}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {944647FF-FCD4-486E-AE17-184A72BEBF87}
+	EndGlobalSection
+EndGlobal
