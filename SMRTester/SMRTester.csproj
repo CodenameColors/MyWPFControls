@@ -94,5 +94,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SMRControl\SMRControl.csproj">
+      <Project>{77686eb6-5e6a-4f46-8e4a-ec7521223e7b}</Project>
+      <Name>SMRControl</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

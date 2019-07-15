@@ -20,9 +20,22 @@ namespace SMRControl
     /// </summary>
     public partial class UserControl1 : UserControl
     {
-        public UserControl1()
-        {
-            InitializeComponent();
-        }
+
+		Point MPos = new Point();
+
+    public UserControl1()
+    {
+        InitializeComponent();
     }
+
+		private void Top_MouseMove(object sender, MouseEventArgs e)
+		{
+			//which way is mouse moving?
+			if (e.LeftButton == MouseButtonState.Pressed)
+			{
+				MPos -= (Vector)e.GetPosition((Rectangle)sender);
+				Console.WriteLine(MPos.ToString());
+			}
+		}
+	}
 }

@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMRTester", "..\SMRTester\S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileImportRow", "..\FileImportRow\FileImportRow.csproj", "{A7764F98-CF42-4DC2-AD8F-00D25B240E2F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileImportRowTester", "..\FileImportRowTester\FileImportRowTester.csproj", "{5A862F32-D842-4843-934F-7951D9026EF5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{A7764F98-CF42-4DC2-AD8F-00D25B240E2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7764F98-CF42-4DC2-AD8F-00D25B240E2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7764F98-CF42-4DC2-AD8F-00D25B240E2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A862F32-D842-4843-934F-7951D9026EF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A862F32-D842-4843-934F-7951D9026EF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A862F32-D842-4843-934F-7951D9026EF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A862F32-D842-4843-934F-7951D9026EF5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +61,7 @@ Global
 		{77686EB6-5E6A-4F46-8E4A-EC7521223E7B} = {41D06509-66E6-4917-A1E8-C03928DEFD8B}
 		{B9BD04ED-5654-4FE3-9A1D-B69B28F4659B} = {41D06509-66E6-4917-A1E8-C03928DEFD8B}
 		{A7764F98-CF42-4DC2-AD8F-00D25B240E2F} = {DD160E72-9AF4-4DEF-8E0B-27ED61E40D2A}
+		{5A862F32-D842-4843-934F-7951D9026EF5} = {DD160E72-9AF4-4DEF-8E0B-27ED61E40D2A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {944647FF-FCD4-486E-AE17-184A72BEBF87}

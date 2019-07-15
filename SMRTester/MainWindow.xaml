@@ -4,9 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SMRTester"
+				xmlns:SMR ="clr-namespace:SMRControl;assembly=SMRControl"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" Background="Black">
     <Grid>
-        
+
+		<SMR:UserControl1 Width="200" Height="100">
+			
+		</SMR:UserControl1>
+			
     </Grid>
 </Window>
