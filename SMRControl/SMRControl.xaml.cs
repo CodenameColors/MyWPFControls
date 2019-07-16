@@ -17,25 +17,63 @@ namespace SMRControl
 {
     /// <summary>
     /// Interaction logic for UserControl1.xaml
+		/// ITS IMPORTANT THAT THIS CONTROL IS ONLY USED FOR CANVASES
     /// </summary>
-    public partial class UserControl1 : UserControl
+    public partial class SMRControl : UserControl
     {
 
 		Point MPos = new Point();
+		Point InitialPoint = new Point();
+		Point InitialDims = new Point();
 
-    public UserControl1()
+    public SMRControl()
     {
         InitializeComponent();
     }
 
+
+		private void Rectangle_MouseDown(object sender, MouseButtonEventArgs e)
+		{
+			InitialPoint = Mouse.GetPosition((Canvas)this.Parent);
+			InitialDims.X = this.Width; InitialDims.Y = this.Height;
+			Console.WriteLine(InitialPoint.ToString());
+		}
+
+		private void Rectangle_MouseUp(object sender, MouseButtonEventArgs e)
+		{
+			InitialPoint = Mouse.GetPosition((Canvas)this.Parent);
+			InitialDims.X = this.Width; InitialDims.Y = this.Height;
+			Console.WriteLine(InitialPoint.ToString());
+		}
+
 		private void Top_MouseMove(object sender, MouseEventArgs e)
 		{
-			//which way is mouse moving?
+			Point CurrentPos = Mouse.GetPosition((Canvas)this.Parent);
 			if (e.LeftButton == MouseButtonState.Pressed)
 			{
-				MPos -= (Vector)e.GetPosition((Rectangle)sender);
-				Console.WriteLine(MPos.ToString());
+				if (InitialPoint.Y - CurrentPos.Y >= 0)
+				{
+					this.Height = InitialDims.Y + (InitialPoint.Y - CurrentPos.Y);
+					Canvas.SetTop(this, Canvas.GetTop(this) - (1));
+					Console.WriteLine("Increase top");
+				}
+				else
+				{
+					this.Height = InitialDims.Y - (CurrentPos.Y - InitialPoint.Y);
+					Canvas.SetTop(this, Canvas.GetTop(this) + (1));
+					Console.WriteLine("Decrease top");
+				}
 			}
+		}
+
+		private void MoveRect_MouseMove(object sender, MouseEventArgs e)
+		{
+			//if(e.LeftButton == MouseButtonState.Pressed)
+			//{
+			//	Canvas.SetLeft(this, Canvas.GetLeft(this) + 1);
+			//	Canvas.SetTop(this, Canvas.GetTop(this) + 1);
+			//	Console.WriteLine("Moved");
+			//}
 		}
 	}
 }

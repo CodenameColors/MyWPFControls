@@ -7,11 +7,10 @@
 				xmlns:SMR ="clr-namespace:SMRControl;assembly=SMRControl"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" Background="Black">
-    <Grid>
-
-		<SMR:UserControl1 Width="200" Height="100">
-			
-		</SMR:UserControl1>
-			
-    </Grid>
+	<Grid>
+		<Canvas>
+			<SMR:SMRControl Width="200" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center" Canvas.Left="277" Canvas.Top="140">
+			</SMR:SMRControl>
+		</Canvas>
+	</Grid>
 </Window>
