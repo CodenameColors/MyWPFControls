@@ -23,6 +23,40 @@ namespace SMRTester
 		public MainWindow()
 		{
 			InitializeComponent();
+			SMRCon.MouseUp += SMRCon_MouseUp;
+		}
+
+		private void SMRCon_MouseUp(object sender, MouseButtonEventArgs e)
+		{
+			Console.WriteLine("MUP");
+		}
+
+		private void Canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		{
+
+			Console.WriteLine("MW MBLD");
+
+			//get position
+			Point Mpos = Mouse.GetPosition(BackCanvas);
+
+			int x0 = (int)Canvas.GetLeft(SMRCon);
+			int x1 = (int)Canvas.GetRight(SMRCon);
+			int y0 = (int)Canvas.GetTop(SMRCon);
+			int y1 = (int)Canvas.GetBottom(SMRCon);
+
+
+			
+
+			SMRCon.SetVisibility(Visibility.Hidden);
+
+			//if (Mpos.X >= x0 && Mpos.X <= x1)
+			//{
+			//	if (Mpos.Y >= y0 && Mpos.Y <= y1)
+			//	{
+			//		Console.WriteLine("clicked in control");
+			//	}
+			//}
+
 		}
 	}
 }

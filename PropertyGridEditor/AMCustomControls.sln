@@ -21,6 +21,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileImportRow", "..\FileImp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileImportRowTester", "..\FileImportRowTester\FileImportRowTester.csproj", "{5A862F32-D842-4843-934F-7951D9026EF5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Timeline_Player", "Timeline_Player", "{0069FA57-2D3B-45DE-8EBD-73C64AE5E374}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimelinePlayer", "..\TimelinePlayer\TimelinePlayer.csproj", "{38099F5F-6D7D-4F8E-A900-9083365B2C59}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimelinePlayer_Tester", "..\TimelinePlayer_Tester\TimelinePlayer_Tester.csproj", "{CEBBD6ED-0FEB-4A0F-B95F-9D0621F9E764}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +57,14 @@ Global
 		{5A862F32-D842-4843-934F-7951D9026EF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A862F32-D842-4843-934F-7951D9026EF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A862F32-D842-4843-934F-7951D9026EF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38099F5F-6D7D-4F8E-A900-9083365B2C59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38099F5F-6D7D-4F8E-A900-9083365B2C59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38099F5F-6D7D-4F8E-A900-9083365B2C59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38099F5F-6D7D-4F8E-A900-9083365B2C59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEBBD6ED-0FEB-4A0F-B95F-9D0621F9E764}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEBBD6ED-0FEB-4A0F-B95F-9D0621F9E764}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEBBD6ED-0FEB-4A0F-B95F-9D0621F9E764}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEBBD6ED-0FEB-4A0F-B95F-9D0621F9E764}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,6 +76,8 @@ Global
 		{B9BD04ED-5654-4FE3-9A1D-B69B28F4659B} = {41D06509-66E6-4917-A1E8-C03928DEFD8B}
 		{A7764F98-CF42-4DC2-AD8F-00D25B240E2F} = {DD160E72-9AF4-4DEF-8E0B-27ED61E40D2A}
 		{5A862F32-D842-4843-934F-7951D9026EF5} = {DD160E72-9AF4-4DEF-8E0B-27ED61E40D2A}
+		{38099F5F-6D7D-4F8E-A900-9083365B2C59} = {0069FA57-2D3B-45DE-8EBD-73C64AE5E374}
+		{CEBBD6ED-0FEB-4A0F-B95F-9D0621F9E764} = {0069FA57-2D3B-45DE-8EBD-73C64AE5E374}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {944647FF-FCD4-486E-AE17-184A72BEBF87}

@@ -79,6 +79,7 @@ namespace PropGridTester
 			vs.Add("Dank"); vs.Add("Memes");
 
 			ttt.AddProperty(lList, tboxes, vs);
+			ttt.AddProperty("Background", new DropDownCustomColorPicker.CustomColorPicker(), null);
 			//this.PropDictionary = ttt.PropDictionary; //update...
 		}
 

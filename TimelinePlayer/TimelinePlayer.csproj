@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4A4FC4F0-7007-46B7-9401-BD5D405C6362}</ProjectGuid>
+    <ProjectGuid>{38099F5F-6D7D-4F8E-A900-9083365B2C59}</ProjectGuid>
     <OutputType>library</OutputType>
-    <RootNamespace>PropertyGridEditor</RootNamespace>
-    <AssemblyName>PropertyGridEditor</AssemblyName>
+    <RootNamespace>TimelinePlayer</RootNamespace>
+    <AssemblyName>TimelinePlayer</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -22,7 +22,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,9 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CustomColorPicker">
-      <HintPath>..\..\..\..\Visual Studio 2017\Projects\WPFColorPicker\DropDownCustomColorPicker\bin\Debug\CustomColorPicker.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -52,13 +48,12 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Resources\ObservableDictionary.cs" />
-    <Page Include="PropGrid.xaml">
+    <Page Include="TimelinePlayer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="PropGrid.xaml.cs">
-      <DependentUpon>PropGrid.xaml</DependentUpon>
+    <Compile Include="TimelinePlayer.xaml.cs">
+      <DependentUpon>TimelinePlayer.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -85,6 +80,5 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

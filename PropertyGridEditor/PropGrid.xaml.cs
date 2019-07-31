@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using DrWPF.Windows.Data;
+using DropDownCustomColorPicker;
 
 namespace PropertyGridEditor
 {
@@ -27,7 +28,7 @@ namespace PropertyGridEditor
 		//Dictionary<String, Tuple<Control, object>> properties = new Dictionary<string, Tuple<Control, object>>();
 		public ObservableDictionary<String, object> PropDictionary = new ObservableDictionary<string, object>();
 		private ObservableDictionary<String, object> FilteredPropDictionary = new ObservableDictionary<string, object>();
-		private String CurrentProp = "";
+		public String CurrentProp = "";
 
 		Grid NonFilteredGrid;
 
@@ -69,9 +70,9 @@ namespace PropertyGridEditor
 			};
 			Grid.SetColumnSpan(bor, 2);
 			Grid.SetRow(bor, num);
-			Grid.SetZIndex(bor, int.MaxValue - 1);
+			Grid.SetZIndex(bor, -1);
 			bor.MouseRightButtonDown += Ctype_MouseRightButtonDown;
-			InnerPropGrid.Children.Add(bor); //add label to grid and display
+			
 
 			Label l = new Label() //create label then add it.
 			{
@@ -86,6 +87,7 @@ namespace PropertyGridEditor
 			Grid.SetRow(l, num);
 			Grid.SetColumn(l, 0);
 			InnerPropGrid.Children.Add(l); //add label to grid and display
+			InnerPropGrid.Children.Add(bor); //add label to grid and display
 		}
 
 		/// <summary>
@@ -222,19 +224,23 @@ namespace PropertyGridEditor
 			{
 				if (data is List<String>)
 				{
-					ctype.HorizontalAlignment = HorizontalAlignment.Left;
+					ctype.HorizontalAlignment = HorizontalAlignment.Stretch;
 					ctype.VerticalAlignment = VerticalAlignment.Center;
 					ctype.Margin = new Thickness(10, 2, 10, 2);
-					((ComboBox)ctype).ItemsSource = (List<String>)data;
-					ctype.Height = 30;
+					if(((ComboBox)ctype).ItemsSource == null)
+						((ComboBox)ctype).ItemsSource = (List<String>)data;
+					if(ctype.Height == 0)
+						ctype.Height = 30;
+					if (ctype.Height > 30)
+						InnerPropGrid.RowDefinitions[num].Height = new GridLength(ctype.Height);
 
 					Grid.SetRow(ctype, num);
 					Grid.SetColumn(ctype, 1);
 					ctype.BringIntoView();
 					ctype.Tag = PropName; //used for EZ dictionary access later
-					((ComboBox)ctype).SelectionChanged += PropGrid_SelectionChanged;
+					//((ComboBox)ctype).SelectionChanged += PropGrid_SelectionChanged;
 
-					((ComboBox)ctype).SelectedIndex = 0;
+					//((ComboBox)ctype).SelectedIndex = 0;
 					InnerPropGrid.Children.Add(ctype); //add the desired control type.
 				}
 			}
@@ -258,7 +264,22 @@ namespace PropertyGridEditor
 					InnerPropGrid.Children.Add(ctype); //add the desired control type.
 				}
 			}
-			
+			else if (ctype is CustomColorPicker)
+			{
+				ctype.HorizontalAlignment = HorizontalAlignment.Left;
+				ctype.VerticalAlignment = VerticalAlignment.Center;
+				ctype.Margin = new Thickness(10, 2, 10, 2);
+				ctype.Height = 30;
+
+				Grid.SetRow(ctype, num);
+				Grid.SetColumn(ctype, 1);
+				ctype.BringIntoView();
+				ctype.Tag = PropName; //used for EZ dictionary access later
+				//((CustomColorPicker)ctype).SelectedColorChanged += ;
+
+				InnerPropGrid.Children.Add(ctype); //add the desired control type.
+			}
+
 		}
 
 		/// <summary>
@@ -291,12 +312,13 @@ namespace PropertyGridEditor
 				cd.Width = new GridLength(newwidth);
 			}
 
-			//add the labels to the grid
-			AddLabels(LabelsList);
+			
 
 			//add the input controls!
 			AddInputControls(LabelsList[1].Content.ToString(), InputControls, data, LabelsList.Count);
 			NonFilteredGrid = Property_Grid;
+			//add the labels to the grid
+			AddLabels(LabelsList); ;
 		}
 
 		#endregion
@@ -509,7 +531,7 @@ namespace PropertyGridEditor
 					((TextBox)controls[i]).VerticalContentAlignment = VerticalAlignment.Center;
 					((TextBox)controls[i]).Text = data[i];
 
-					Grid.SetRow((controls[i]), InnerPropGrid.RowDefinitions.Count - 1);
+					Grid.SetRow((controls[i]), InnerPropGrid.RowDefinitions.Count );
 					Grid.SetColumn(controls[i], i + offset);
 					InnerPropGrid.Children.Add(controls[i]);
 					Console.WriteLine("Adding a new TextBox");
@@ -521,7 +543,7 @@ namespace PropertyGridEditor
 				{
 					((ComboBox)controls[i]).HorizontalAlignment = HorizontalAlignment.Stretch;
 
-					Grid.SetRow((controls[i]), InnerPropGrid.RowDefinitions.Count - 1);
+					Grid.SetRow((controls[i]), InnerPropGrid.RowDefinitions.Count );
 					Grid.SetColumn(controls[i], i + offset);
 					InnerPropGrid.Children.Add(controls[i]);
 				}
@@ -529,7 +551,7 @@ namespace PropertyGridEditor
 				{
 					((CheckBox)controls[i]).HorizontalAlignment = HorizontalAlignment.Left;
 					((CheckBox)controls[i]).VerticalAlignment = VerticalAlignment.Center;
-					Grid.SetRow((controls[i]), InnerPropGrid.RowDefinitions.Count - 1);
+					Grid.SetRow((controls[i]), InnerPropGrid.RowDefinitions.Count );
 					Grid.SetColumn(controls[i], i + offset);
 					InnerPropGrid.Children.Add(controls[i]);
 				}
@@ -549,13 +571,13 @@ namespace PropertyGridEditor
 				HorizontalAlignment = HorizontalAlignment.Stretch,
 				VerticalAlignment = VerticalAlignment.Stretch,
 				Background = Brushes.Transparent,
-				Tag = labels[0].Content.ToString()
+				Tag = PropDictionary.Keys.ToList().Last()
 			};
 			Grid.SetColumnSpan(bor, 2);
 			Grid.SetRow(bor, num);
 			Grid.SetZIndex(bor, int.MaxValue - 1);
 			bor.MouseRightButtonDown += Ctype_MouseRightButtonDown;
-			InnerPropGrid.Children.Add(bor); //add label to grid and display
+			
 
 			//add the labels to the columns!
 			for (int i = 0; i < labels.Count; i++)
@@ -564,6 +586,7 @@ namespace PropertyGridEditor
 				Grid.SetColumn(labels[i], i);
 				InnerPropGrid.Children.Add(labels[i]); //add label to grid and display
 			}
+			InnerPropGrid.Children.Add(bor); //add label to grid and display
 		}
 
 

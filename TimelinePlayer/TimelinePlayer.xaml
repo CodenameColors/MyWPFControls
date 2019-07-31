@@ -1,0 +1,102 @@
+﻿<UserControl x:Class="TimelinePlayer.TimelinePlayer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TimelinePlayer"
+             mc:Ignorable="d" Background="Transparent" Height="200" Width="650">
+	<UserControl.Resources>
+
+		<Style x:Key="LeftScrollViewer" TargetType="{x:Type ScrollViewer}">
+			<Setter Property="OverridesDefaultStyle" Value="True"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type ScrollViewer}">
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition/>
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition/>
+							</Grid.RowDefinitions>
+
+							<ScrollContentPresenter Grid.Column="1" Grid.Row="0"/>
+
+							<ScrollBar Name="PART_VerticalScrollBar"
+            Value="{TemplateBinding VerticalOffset}"
+            Maximum="{TemplateBinding ScrollableHeight}"
+            ViewportSize="{TemplateBinding ViewportHeight}"
+            Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+							<ScrollBar Name="PART_HorizontalScrollBar"
+            Orientation="Horizontal"
+            Grid.Column="1"
+            Value="{TemplateBinding HorizontalOffset}"
+            Maximum="{TemplateBinding ScrollableWidth}"
+            ViewportSize="{TemplateBinding ViewportWidth}"
+            Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
+
+						</Grid>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+	</UserControl.Resources>
+
+	<Grid>
+		<ScrollViewer Grid.ColumnSpan="3" Background="#FF191919" VerticalScrollBarVisibility="Hidden">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="1*"/>
+					<ColumnDefinition Width="5"/>
+					<ColumnDefinition Width="4*"/>
+				</Grid.ColumnDefinitions>
+				<TextBlock Text="Track Items" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" />
+				<ListBox Grid.Column="0" Background="#FF4F4F4F" Margin="0,20,0,0" BorderBrush="#00ABADB3" BorderThickness="0">
+
+				</ListBox>
+
+				<Grid  Grid.Column="2" >
+					<Grid.RowDefinitions>
+						<RowDefinition Height="20"/>
+						<RowDefinition Height="*"/>
+						<RowDefinition Height="0"/>  <!--it seems dumb, but this allows the horizontal scroll bar to NOT go out of view--> 
+					</Grid.RowDefinitions>
+					<Canvas x:Name="TimeScrubber_Canvas" Background="#FF191919"/>
+					<ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Visible" Margin="0,0,0,0" Height="180" VerticalAlignment="Top">
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="25"/>
+								<RowDefinition Height="25"/>
+							</Grid.RowDefinitions>
+
+							<Canvas Grid.Row="0">
+								<Canvas.Background>
+									<VisualBrush TileMode="Tile" Stretch="Fill" Viewport="0,0,25,25" ViewportUnits="Absolute" >
+										<VisualBrush.Visual>
+											<Rectangle Width="100" Height="20" Fill="#FF2E2E2E" Stroke="Gray" StrokeThickness="1" />
+										</VisualBrush.Visual>
+									</VisualBrush>
+								</Canvas.Background>
+							</Canvas>
+
+							<Canvas Grid.Row="1">
+								<Canvas.Background>
+									<VisualBrush TileMode="Tile" Stretch="Fill" Viewport="0,0,25,25" ViewportUnits="Absolute" >
+										<VisualBrush.Visual>
+											<Rectangle Width="100" Height="20" Fill="#FF2E2E2E" Stroke="Gray" StrokeThickness="1" />
+										</VisualBrush.Visual>
+									</VisualBrush>
+								</Canvas.Background>
+							</Canvas>
+							
+						</Grid>
+					</ScrollViewer>
+				</Grid>
+				<GridSplitter Grid.Column="1" Width="5" Background="#FFC9C9C9" ResizeDirection="Columns" HorizontalAlignment="Stretch"/>
+			</Grid>
+		</ScrollViewer>
+	</Grid>
+</UserControl>
