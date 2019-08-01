@@ -85,5 +85,11 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\defaultimage.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\speech-bubbles-png.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -4,22 +4,40 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TimelinePlayer"
+						 xmlns:timel="clr-namespace:TimelinePlayer.Components"
              mc:Ignorable="d" Background="Transparent" Height="200" Width="650">
 	<UserControl.Resources>
 
+		<Style TargetType="{x:Type timel:TimeBlock}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type timel:TimeBlock}">
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="40"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+							<TextBlock Grid.Column="1" Text="FUCK" Background="Red" Foreground="White"/>
+							<Image Grid.Column="0" Width="30" Height="30" Source="Images/defaultimage.jpg"/>
+						</Grid>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		
 		<Style x:Key="LeftScrollViewer" TargetType="{x:Type ScrollViewer}">
 			<Setter Property="OverridesDefaultStyle" Value="True"/>
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate TargetType="{x:Type ScrollViewer}">
-						<Grid>
+						<Grid VerticalAlignment="Bottom">
 							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="Auto" MinWidth="75"/>
 								<ColumnDefinition/>
 							</Grid.ColumnDefinitions>
 							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto"/>
-								<RowDefinition/>
+								<RowDefinition Height="Auto" MinHeight="10"/>
+								<RowDefinition Height="0"/>
 							</Grid.RowDefinitions>
 
 							<ScrollContentPresenter Grid.Column="1" Grid.Row="0"/>
@@ -28,14 +46,14 @@
             Value="{TemplateBinding VerticalOffset}"
             Maximum="{TemplateBinding ScrollableHeight}"
             ViewportSize="{TemplateBinding ViewportHeight}"
-            Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+            Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Grid.Column="1" Width="Auto"/>
 							<ScrollBar Name="PART_HorizontalScrollBar"
             Orientation="Horizontal"
             Grid.Column="1"
             Value="{TemplateBinding HorizontalOffset}"
             Maximum="{TemplateBinding ScrollableWidth}"
             ViewportSize="{TemplateBinding ViewportWidth}"
-            Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
+            Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Height="Auto"/>
 
 						</Grid>
 					</ControlTemplate>
@@ -43,65 +61,78 @@
 			</Setter>
 		</Style>
 
+		<ContentControl x:Key="TimelineBlock_CC"
+										x:Shared="False" >
+			<Border >
+				<Grid>
+					<Button Background="Transparent"/>
+					<StackPanel Orientation="Horizontal">
+						<Image Height="25" Width="25" Source="Images/speech-bubbles-png.png" HorizontalAlignment="Left" >
+						</Image>
+						<Image Height="25" Width="25" Source="Images/defaultimage.jpg" HorizontalAlignment="Left">
+						</Image>
+						<TextBlock Text="[Name]"/>
+					</StackPanel>
+				</Grid>
+				
+				
+			</Border>
+		</ContentControl>
+		
 	</UserControl.Resources>
 
-	<Grid>
-		<ScrollViewer Grid.ColumnSpan="3" Background="#FF191919" VerticalScrollBarVisibility="Hidden">
-			<Grid>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="1*"/>
-					<ColumnDefinition Width="5"/>
-					<ColumnDefinition Width="4*"/>
-				</Grid.ColumnDefinitions>
-				<TextBlock Text="Track Items" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-				<Button x:Name="AddTrack_BTN" Content="Add+" Height="20" Width="35" Margin="96,0,0,180" HorizontalAlignment="Right" VerticalAlignment="Top" Click="AddTrack_BTN_Click"/>
-				<ListBox x:Name="TrackItems_LB" Grid.Column="0" Background="#FF4F4F4F" Margin="0,20" BorderBrush="#00ABADB3" BorderThickness="0">
+	<Grid Background="#FF323232">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="20"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="3"/>
+			<RowDefinition Height="25"/>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="2*"/>
+			<ColumnDefinition Width="3"/>
+			<ColumnDefinition Width="6*"/>
+		</Grid.ColumnDefinitions>
+		<TextBlock Text="Track Items" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+		<Button x:Name="AddTrack_BTN" Content="Add+" Height="20" Width="35" HorizontalAlignment="Right" VerticalAlignment="Top" Click="AddTrack_BTN_Click" Foreground="Black"/>
 
-				</ListBox>
-				<TextBlock Text="Rate 1.0:" Foreground="White" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="3,0,0,3"/>
-				<Slider Minimum="0" Maximum="2" Value="1" VerticalAlignment="Bottom" Margin="45,0,0,0" Height="20"/>
+		<ScrollViewer Grid.Column="2" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Background="#FF636363" 
+				ScrollBar.Scroll="ScrollViewer_Scroll" ScrollChanged="ScrollViewer_ScrollChanged">
+			<Grid x:Name="Timelines_Grid">
+				<Grid.RowDefinitions>
+				</Grid.RowDefinitions>
 
-				<Grid  Grid.Column="2" >
-					<Grid.RowDefinitions>
-						<RowDefinition Height="20"/>
-						<RowDefinition Height="*"/>
-						<RowDefinition Height="020"/>  <!--it seems dumb, but this allows the horizontal scroll bar to NOT go out of view--> 
-					</Grid.RowDefinitions>
-					<Canvas x:Name="TimeScrubber_Canvas" Background="#FF191919"/>
-					<ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Visible" VerticalAlignment="Stretch" Margin="0,0,0,0"  >
-						<Grid>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="25"/>
-								<RowDefinition Height="25"/>
-							</Grid.RowDefinitions>
+				<Canvas Width="800"/>
 
-							<Canvas Grid.Row="0">
-								<Canvas.Background>
-									<VisualBrush TileMode="Tile" Stretch="Fill" Viewport="0,0,25,25" ViewportUnits="Absolute" >
-										<VisualBrush.Visual>
-											<Rectangle Width="100" Height="20" Fill="#FF2E2E2E" Stroke="Gray" StrokeThickness="1" />
-										</VisualBrush.Visual>
-									</VisualBrush>
-								</Canvas.Background>
-							</Canvas>
-
-							<Canvas Grid.Row="1">
-								<Canvas.Background>
-									<VisualBrush TileMode="Tile" Stretch="Fill" Viewport="0,0,25,25" ViewportUnits="Absolute" >
-										<VisualBrush.Visual>
-											<Rectangle Width="100" Height="20" Fill="#FF2E2E2E" Stroke="Gray" StrokeThickness="1" />
-										</VisualBrush.Visual>
-									</VisualBrush>
-								</Canvas.Background>
-							</Canvas>
-						</Grid>
-					</ScrollViewer>
-					<Button Content="Stop"  Width="40"  Grid.Row="2" Margin="4,0,0,0" HorizontalAlignment="Left"/>
-					<Button Content="Pause" Width="40"  Grid.Row="2" Margin="51,0,0,0" HorizontalAlignment="Left"/>
-					<Button Content="Play"  Width="40"  Grid.Row="2" Margin="101,0,0,0" HorizontalAlignment="Left"/>
-				</Grid>
-				<GridSplitter Grid.Column="1" Width="5" Background="#FFC9C9C9" ResizeDirection="Columns" HorizontalAlignment="Stretch"/>
 			</Grid>
 		</ScrollViewer>
+		<GridSplitter Grid.Column="1" Grid.RowSpan="500" HorizontalAlignment="Stretch" Background="#FF9B9B9B" />
+
+		<ScrollViewer x:Name="TimelineScrubber_SV" Grid.Row="0" Grid.Column="2" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
+			<Canvas Grid.Row="1" Width="654">
+				<Canvas.Background>
+					<VisualBrush TileMode="Tile" Stretch="Fill" Viewport="0,0,25,25" ViewportUnits="Absolute" >
+						<VisualBrush.Visual>
+							<Border Width="20" Height="20" Background="#FF2E2E2E" BorderBrush="Gray" BorderThickness="1" >
+								<TextBlock Text="1" FontSize="10" Foreground="White"/>
+							</Border>
+						</VisualBrush.Visual>
+					</VisualBrush>
+				</Canvas.Background>
+			</Canvas>
+		</ScrollViewer>
+
+		<ScrollViewer x:Name="Tracks_SV" Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" Margin="0,0,0,17">
+			<Grid x:Name="Tracks_Grid">
+
+			</Grid>
+		</ScrollViewer>
+
+		<TextBlock Grid.Row="3" Text="Rate 1.0:" Foreground="White" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="3,0,0,3"/>
+		<Slider Grid.Row="3" Minimum="0" Maximum="2" Value="1" VerticalAlignment="Bottom" Margin="45,0,0,0" Height="20"/>
+		<Button Grid.Column="2" Content="Stop"  Width="40"  Grid.Row="3" Margin="4,0,0,0" HorizontalAlignment="Left"/>
+		<Button Grid.Column="2" Content="Pause" Width="40"  Grid.Row="3" Margin="51,0,0,0" HorizontalAlignment="Left"/>
+		<Button Grid.Column="2" Content="Play"  Width="40"  Grid.Row="3" Margin="101,0,0,0" HorizontalAlignment="Left"/>
+		<GridSplitter Grid.Row="2" Grid.ColumnSpan="4" Background="#FF9B9B9B" ResizeDirection="Columns" HorizontalAlignment="Stretch"/>
 	</Grid>
 </UserControl>
