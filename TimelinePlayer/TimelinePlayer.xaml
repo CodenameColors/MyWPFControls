@@ -53,19 +53,22 @@
 					<ColumnDefinition Width="5"/>
 					<ColumnDefinition Width="4*"/>
 				</Grid.ColumnDefinitions>
-				<TextBlock Text="Track Items" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" />
-				<ListBox Grid.Column="0" Background="#FF4F4F4F" Margin="0,20,0,0" BorderBrush="#00ABADB3" BorderThickness="0">
+				<TextBlock Text="Track Items" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+				<Button x:Name="AddTrack_BTN" Content="Add+" Height="20" Width="35" Margin="96,0,0,180" HorizontalAlignment="Right" VerticalAlignment="Top" Click="AddTrack_BTN_Click"/>
+				<ListBox x:Name="TrackItems_LB" Grid.Column="0" Background="#FF4F4F4F" Margin="0,20" BorderBrush="#00ABADB3" BorderThickness="0">
 
 				</ListBox>
+				<TextBlock Text="Rate 1.0:" Foreground="White" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="3,0,0,3"/>
+				<Slider Minimum="0" Maximum="2" Value="1" VerticalAlignment="Bottom" Margin="45,0,0,0" Height="20"/>
 
 				<Grid  Grid.Column="2" >
 					<Grid.RowDefinitions>
 						<RowDefinition Height="20"/>
 						<RowDefinition Height="*"/>
-						<RowDefinition Height="0"/>  <!--it seems dumb, but this allows the horizontal scroll bar to NOT go out of view--> 
+						<RowDefinition Height="020"/>  <!--it seems dumb, but this allows the horizontal scroll bar to NOT go out of view--> 
 					</Grid.RowDefinitions>
 					<Canvas x:Name="TimeScrubber_Canvas" Background="#FF191919"/>
-					<ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Visible" Margin="0,0,0,0" Height="180" VerticalAlignment="Top">
+					<ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Visible" VerticalAlignment="Stretch" Margin="0,0,0,0"  >
 						<Grid>
 							<Grid.RowDefinitions>
 								<RowDefinition Height="25"/>
@@ -91,9 +94,11 @@
 									</VisualBrush>
 								</Canvas.Background>
 							</Canvas>
-							
 						</Grid>
 					</ScrollViewer>
+					<Button Content="Stop"  Width="40"  Grid.Row="2" Margin="4,0,0,0" HorizontalAlignment="Left"/>
+					<Button Content="Pause" Width="40"  Grid.Row="2" Margin="51,0,0,0" HorizontalAlignment="Left"/>
+					<Button Content="Play"  Width="40"  Grid.Row="2" Margin="101,0,0,0" HorizontalAlignment="Left"/>
 				</Grid>
 				<GridSplitter Grid.Column="1" Width="5" Background="#FFC9C9C9" ResizeDirection="Columns" HorizontalAlignment="Stretch"/>
 			</Grid>
