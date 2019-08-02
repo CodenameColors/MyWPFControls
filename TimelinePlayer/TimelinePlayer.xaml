@@ -12,19 +12,51 @@
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate TargetType="{x:Type timel:TimeBlock}">
-						<Grid>
+						<Grid Height="40">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="40"/>
 								<ColumnDefinition Width="*"/>
 							</Grid.ColumnDefinitions>
-							<TextBlock Grid.Column="1" Text="FUCK" Background="Red" Foreground="White"/>
+							<TextBlock Grid.Column="1" Text="{Binding StartTime}" Background="Red" Foreground="White"/>
 							<Image Grid.Column="0" Width="30" Height="30" Source="Images/defaultimage.jpg"/>
+
+							<ContentPresenter HorizontalAlignment="Right" Grid.Column="1" 
+                                              VerticalAlignment="Stretch"
+                                              x:Name="PART_RightIndicator">
+								<ContentPresenter.Content>
+									<Thumb x:Name="resizeThumb_Right"  Width="5" Cursor="ScrollWE" Background="Transparent"
+										 HorizontalAlignment="Right" VerticalAlignment="Stretch"
+										 DragDelta="TimeBlock_Resize_Right" />
+								</ContentPresenter.Content>
+							</ContentPresenter>
+
+							<ContentPresenter HorizontalAlignment="Stretch" Grid.ColumnSpan="5" 
+                                              VerticalAlignment="Stretch"
+                                              x:Name="PART_MiddleIndicator">
+								<ContentPresenter.Content>
+									<Thumb x:Name="MoveThumb_Middle" Cursor="ScrollAll" Background="Transparent" Opacity="0"
+										 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+										 Margin="0,0,5,0" DragDelta="MoveThumb_Middle_DragDelta" />
+								</ContentPresenter.Content>
+							</ContentPresenter>
+
+							<ContentPresenter HorizontalAlignment="Left" Grid.Column="0" 
+                                              VerticalAlignment="Stretch"
+                                              x:Name="PARTLeftIndicator">
+								<ContentPresenter.Content>
+									<Thumb x:Name="resizeThumb_Left"  Width="5" Cursor="ScrollWE" Background="Transparent"
+										 HorizontalAlignment="Right" VerticalAlignment="Stretch"
+										 DragDelta="TimeBlock_Resize_Left" />
+								</ContentPresenter.Content>
+							</ContentPresenter>
+							<Border Grid.ColumnSpan="5" BorderBrush="Black" BorderThickness="2"/>
+
 						</Grid>
 					</ControlTemplate>
 				</Setter.Value>
 			</Setter>
 		</Style>
-		
+
 		<Style x:Key="LeftScrollViewer" TargetType="{x:Type ScrollViewer}">
 			<Setter Property="OverridesDefaultStyle" Value="True"/>
 			<Setter Property="Template">
@@ -74,11 +106,11 @@
 						<TextBlock Text="[Name]"/>
 					</StackPanel>
 				</Grid>
-				
-				
+
+
 			</Border>
 		</ContentControl>
-		
+
 	</UserControl.Resources>
 
 	<Grid Background="#FF323232">
@@ -113,12 +145,15 @@
 				<Canvas.Background>
 					<VisualBrush TileMode="Tile" Stretch="Fill" Viewport="0,0,25,25" ViewportUnits="Absolute" >
 						<VisualBrush.Visual>
+
 							<Border Width="20" Height="20" Background="#FF2E2E2E" BorderBrush="Gray" BorderThickness="1" >
 								<TextBlock Text="1" FontSize="10" Foreground="White"/>
 							</Border>
+				
 						</VisualBrush.Visual>
 					</VisualBrush>
 				</Canvas.Background>
+				<local:NumberedTickBar HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Minimum="0" Maximum="10"  TickFrequency="1" Placement="Top" Height="20" Fill="White" Width="482"/>
 			</Canvas>
 		</ScrollViewer>
 

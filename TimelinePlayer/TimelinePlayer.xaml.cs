@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -123,6 +124,7 @@ namespace TimelinePlayer
 
 			//add my custom time block
 			TimeBlock timeBlock = new TimeBlock() { Width = 100, Margin = new Thickness(0,3,0,3)};
+			timeBlock.StartDate = new DateTime(20);
 			c.Children.Add(timeBlock);
 			Timelines_Grid.Children.Add(c);
 		}
@@ -170,6 +172,61 @@ namespace TimelinePlayer
 			
 		}
 
+		private void TimeBlock_Resize_Right(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+		{
 
+			TimeBlock tb = ((TimeBlock)((Thumb)sender).TemplatedParent);
+			if(tb.Width + e.HorizontalChange > 5)
+				tb.Width += e.HorizontalChange;
+		}
+
+		private void TimeBlock_Resize_Left(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+		{
+
+			TimeBlock tb = ((TimeBlock)((Thumb)sender).TemplatedParent);
+
+			if (tb.Width - e.HorizontalChange > 5)
+			{
+				tb.Width -= e.HorizontalChange;
+				Canvas.SetLeft(tb, VisualTreeHelper.GetOffset(tb).X + e.HorizontalChange);
+			}
+		}
+
+		private void MoveThumb_Middle_DragDelta(object sender, DragDeltaEventArgs e)
+		{
+			TimeBlock tb = ((TimeBlock)((Thumb)sender).TemplatedParent);
+			if(VisualTreeHelper.GetOffset(tb).X + e.HorizontalChange > 0)
+				Canvas.SetLeft(tb, VisualTreeHelper.GetOffset(tb).X + e.HorizontalChange);
+		}
 	}
+
+	public class NumberedTickBar : TickBar
+	{
+		protected override void OnRender(DrawingContext dc)
+		{
+
+			Size size = new Size(base.ActualWidth, base.ActualHeight);
+			int tickCount = (int)((this.Maximum - this.Minimum) / this.TickFrequency) + 1;
+			if ((this.Maximum - this.Minimum) % this.TickFrequency == 0)
+				tickCount -= 1;
+			Double tickFrequencySize;
+			// Calculate tick's setting
+			tickFrequencySize = (size.Width * this.TickFrequency / (this.Maximum - this.Minimum));
+			string text = "";
+			FormattedText formattedText = null;
+			double num = this.Maximum - this.Minimum;
+			int i = 0;
+			// Draw each tick text
+			for (i = 0; i <= tickCount; i++)
+			{
+				text = Convert.ToString(Convert.ToInt32(this.Minimum + this.TickFrequency * i), 10);
+
+				formattedText = new FormattedText(text, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, new Typeface("Verdana"), 8, Brushes.Black);
+				dc.DrawText(formattedText, new Point((tickFrequencySize * i), 30));
+
+			}
+		}
+	}
+
+
 }

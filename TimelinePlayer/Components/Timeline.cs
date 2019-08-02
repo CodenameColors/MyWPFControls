@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace TimelinePlayer.Components
 {
-	class Timeline
+	public class Timeline
 	{
+
 		LinkedList<TimeBlock> timeBlocksLL = new LinkedList<TimeBlock>();
 
 		public Timeline()
@@ -22,6 +24,8 @@ namespace TimelinePlayer.Components
 		{
 
 		}
+
+
 
 	}
 }
