@@ -54,6 +54,7 @@
     </Page>
     <Compile Include="Components\DialogueBlock.cs" />
     <Compile Include="Components\TimeBlock.cs" />
+    <Compile Include="Components\TimeDataType.cs" />
     <Compile Include="Components\Timeline.cs" />
     <Compile Include="Components\TrackTimeline.cs" />
     <Compile Include="Components\TrackItem.cs" />
