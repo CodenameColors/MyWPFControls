@@ -114,16 +114,16 @@ namespace TimelinePlayer
 
 			//Button bor = new Button() { Background = Brushes.Aqua };
 			ContentControl bor = (ContentControl)this.Resources["TimelineBlock_CC"];
-			Tracks_Grid.RowDefinitions.Add(new RowDefinition(){ Height=new GridLength(50)});
+			Tracks_Grid.RowDefinitions.Add(new RowDefinition(){ Height=new GridLength(75)});
 			Grid.SetRow(bor, Tracks_Grid.RowDefinitions.Count - 1);
 			Tracks_Grid.Children.Add(bor);
-			Timelines_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(50) });
-			Canvas c = new Canvas() { Background = Brushes.Purple, Margin=new Thickness(0,3,0,3)};
+			Timelines_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
+			Canvas c = new Canvas() { Background = Brushes.Gray, Margin=new Thickness(0,3,0,3)};
 			c.MouseEnter += C_MouseEnter;
 			Grid.SetRow(c, Tracks_Grid.RowDefinitions.Count - 1);
 
 			//add my custom time block
-			TimeBlock timeBlock = new TimeBlock() {Width = 100, Margin = new Thickness(0,3,0,3)};
+			TimeBlock timeBlock = new TimeBlock() {Trackname="Memes", Width = 100, Margin = new Thickness(0,0,0,3)};
 			c.Children.Add(timeBlock);
 			Timelines_Grid.Children.Add(c);
 		}

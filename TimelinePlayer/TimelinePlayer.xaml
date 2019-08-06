@@ -18,26 +18,37 @@
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate TargetType="{x:Type timel:TimeBlock}"  >
-						<Grid Height="40">
+						<Grid Height="70">
 							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="40"/>
+								<ColumnDefinition Width="50"/>
 								<ColumnDefinition Width="*"/>
 							</Grid.ColumnDefinitions>
-							<TextBlock Grid.Column="1" Text="{Binding Trackname, RelativeSource={RelativeSource TemplatedParent}}" HorizontalAlignment="Left" Foreground="White" />
-							
-							<Image Grid.Column="0" Width="30" Height="30" Source="Images/defaultimage.jpg"/>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="1*"/>
+								<RowDefinition Height="1*"/>
+								<RowDefinition Height="1*"/>
+							</Grid.RowDefinitions>
 
-							<ContentPresenter HorizontalAlignment="Right" Grid.Column="1" 
+							<TextBlock Grid.Column="1" Text="{Binding Trackname, RelativeSource={RelativeSource TemplatedParent}}" HorizontalAlignment="Left" Foreground="White" />
+							<Image Grid.Column="0" Grid.RowSpan="2" Width="50" Height="50" Source="{Binding TrackSpritePath, RelativeSource={RelativeSource TemplatedParent}}" >
+								<!--<Image.Source>
+									<BitmapImage UriSource="{Binding TrackSpritePath, RelativeSource={RelativeSource TemplatedParent}}"/>
+								</Image.Source>-->
+							</Image>
+
+							<TextBlock Grid.Row="1" Grid.Column="1"  Text="{Binding CurrentDialogue, RelativeSource={RelativeSource TemplatedParent}}" HorizontalAlignment="Left" Foreground="White"/>
+							<TextBlock Grid.Row="2" Grid.ColumnSpan="3"  Text="{Binding AudioFile, RelativeSource={RelativeSource TemplatedParent}}" HorizontalAlignment="Left" Foreground="White" Margin="3,0,0,0"/>
+							<ContentPresenter HorizontalAlignment="Right" Grid.Column="1" Grid.RowSpan="3"
                                               VerticalAlignment="Stretch"
                                               x:Name="PART_RightIndicator">
 								<ContentPresenter.Content>
-									<Thumb x:Name="resizeThumb_Right"  Width="5" Cursor="ScrollWE" Background="Transparent"
+									<Thumb x:Name="resizeThumb_Right"  Width="5" Cursor="ScrollWE" Background="Transparent" Opacity="0"
 										 HorizontalAlignment="Right" VerticalAlignment="Stretch"
 										 DragDelta="TimeBlock_Resize_Right" />
 								</ContentPresenter.Content>
 							</ContentPresenter>
 
-							<ContentPresenter HorizontalAlignment="Stretch" Grid.ColumnSpan="5" 
+							<ContentPresenter HorizontalAlignment="Stretch" Grid.ColumnSpan="5" Grid.RowSpan="3"
                                               VerticalAlignment="Stretch"
                                               x:Name="PART_MiddleIndicator">
 								<ContentPresenter.Content>
@@ -47,16 +58,18 @@
 								</ContentPresenter.Content>
 							</ContentPresenter>
 
-							<ContentPresenter HorizontalAlignment="Left" Grid.Column="0" 
+							<ContentPresenter HorizontalAlignment="Left" Grid.Column="0" Grid.RowSpan="3"
                                               VerticalAlignment="Stretch"
                                               x:Name="PARTLeftIndicator">
 								<ContentPresenter.Content>
-									<Thumb x:Name="resizeThumb_Left"  Width="5" Cursor="ScrollWE" Background="Transparent"
+									<Thumb x:Name="resizeThumb_Left"  Width="5" Cursor="ScrollWE" Background="Transparent" Opacity="0"
 										 HorizontalAlignment="Right" VerticalAlignment="Stretch"
 										 DragDelta="TimeBlock_Resize_Left" />
 								</ContentPresenter.Content>
 							</ContentPresenter>
-							<Border Grid.ColumnSpan="5" BorderBrush="Black" BorderThickness="2"/>
+							<Border Grid.ColumnSpan="5" BorderBrush="#FF595959" BorderThickness="2" Grid.RowSpan="3"/>
+							<GridSplitter Grid.Row="0" VerticalAlignment="Bottom" Grid.ColumnSpan="5" Height="2" HorizontalAlignment="Stretch" Background="#7F404040" ResizeDirection="Rows" Margin="50,0,4,0"/>
+							<GridSplitter Grid.Row="1" VerticalAlignment="Bottom" Grid.ColumnSpan="5" Height="2" HorizontalAlignment="Stretch" Background="#7F404040" ResizeDirection="Rows" Margin="3,0,3,0"/>
 						</Grid>
 					</ControlTemplate>
 				</Setter.Value>

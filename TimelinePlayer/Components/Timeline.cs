@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace TimelinePlayer.Components
 {
-	public class Timeline
+	public class Timeline : Canvas
 	{
 
 		LinkedList<TimeBlock> timeBlocksLL = new LinkedList<TimeBlock>();
