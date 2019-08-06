@@ -12,19 +12,15 @@ namespace TimelinePlayer.Components
 	public class TimeBlock : Button, INotifyPropertyChanged
 	{
 		#region start date
-		public String StartDate
+		public String Trackname
 		{
 			get { return (String)GetValue(StartDateProperty); }
 			set { SetValue(StartDateProperty, value); }
 		}
-
-		public String Test { get { return "settest"; } set { Test = value; } }
-
 		// Using a DependencyProperty as the backing store for StartDate.  This enables animation, styling, binding, etc...
 		public static readonly DependencyProperty StartDateProperty =
-				DependencyProperty.Register("StartDate", typeof(String), typeof(TrackTimeline),
-				new UIPropertyMetadata("test",
-						new PropertyChangedCallback(OnStartDateChanged)));
+				DependencyProperty.Register("Trackname", typeof(String), typeof(TimeBlock),
+				new PropertyMetadata( "Emma", new PropertyChangedCallback(OnStartDateChanged)));
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
@@ -42,13 +38,13 @@ namespace TimelinePlayer.Components
 
 		public TimeBlock()
 		{
-			StartDate = "60";
+			DataContext = this;
 		}
 
 		private void TimeBlock_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
 		{
 			Console.WriteLine("moved");
-			StartDate = "70";
+			Trackname = "Antonio";
 		}
 
 

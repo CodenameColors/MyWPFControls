@@ -17,13 +17,14 @@
 		<Style TargetType="{x:Type timel:TimeBlock}">
 			<Setter Property="Template">
 				<Setter.Value>
-					<ControlTemplate TargetType="{x:Type timel:TimeBlock}">
+					<ControlTemplate TargetType="{x:Type timel:TimeBlock}"  >
 						<Grid Height="40">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="40"/>
 								<ColumnDefinition Width="*"/>
 							</Grid.ColumnDefinitions>
-							<TextBlock Grid.Column="1" DataContext="{x:Type timel:TimeBlock}" Text="{Binding Path=StartDate}" Foreground="Black" Width="20"/>
+							<TextBlock Grid.Column="1" Text="{Binding Trackname, RelativeSource={RelativeSource TemplatedParent}}" HorizontalAlignment="Left" Foreground="White" />
+							
 							<Image Grid.Column="0" Width="30" Height="30" Source="Images/defaultimage.jpg"/>
 
 							<ContentPresenter HorizontalAlignment="Right" Grid.Column="1" 
@@ -56,7 +57,6 @@
 								</ContentPresenter.Content>
 							</ContentPresenter>
 							<Border Grid.ColumnSpan="5" BorderBrush="Black" BorderThickness="2"/>
-
 						</Grid>
 					</ControlTemplate>
 				</Setter.Value>

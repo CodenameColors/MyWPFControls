@@ -123,7 +123,7 @@ namespace TimelinePlayer
 			Grid.SetRow(c, Tracks_Grid.RowDefinitions.Count - 1);
 
 			//add my custom time block
-			TimeBlock timeBlock = new TimeBlock() {StartDate="60", Width = 100, Margin = new Thickness(0,3,0,3)};
+			TimeBlock timeBlock = new TimeBlock() {Width = 100, Margin = new Thickness(0,3,0,3)};
 			c.Children.Add(timeBlock);
 			Timelines_Grid.Children.Add(c);
 		}
