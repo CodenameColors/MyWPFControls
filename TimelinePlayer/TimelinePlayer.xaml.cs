@@ -136,7 +136,7 @@ namespace TimelinePlayer
 			////add my custom time block
 			TimeBlock timeBlock = new TimeBlock(timeline) { Trackname = "Memes", Width = 100, Margin = new Thickness(0, 0, 0, 3) };
 			Canvas.SetLeft(timeBlock, 1);
-			timeline.Children.Add(timeBlock);
+			//timeline.Children.Add(timeBlock);
 			Timelines_Grid.Children.Add(timeline);
 
 			timelines.Add(timeline);
@@ -183,7 +183,7 @@ namespace TimelinePlayer
 			////add my custom time block
 			TimeBlock timeBlock = new TimeBlock(timeline) { Trackname = "Memes", Width = 100, Margin = new Thickness(0, 0, 0, 3) };
 			Canvas.SetLeft(timeBlock, 1);
-			timeline.Children.Add(timeBlock);
+			//timeline.Children.Add(timeBlock);
 			Timelines_Grid.Children.Add(timeline);
 
 			timelines.Add(timeline);
@@ -238,12 +238,42 @@ namespace TimelinePlayer
 		private void MoveThumb_Middle_DragDelta(object sender, DragDeltaEventArgs e)
 		{
 			TimeBlock tb = ((TimeBlock)((Thumb)sender).TemplatedParent);
-			if(VisualTreeHelper.GetOffset(tb).X + e.HorizontalChange > 0)
-				Canvas.SetLeft(tb, VisualTreeHelper.GetOffset(tb).X + e.HorizontalChange);
+			if (VisualTreeHelper.GetOffset(tb).X + e.HorizontalChange > 0) {
+				if (CanMoveTimeBlock(timelines[Grid.GetRow(tb.TimelineParent)], tb,(int)(Canvas.GetLeft(tb) + e.HorizontalChange), (int)(Canvas.GetLeft(tb) + tb.ActualWidth + e.HorizontalChange)))
+					Canvas.SetLeft(tb, VisualTreeHelper.GetOffset(tb).X + e.HorizontalChange);
+			}
+
+			Console.WriteLine(Grid.GetRow(tb.TimelineParent));
 
 			//don't let the users put timeblock in side eaachother
 
 			//only move the timeblock when the mouse is not over another time block
+
+		}
+
+		private bool CanMoveTimeBlock(Timeline tline, TimeBlock desiredmove, int left, int right)
+		{
+			bool retb = true;
+			//there are multiple Timeblocks in a timeline
+			foreach(TimeBlock TBlock in tline.timeBlocksLL)
+			{
+				if (desiredmove == TBlock) continue;
+				int block_l = (int)Canvas.GetLeft(TBlock);
+				int block_r = (int)(block_l + TBlock.Width);
+
+				//if (left > block_l && right < block_r)
+				//	retb &= false;
+
+				if (right > block_l && right < block_r)
+					retb &= false;
+				if (left > block_l && left < block_r)
+					retb &= false;
+			}
+			return retb;
+		}
+
+		private void SetSnapLocation(List<Timeline> timelines, TimeBlock desiredsnapper)
+		{
 
 		}
 

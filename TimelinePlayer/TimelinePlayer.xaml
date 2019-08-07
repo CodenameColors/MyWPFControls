@@ -8,11 +8,6 @@
              mc:Ignorable="d" Background="Transparent" Height="200" Width="650">
 	<UserControl.Resources>
 
-		<DataTemplate x:Key="TimeTypeTemplate" DataType="{x:Type timel:TimeDataType}">
-			<Border>
-				<TextBlock Text="{Binding Path=StartTime}"/>
-			</Border>
-		</DataTemplate>
 		
 		<Style TargetType="{x:Type timel:TimeBlock}">
 			<Setter Property="Template">

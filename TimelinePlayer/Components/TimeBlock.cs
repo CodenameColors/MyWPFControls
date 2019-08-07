@@ -12,7 +12,7 @@ namespace TimelinePlayer.Components
 	public class TimeBlock : Button, INotifyPropertyChanged
 	{
 
-		Timeline TimelineParent;
+		public Timeline TimelineParent;
 
 		#region Sprite
 
