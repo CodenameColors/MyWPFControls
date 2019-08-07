@@ -72,6 +72,8 @@ namespace TimelinePlayer
 	public partial class TimelinePlayer : UserControl
   {
 
+		List<Timeline> timelines = new List<Timeline>();
+
 		static TimeBlockDragAdorner _dragAdorner;
 		public IEnumerable ItemsSource
 		{
@@ -118,14 +120,27 @@ namespace TimelinePlayer
 			Grid.SetRow(bor, Tracks_Grid.RowDefinitions.Count - 1);
 			Tracks_Grid.Children.Add(bor);
 			Timelines_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
-			Canvas c = new Canvas() { Background = Brushes.Gray, Margin=new Thickness(0,3,0,3)};
-			c.MouseEnter += C_MouseEnter;
-			Grid.SetRow(c, Tracks_Grid.RowDefinitions.Count - 1);
 
-			//add my custom time block
-			TimeBlock timeBlock = new TimeBlock() {Trackname="Memes", Width = 100, Margin = new Thickness(0,0,0,3)};
-			c.Children.Add(timeBlock);
-			Timelines_Grid.Children.Add(c);
+			Timeline timeline = new Timeline()
+			{
+				HorizontalAlignment = HorizontalAlignment.Stretch,
+				VerticalAlignment = VerticalAlignment.Stretch,
+				Background = Brushes.Gray,
+				Margin = new Thickness(0, 3, 0, 3)
+			};
+
+			//Canvas c = new Canvas() { Background = Brushes.Gray, Margin=new Thickness(0,3,0,3)};
+			//c.MouseEnter += C_MouseEnter;
+			Grid.SetRow(timeline, Tracks_Grid.RowDefinitions.Count - 1);
+
+			////add my custom time block
+			TimeBlock timeBlock = new TimeBlock(timeline) { Trackname = "Memes", Width = 100, Margin = new Thickness(0, 0, 0, 3) };
+			Canvas.SetLeft(timeBlock, 1);
+			timeline.Children.Add(timeBlock);
+			Timelines_Grid.Children.Add(timeline);
+
+			timelines.Add(timeline);
+
 		}
 
 		private void C_MouseEnter(object sender, MouseEventArgs e)
@@ -138,13 +153,42 @@ namespace TimelinePlayer
 			InitializeComponent();
 			Console.WriteLine("init");
 
-			
+
 		}
 
 		private void AddTrack_BTN_Click(object sender, RoutedEventArgs e)
 		{
 			Console.WriteLine("AddTrack");
-			
+			//timelines.Add(new Timeline());
+
+
+			ContentControl bor = (ContentControl)this.Resources["TimelineBlock_CC"];
+			Tracks_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
+			Grid.SetRow(bor, Tracks_Grid.RowDefinitions.Count - 1);
+			Tracks_Grid.Children.Add(bor);
+			Timelines_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
+
+			Timeline timeline = new Timeline()
+			{
+				HorizontalAlignment = HorizontalAlignment.Stretch,
+				VerticalAlignment = VerticalAlignment.Stretch,
+				Background = Brushes.Gray,
+				Margin = new Thickness(0, 3, 0, 3)
+			};
+
+			//Canvas c = new Canvas() { Background = Brushes.Gray, Margin=new Thickness(0,3,0,3)};
+			//c.MouseEnter += C_MouseEnter;
+			Grid.SetRow(timeline, Tracks_Grid.RowDefinitions.Count - 1);
+
+			////add my custom time block
+			TimeBlock timeBlock = new TimeBlock(timeline) { Trackname = "Memes", Width = 100, Margin = new Thickness(0, 0, 0, 3) };
+			Canvas.SetLeft(timeBlock, 1);
+			timeline.Children.Add(timeBlock);
+			Timelines_Grid.Children.Add(timeline);
+
+			timelines.Add(timeline);
+
+
 		}
 
 		private void Timelines_VertScroll(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -196,6 +240,21 @@ namespace TimelinePlayer
 			TimeBlock tb = ((TimeBlock)((Thumb)sender).TemplatedParent);
 			if(VisualTreeHelper.GetOffset(tb).X + e.HorizontalChange > 0)
 				Canvas.SetLeft(tb, VisualTreeHelper.GetOffset(tb).X + e.HorizontalChange);
+
+			//don't let the users put timeblock in side eaachother
+
+			//only move the timeblock when the mouse is not over another time block
+
+		}
+
+		private void Button_Click(object sender, RoutedEventArgs e)
+		{
+			ContentControl cc = (ContentControl)((Border)((Grid)((StackPanel)((Button)sender).Parent).Parent).Parent).Parent;
+			Console.WriteLine(Grid.GetRow(cc));
+
+			timelines[Grid.GetRow(cc)].AddTimeBlock(new TimeBlock(timelines[Grid.GetRow(cc)]) { Trackname = "Memes", Width = 100, Margin = new Thickness(0, 0, 0, 3) });
+			
+			
 		}
 	}
 

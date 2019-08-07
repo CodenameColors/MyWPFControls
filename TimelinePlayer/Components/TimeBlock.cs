@@ -12,6 +12,8 @@ namespace TimelinePlayer.Components
 	public class TimeBlock : Button, INotifyPropertyChanged
 	{
 
+		Timeline TimelineParent;
+
 		#region Sprite
 
 		//Sprite Name
@@ -111,8 +113,9 @@ namespace TimelinePlayer.Components
 			this.MouseMove += TimeBlock_MouseMove;
 		}
 
-		public TimeBlock()
+		public TimeBlock(Timeline parent)
 		{
+			TimelineParent = parent;
 			DataContext = this;
 		}
 
@@ -122,6 +125,11 @@ namespace TimelinePlayer.Components
 			Trackname = "Emma";
 			TrackSpritePath = "C:/Users/amorales/Documents/Visual Studio 2017/Projects/ProjectEE/AmethystEngine/images/emma_colors_oc.png";
 			CurrentDialogue = "Sup, Nerd?";
+
+
+			double left = Canvas.GetLeft(this);
+			if (left + this.Width > TimelineParent.ActualWidth) //expands the time line if the block goes off screen
+				TimelineParent.Width = left + this.Width;
 		}
 
 
