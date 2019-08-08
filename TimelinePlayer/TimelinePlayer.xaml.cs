@@ -17,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using TimelinePlayer.Components;
 
 namespace TimelinePlayer
@@ -71,10 +72,72 @@ namespace TimelinePlayer
 	/// </summary>
 	public partial class TimelinePlayer : UserControl
   {
-
+		DispatcherTimer PlayerTimer = new DispatcherTimer();
 		List<Timeline> timelines = new List<Timeline>();
+		double ScaleWidth = 1.0;
 
 		static TimeBlockDragAdorner _dragAdorner;
+
+		public int TimeWidth
+		{
+			get { return (int)GetValue(TimeWidthProperty); }
+			set { SetValue(TimeWidthProperty, value); }
+		}
+
+		public static readonly DependencyProperty TimeWidthProperty =
+			DependencyProperty.Register("TimeWidth", typeof(int), typeof(TimelinePlayer),
+				new PropertyMetadata(40, new PropertyChangedCallback(OnTimeWidthPropertyChanged)));
+
+		private static void OnTimeWidthPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+		{
+			Console.WriteLine("TimeWidth Changed");
+			TimelinePlayer tlp = (TimelinePlayer)sender;
+			int position = tlp.TimeWidth; int count = 1;
+
+			//create the timeline. keep going until the end is reached
+			while (position < tlp.TimelineScrubber_SV.ActualWidth)
+			{
+
+
+				Line l = new Line() { X1 = position, X2 = position, Y1 = 0, Y2 = 20, Fill = Brushes.White, StrokeThickness = 2, Stroke = Brushes.White };
+				tlp.TimelineScrubber_Canvas.Children.Add(l);
+
+
+				TextBlock time = new TextBlock() { Foreground = Brushes.White, FontSize = 10, Text = count.ToString() };
+				Canvas.SetLeft(time, position +2);
+				tlp.TimelineScrubber_Canvas.Children.Add(time);
+
+				position += tlp.TimeWidth; count++;
+			}
+
+
+
+			//TimelineScrubber_Canvas.Children.Add(l);
+
+		}
+
+		private void RedrawTimeScrubber(Canvas timescrubber, int timewidth)
+		{
+			timescrubber.Children.Clear();
+			int position = timewidth; int count = 1;
+			//create the timeline. keep going until the end is reached
+			while (position < (timescrubber).ActualWidth)
+			{
+				Line l = new Line() { X1 = position, X2 = position, Y1 = 0, Y2 = 20, Fill = Brushes.White, StrokeThickness = 2, Stroke = Brushes.White };
+				timescrubber.Children.Add(l);
+
+
+				TextBlock time = new TextBlock() { Foreground = Brushes.White, FontSize = 10, Text = count.ToString() };
+				Canvas.SetLeft(time, position + 2);
+				timescrubber.Children.Add(time);
+
+				position += timewidth; count++;
+			}
+
+
+		}
+
+
 		public IEnumerable ItemsSource
 		{
 			get { return (IEnumerable)GetValue(ItemsSourceProperty); }
@@ -121,7 +184,7 @@ namespace TimelinePlayer
 			Tracks_Grid.Children.Add(bor);
 			Timelines_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
 
-			Timeline timeline = new Timeline()
+			Timeline timeline = new Timeline(TimeWidth)
 			{
 				HorizontalAlignment = HorizontalAlignment.Stretch,
 				VerticalAlignment = VerticalAlignment.Stretch,
@@ -134,7 +197,7 @@ namespace TimelinePlayer
 			Grid.SetRow(timeline, Tracks_Grid.RowDefinitions.Count - 1);
 
 			////add my custom time block
-			TimeBlock timeBlock = new TimeBlock(timeline) { Trackname = "Memes", Width = 100, Margin = new Thickness(0, 0, 0, 3) };
+			TimeBlock timeBlock = new TimeBlock(timeline, 0) { Trackname = "Memes", Width = 100, Margin = new Thickness(0, 0, 0, 3) };
 			Canvas.SetLeft(timeBlock, 1);
 			//timeline.Children.Add(timeBlock);
 			Timelines_Grid.Children.Add(timeline);
@@ -152,9 +215,15 @@ namespace TimelinePlayer
     {
 			InitializeComponent();
 			Console.WriteLine("init");
-
-
+			PlayerTimer.Tick += PlayTimer_Tick;
 		}
+
+
+		private void UserControl_Loaded(object sender, RoutedEventArgs e)
+		{
+			RedrawTimeScrubber(TimelineScrubber_Canvas, TimeWidth);
+		}
+
 
 		private void AddTrack_BTN_Click(object sender, RoutedEventArgs e)
 		{
@@ -168,7 +237,7 @@ namespace TimelinePlayer
 			Tracks_Grid.Children.Add(bor);
 			Timelines_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
 
-			Timeline timeline = new Timeline()
+			Timeline timeline = new Timeline(TimeWidth)
 			{
 				HorizontalAlignment = HorizontalAlignment.Stretch,
 				VerticalAlignment = VerticalAlignment.Stretch,
@@ -181,8 +250,8 @@ namespace TimelinePlayer
 			Grid.SetRow(timeline, Tracks_Grid.RowDefinitions.Count - 1);
 
 			////add my custom time block
-			TimeBlock timeBlock = new TimeBlock(timeline) { Trackname = "Memes", Width = 100, Margin = new Thickness(0, 0, 0, 3) };
-			Canvas.SetLeft(timeBlock, 1);
+			//TimeBlock timeBlock = new TimeBlock(timeline, 0) { Trackname = "Memes", Width = 100, Margin = new Thickness(0, 0, 0, 3) };
+			//Canvas.SetLeft(timeBlock, 1);
 			//timeline.Children.Add(timeBlock);
 			Timelines_Grid.Children.Add(timeline);
 
@@ -215,14 +284,7 @@ namespace TimelinePlayer
 			
 		}
 
-		private void TimeBlock_Resize_Right(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
-		{
-
-			TimeBlock tb = ((TimeBlock)((Thumb)sender).TemplatedParent);
-			if(tb.Width + e.HorizontalChange > 5)
-				tb.Width += e.HorizontalChange;
-		}
-
+		
 		private void TimeBlock_Resize_Left(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
 		{
 
@@ -232,6 +294,23 @@ namespace TimelinePlayer
 			{
 				tb.Width -= e.HorizontalChange;
 				Canvas.SetLeft(tb, VisualTreeHelper.GetOffset(tb).X + e.HorizontalChange);
+				tb.StartTime = Canvas.GetLeft(tb) * tb.TimelineParent.TimePerPixel;
+			}
+		}
+		private void TimeBlock_Resize_Right(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+		{
+
+			TimeBlock tb = ((TimeBlock)((Thumb)sender).TemplatedParent);
+			if(tb.Width + e.HorizontalChange > 5)
+				tb.Width += e.HorizontalChange;
+			tb.StartTime = Canvas.GetLeft(tb) * tb.TimelineParent.TimePerPixel;
+
+			double left = Canvas.GetLeft(tb);
+			if (left + tb.Width > tb.TimelineParent.ActualWidth)
+			{ //expands the time line if the block goes off screen
+				tb.TimelineParent.Width = left + tb.Width;
+				TimelineScrubber_Canvas.Width = tb.TimelineParent.Width;
+				RedrawTimeScrubber(TimelineScrubber_Canvas, TimeWidth);
 			}
 		}
 
@@ -239,8 +318,11 @@ namespace TimelinePlayer
 		{
 			TimeBlock tb = ((TimeBlock)((Thumb)sender).TemplatedParent);
 			if (VisualTreeHelper.GetOffset(tb).X + e.HorizontalChange > 0) {
-				if (CanMoveTimeBlock(timelines[Grid.GetRow(tb.TimelineParent)], tb,(int)(Canvas.GetLeft(tb) + e.HorizontalChange), (int)(Canvas.GetLeft(tb) + tb.ActualWidth + e.HorizontalChange)))
+				if (CanMoveTimeBlock(timelines[Grid.GetRow(tb.TimelineParent)], tb, (int)(Canvas.GetLeft(tb) + e.HorizontalChange), (int)(Canvas.GetLeft(tb) + tb.ActualWidth + e.HorizontalChange)))
+				{
 					Canvas.SetLeft(tb, VisualTreeHelper.GetOffset(tb).X + e.HorizontalChange);
+					tb.StartTime = Canvas.GetLeft(tb) * tb.TimelineParent.TimePerPixel;
+				}
 			}
 
 			Console.WriteLine(Grid.GetRow(tb.TimelineParent));
@@ -248,6 +330,15 @@ namespace TimelinePlayer
 			//don't let the users put timeblock in side eaachother
 
 			//only move the timeblock when the mouse is not over another time block
+
+
+			double left = Canvas.GetLeft(tb);
+			if (left + tb.Width > tb.TimelineParent.ActualWidth)
+			{ //expands the time line if the block goes off screen
+				tb.TimelineParent.Width = left + tb.Width;
+				TimelineScrubber_Canvas.Width = tb.TimelineParent.Width;
+				RedrawTimeScrubber(TimelineScrubber_Canvas, TimeWidth);
+			}
 
 		}
 
@@ -272,7 +363,7 @@ namespace TimelinePlayer
 			return retb;
 		}
 
-		private void SetSnapLocation(List<Timeline> timelines, TimeBlock desiredsnapper)
+		private void SetSnapLocation(List<Timeline> timelines, TimeBlock desiredsnapper, int timeline)
 		{
 
 		}
@@ -282,9 +373,51 @@ namespace TimelinePlayer
 			ContentControl cc = (ContentControl)((Border)((Grid)((StackPanel)((Button)sender).Parent).Parent).Parent).Parent;
 			Console.WriteLine(Grid.GetRow(cc));
 
-			timelines[Grid.GetRow(cc)].AddTimeBlock(new TimeBlock(timelines[Grid.GetRow(cc)]) { Trackname = "Memes", Width = 100, Margin = new Thickness(0, 0, 0, 3) });
+			timelines[Grid.GetRow(cc)].AddTimeBlock(new TimeBlock(timelines[Grid.GetRow(cc)], 0) { Trackname = "Memes", Width = 100, Margin = new Thickness(0, 0, 0, 3) });
 			
 			
+		}
+
+		private void ScrollViewer_MouseWheel(object sender, MouseWheelEventArgs e)
+		{
+			Console.WriteLine("Mouse wheel over tracks");
+			if (e.Delta < 0)
+			{
+				if (ScaleWidth - .2 >= 0.2)
+				{
+					TimelineScrubber_Canvas.RenderTransform = new ScaleTransform(ScaleWidth -= .2, 1.0);
+					foreach(Timeline tline in timelines)
+					{
+						tline.RenderTransform = new ScaleTransform(ScaleWidth, 1.0);
+					}
+				}
+			}
+			else
+			{
+				TimelineScrubber_Canvas.RenderTransform = new ScaleTransform(ScaleWidth += .2, 1.0);
+				foreach (Timeline tline in timelines)
+				{
+					tline.RenderTransform = new ScaleTransform(ScaleWidth, 1.0);
+				}
+			}
+			RedrawTimeScrubber(TimelineScrubber_Canvas, TimeWidth);
+
+		}
+
+		private void PlayTimeline_BTN_Click(object sender, RoutedEventArgs e)
+		{
+			PlayerTimer.Interval = TimeSpan.FromMilliseconds(50);
+			PlayerTimer.Start();
+		}
+
+		void PlayTimer_Tick(object sender, EventArgs e)
+		{
+			PlayLine.X1 += 1; PlayLine.X2 += 1;
+		}
+
+		private void Timelines_Grid_SizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			PlayLine.Y2 = Tracks_Grid.ActualHeight;
 		}
 	}
 

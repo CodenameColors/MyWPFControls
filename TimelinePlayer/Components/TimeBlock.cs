@@ -101,9 +101,24 @@ namespace TimelinePlayer.Components
 
 		#region Time
 
-		public double StartTime { get; set; }
-			public double EndTime { get; set; }
-			public double Duration { get; set; }
+		public double StartTime
+		{
+			get { return (double)GetValue(StartTimeProperty); }
+			set { SetValue(StartTimeProperty, value); }
+		}
+
+	public static readonly DependencyProperty StartTimeProperty =
+				DependencyProperty.Register("StartTime", typeof(double), typeof(TimeBlock),
+					new PropertyMetadata(0.0, new PropertyChangedCallback(OnStartTimeChange)));
+		private static void OnStartTimeChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			TimeBlock tb = (TimeBlock)d;
+			tb.EndTime = tb.StartTime + (tb.ActualWidth * tb.TimelineParent.TimePerPixel);
+			tb.Duration = tb.EndTime - tb.StartTime;
+		}
+
+		public double EndTime { get; set; }
+		public double Duration { get; set; }
 
 		#endregion
 
@@ -113,23 +128,32 @@ namespace TimelinePlayer.Components
 			this.MouseMove += TimeBlock_MouseMove;
 		}
 
-		public TimeBlock(Timeline parent)
+		public TimeBlock(Timeline parent, double starttime)
 		{
 			TimelineParent = parent;
 			DataContext = this;
+			this.Loaded += TimeBlock_Loaded;
+			this.StartTime = starttime;
+
 		}
 
+		private void TimeBlock_Loaded(object sender, RoutedEventArgs e)
+		{
+			
+			this.EndTime = StartTime + (this.ActualWidth * TimelineParent.TimePerPixel);
+			this.Duration = EndTime - StartTime;
+		}
 		private void TimeBlock_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
 		{
 			Console.WriteLine("moved");
 			Trackname = "Emma";
 			TrackSpritePath = "C:/Users/amorales/Documents/Visual Studio 2017/Projects/ProjectEE/AmethystEngine/images/emma_colors_oc.png";
 			CurrentDialogue = "Sup, Nerd?";
+			
 
-
-			double left = Canvas.GetLeft(this);
-			if (left + this.Width > TimelineParent.ActualWidth) //expands the time line if the block goes off screen
-				TimelineParent.Width = left + this.Width;
+			//double left = Canvas.GetLeft(this);
+			//if (left + this.Width > TimelineParent.ActualWidth) //expands the time line if the block goes off screen
+			//	TimelineParent.Width = left + this.Width;
 		}
 
 

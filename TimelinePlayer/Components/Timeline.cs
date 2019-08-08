@@ -14,7 +14,7 @@ namespace TimelinePlayer.Components
 {
 	public class Timeline : Canvas
 	{
-
+		public double TimePerPixel;
 		public LinkedList<TimeBlock> timeBlocksLL
 		{
 			get { return LLTimeBlocks; }
@@ -22,9 +22,10 @@ namespace TimelinePlayer.Components
 		}
 		private LinkedList<TimeBlock> LLTimeBlocks = new LinkedList<TimeBlock>();
 
-		public Timeline()
+		public Timeline(int TimeWidth)
 		{
 			timeBlocksLL = new LinkedList<TimeBlock>();
+			TimePerPixel = 1.0 / TimeWidth;
 		}
 
 		/// <summary>
