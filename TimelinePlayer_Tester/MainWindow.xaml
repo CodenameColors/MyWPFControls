@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:TimelinePlayer_Tester"
         mc:Ignorable="d"
 				Background="Black"
-        Title="MainWindow" Height="378.883" Width="800" Loaded="Window_Loaded">
+        Title="MainWindow" Height="379" Width="800" Loaded="Window_Loaded">
 	<Grid >
 		<Tline:TimelinePlayer x:Name="Timeline" ItemsSource="{Binding Titles}" Height="284" VerticalAlignment="Top" TimeWidth="60" Margin="0,40,90,0">
 

@@ -149,6 +149,7 @@ namespace TimelinePlayer.Components
 			Trackname = "Emma";
 			TrackSpritePath = "C:/Users/amorales/Documents/Visual Studio 2017/Projects/ProjectEE/AmethystEngine/images/emma_colors_oc.png";
 			CurrentDialogue = "Sup, Nerd?";
+			AudioFile = ".mp3";
 			
 
 			//double left = Canvas.GetLeft(this);

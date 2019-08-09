@@ -72,7 +72,7 @@ namespace TimelinePlayer
 	/// </summary>
 	public partial class TimelinePlayer : UserControl
   {
-		DispatcherTimer PlayerTimer = new DispatcherTimer();
+		DispatcherTimer PlayerTimer = new DispatcherTimer(DispatcherPriority.Normal);
 		List<Timeline> timelines = new List<Timeline>();
 		double ScaleWidth = 1.0;
 
@@ -228,8 +228,6 @@ namespace TimelinePlayer
 		private void AddTrack_BTN_Click(object sender, RoutedEventArgs e)
 		{
 			Console.WriteLine("AddTrack");
-			//timelines.Add(new Timeline());
-
 
 			ContentControl bor = (ContentControl)this.Resources["TimelineBlock_CC"];
 			Tracks_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
@@ -244,15 +242,7 @@ namespace TimelinePlayer
 				Background = Brushes.Gray,
 				Margin = new Thickness(0, 3, 0, 3)
 			};
-
-			//Canvas c = new Canvas() { Background = Brushes.Gray, Margin=new Thickness(0,3,0,3)};
-			//c.MouseEnter += C_MouseEnter;
 			Grid.SetRow(timeline, Tracks_Grid.RowDefinitions.Count - 1);
-
-			////add my custom time block
-			//TimeBlock timeBlock = new TimeBlock(timeline, 0) { Trackname = "Memes", Width = 100, Margin = new Thickness(0, 0, 0, 3) };
-			//Canvas.SetLeft(timeBlock, 1);
-			//timeline.Children.Add(timeBlock);
 			Timelines_Grid.Children.Add(timeline);
 
 			timelines.Add(timeline);
@@ -322,6 +312,7 @@ namespace TimelinePlayer
 				{
 					Canvas.SetLeft(tb, VisualTreeHelper.GetOffset(tb).X + e.HorizontalChange);
 					tb.StartTime = Canvas.GetLeft(tb) * tb.TimelineParent.TimePerPixel;
+					tb.BringIntoView();
 				}
 			}
 
@@ -406,18 +397,51 @@ namespace TimelinePlayer
 
 		private void PlayTimeline_BTN_Click(object sender, RoutedEventArgs e)
 		{
-			PlayerTimer.Interval = TimeSpan.FromMilliseconds(50);
+			PlayerTimer.Interval = TimeSpan.FromMilliseconds(16);
 			PlayerTimer.Start();
 		}
 
 		void PlayTimer_Tick(object sender, EventArgs e)
 		{
-			PlayLine.X1 += 1; PlayLine.X2 += 1;
+			if (Timelines_Grid.ActualWidth -5 > PlayLine.X1) { 
+				PlayLine.X1 += 1; PlayLine.X2 += 1; PlayLine.BringIntoView(new Rect(PlayLine.X1, PlayLine.Y1, 2, 100));
+			}
+			else PlayerTimer.Stop();
+			Console.WriteLine("tick");
 		}
 
 		private void Timelines_Grid_SizeChanged(object sender, SizeChangedEventArgs e)
 		{
 			PlayLine.Y2 = Tracks_Grid.ActualHeight;
+			TempStartLine.Y2 = Tracks_Grid.ActualHeight;
+		}
+
+		private void PlayerStop_BTN_Click(object sender, RoutedEventArgs e)
+		{
+			PlayerTimer.Stop();
+			PlayLine.X1 = TempStartLine.X1; PlayLine.X2 = TempStartLine.X2;
+		}
+
+		private void PlayerPause_BTN_Click(object sender, RoutedEventArgs e)
+		{
+			PlayerTimer.Stop();
+		}
+
+		private void ScrollViewer_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			Point Mpos = Mouse.GetPosition((ScrollViewer)sender);
+			if (Mpos.X < Timelines_Grid.ActualWidth - 1)
+				TempStartLine.X1 = Mpos.X; TempStartLine.X2 = Mpos.X + 2;
+		}
+
+		private void ScrollViewer_PreviewMouseMove(object sender, MouseEventArgs e)
+		{
+			if(e.LeftButton == MouseButtonState.Pressed)
+			{
+				Point Mpos = Mouse.GetPosition((ScrollViewer)sender);
+				if(Mpos.X < Timelines_Grid.ActualWidth-1)
+					TempStartLine.X1 = Mpos.X; TempStartLine.X2 = Mpos.X + 2;
+			}
 		}
 	}
 
