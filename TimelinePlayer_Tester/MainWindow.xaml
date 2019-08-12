@@ -12,6 +12,7 @@
 		<Tline:TimelinePlayer x:Name="Timeline" ItemsSource="{Binding Titles}" Height="284" VerticalAlignment="Top" TimeWidth="60" Margin="0,40,90,0">
 
 		</Tline:TimelinePlayer>
-		<Button x:Name="AddItem_BTN" Content="Add item" HorizontalAlignment="Left" Margin="707,318,0,0" VerticalAlignment="Top" Width="75" Click="AddItem_BTN_Click"/>
+		<Button x:Name="AddItem_BTN" Content="Add timeline" HorizontalAlignment="Left" Margin="707,318,0,0" VerticalAlignment="Top" Width="75" Click="AddItem_BTN_Click"/>
+		<Button x:Name="Addtblock_BTN" Content="Add block" HorizontalAlignment="Left" Margin="707,293,0,0" VerticalAlignment="Top" Width="75" Click="Addtblock_BTN_Click"/>
 	</Grid>
 </Window>

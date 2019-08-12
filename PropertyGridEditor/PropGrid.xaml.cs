@@ -294,7 +294,6 @@ namespace PropertyGridEditor
 			//is the current number of columns enough?
 			while (InnerPropGrid.ColumnDefinitions.Count < LabelsList.Count + InputControls.Count)
 			{
-				Console.WriteLine("Adding a column!");
 				InnerPropGrid.ColumnDefinitions.Add(new ColumnDefinition() { });
 
 				//add a grid splitter!
@@ -306,7 +305,6 @@ namespace PropertyGridEditor
 			}
 			//resize the columns
 			int newwidth = (int)(500 / InnerPropGrid.ColumnDefinitions.Count);
-			Console.WriteLine("Control Width: " + newwidth);
 			foreach (ColumnDefinition cd in InnerPropGrid.ColumnDefinitions)
 			{
 				cd.Width = new GridLength(newwidth);

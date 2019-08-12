@@ -37,7 +37,7 @@
                                               VerticalAlignment="Stretch"
                                               x:Name="PART_RightIndicator">
 								<ContentPresenter.Content>
-									<Thumb x:Name="resizeThumb_Right"  Width="5" Cursor="ScrollWE" Background="Transparent" Opacity="0"
+									<Thumb x:Name="resizeThumb_Right"  Width="10" Cursor="ScrollWE" Background="Transparent" Opacity="0"
 										 HorizontalAlignment="Right" VerticalAlignment="Stretch"
 										 DragDelta="TimeBlock_Resize_Right" />
 								</ContentPresenter.Content>
@@ -57,12 +57,12 @@
                                               VerticalAlignment="Stretch"
                                               x:Name="PARTLeftIndicator">
 								<ContentPresenter.Content>
-									<Thumb x:Name="resizeThumb_Left"  Width="5" Cursor="ScrollWE" Background="Transparent" Opacity="0"
+									<Thumb x:Name="resizeThumb_Left"  Width="10" Cursor="ScrollWE" Background="Transparent" Opacity="0"
 										 HorizontalAlignment="Right" VerticalAlignment="Stretch"
 										 DragDelta="TimeBlock_Resize_Left" />
 								</ContentPresenter.Content>
 							</ContentPresenter>
-							<Border Grid.ColumnSpan="5" BorderBrush="#FF595959" BorderThickness="2" Grid.RowSpan="3"/>
+							<Border Grid.ColumnSpan="5" Panel.ZIndex="100" BorderBrush="#FF595959" BorderThickness="2" Grid.RowSpan="3" Width="Auto"/>
 							<GridSplitter Grid.Row="0" VerticalAlignment="Bottom" Grid.ColumnSpan="5" Height="2" HorizontalAlignment="Stretch" Background="#7F404040" ResizeDirection="Rows" Margin="50,0,4,0"/>
 							<GridSplitter Grid.Row="1" VerticalAlignment="Bottom" Grid.ColumnSpan="5" Height="2" HorizontalAlignment="Stretch" Background="#7F404040" ResizeDirection="Rows" Margin="3,0,3,0"/>
 						</Grid>
@@ -117,7 +117,7 @@
 						<!--</Image>-->
 						<Image Height="25" Width="25" Source="Images/defaultimage.jpg" HorizontalAlignment="Left">
 						</Image>
-						<TextBlock Text="[Name]" VerticalAlignment="Center" Padding="5,0,5,0"/>
+						<TextBlock x:Name="Timeline_Text" Text="" VerticalAlignment="Center" Padding="5,0,5,0" Foreground="White"/>
 						<Button Content="Add Item" HorizontalAlignment="Right" Width="50" Height="30" Click="Button_Click"	/>
 					</StackPanel>
 				</Grid>
@@ -144,20 +144,20 @@
 		<Button x:Name="AddTrack_BTN" Content="Add+" Height="20" Width="35" HorizontalAlignment="Right" VerticalAlignment="Top" Click="AddTrack_BTN_Click" Foreground="Black"/>
 
 		<ScrollViewer Grid.Column="2" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Background="#FF636363" 
-				ScrollBar.Scroll="ScrollViewer_Scroll" PreviewMouseWheel="ScrollViewer_MouseWheel" ScrollChanged="ScrollViewer_ScrollChanged" PreviewMouseLeftButtonDown="ScrollViewer_PreviewMouseLeftButtonDown" PreviewMouseMove="ScrollViewer_PreviewMouseMove">
-			<Grid x:Name="Timelines_Grid" Width="Auto" SizeChanged="Timelines_Grid_SizeChanged">
+				ScrollBar.Scroll="ScrollViewer_Scroll" PreviewMouseWheel="ScrollViewer_MouseWheel" ScrollChanged="ScrollViewer_ScrollChanged" 
+									PreviewMouseLeftButtonDown="ScrollViewer_PreviewMouseLeftButtonDown" PreviewMouseMove="ScrollViewer_PreviewMouseMove">
+			<Grid x:Name="Timelines_Grid" Width="Auto" SizeChanged="Timelines_Grid_SizeChanged" HorizontalAlignment="Left">
 				<Grid.RowDefinitions>
 				</Grid.RowDefinitions>
-
-				<Canvas/>
 				<Line Panel.ZIndex="100" Grid.RowSpan="1000" x:Name="PlayLine" Stroke="Red" Y1="0" Y2="152" StrokeThickness="1" HorizontalAlignment="Left" VerticalAlignment="Top" />
 				<Line Panel.ZIndex="99" Grid.RowSpan="1000" x:Name="TempStartLine" Stroke="White" Y1="0" Y2="152" StrokeThickness="2" HorizontalAlignment="Left" VerticalAlignment="Top" />
+				<Line Panel.ZIndex="99" Grid.RowSpan="1000" x:Name="SnapLine" Stroke="LightBlue" Y1="0" Y2="152" StrokeThickness="2" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Hidden" />
 			</Grid>
 		</ScrollViewer>
 		<GridSplitter Grid.Column="1" Grid.RowSpan="500" HorizontalAlignment="Stretch" Background="#FF9B9B9B" />
 
-		<ScrollViewer x:Name="TimelineScrubber_SV" Grid.Row="0" Grid.Column="2" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
-			<Canvas x:Name="TimelineScrubber_Canvas" Grid.Row="1" Width="485" Loaded="UserControl_Loaded">
+		<ScrollViewer x:Name="TimelineScrubber_SV" Grid.Row="0" Grid.Column="2" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" PreviewMouseLeftButtonDown="TimelineScrubber_SV_PreviewMouseLeftButtonDown" PreviewMouseMove="TimelineScrubber_SV_PreviewMouseMove" >
+			<Canvas x:Name="TimelineScrubber_Canvas" Grid.Row="1" Width="Auto" HorizontalAlignment="Left" Loaded="Scrubber_Loaded">
 				<!--<Canvas.Background>
 					<VisualBrush TileMode="Tile" Stretch="Fill" Viewport="0,0,25,25" ViewportUnits="Absolute" >
 						<VisualBrush.Visual>

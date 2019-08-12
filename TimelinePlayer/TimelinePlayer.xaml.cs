@@ -72,10 +72,12 @@ namespace TimelinePlayer
 	/// </summary>
 	public partial class TimelinePlayer : UserControl
   {
+		double TimeScrubber_BaseSize = 0.0;
+		public ObservableCollection<TimeBlock> ActiveTBblocks = new ObservableCollection<TimeBlock>();
 		DispatcherTimer PlayerTimer = new DispatcherTimer(DispatcherPriority.Normal);
 		List<Timeline> timelines = new List<Timeline>();
 		double ScaleWidth = 1.0;
-
+		
 		static TimeBlockDragAdorner _dragAdorner;
 
 		public int TimeWidth
@@ -90,7 +92,6 @@ namespace TimelinePlayer
 
 		private static void OnTimeWidthPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
-			Console.WriteLine("TimeWidth Changed");
 			TimelinePlayer tlp = (TimelinePlayer)sender;
 			int position = tlp.TimeWidth; int count = 1;
 
@@ -120,8 +121,9 @@ namespace TimelinePlayer
 		{
 			timescrubber.Children.Clear();
 			int position = timewidth; int count = 1;
+			TimelineScrubber_Canvas.Width = (TimeScrubber_BaseSize * ScaleWidth);
 			//create the timeline. keep going until the end is reached
-			while (position < (timescrubber).ActualWidth)
+			while (position < (timescrubber).Width)
 			{
 				Line l = new Line() { X1 = position, X2 = position, Y1 = 0, Y2 = 20, Fill = Brushes.White, StrokeThickness = 2, Stroke = Brushes.White };
 				timescrubber.Children.Add(l);
@@ -134,6 +136,11 @@ namespace TimelinePlayer
 				position += timewidth; count++;
 			}
 
+			foreach (Timeline tline in timelines)
+			{
+				tline.Width = (timescrubber).Width;
+				tline.TimePerPixel = 1.0 / timewidth;
+			}
 
 		}
 
@@ -161,35 +168,30 @@ namespace TimelinePlayer
 			// Remove handler for oldValue.CollectionChanged
 			if (oldValue != null)
 			{
-				((ObservableCollection<object>)oldValue).CollectionChanged -= new NotifyCollectionChangedEventHandler(newValueINotifyCollectionChanged_CollectionChanged);
+				((ObservableCollection<Timeline>)oldValue).CollectionChanged -= new NotifyCollectionChangedEventHandler(newValueINotifyCollectionChanged_CollectionChanged);
 			}
 			// Add handler for newValue.CollectionChanged (if possible)
 			if (null != newValue)
 			{
-				((ObservableCollection<object>)newValue).CollectionChanged += new NotifyCollectionChangedEventHandler(newValueINotifyCollectionChanged_CollectionChanged);
+				((ObservableCollection<Timeline>)newValue).CollectionChanged += new NotifyCollectionChangedEventHandler(newValueINotifyCollectionChanged_CollectionChanged);
 			}
 		}
 
 		void newValueINotifyCollectionChanged_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			//Do your stuff here.
-			Console.WriteLine("Added item to source");
-			//Tracks_SV.Children.Add(new Button());
-			//TrackItems_LB.Items.Add(sender);
-
-			//Button bor = new Button() { Background = Brushes.Aqua };
 			ContentControl bor = (ContentControl)this.Resources["TimelineBlock_CC"];
 			Tracks_Grid.RowDefinitions.Add(new RowDefinition(){ Height=new GridLength(75)});
 			Grid.SetRow(bor, Tracks_Grid.RowDefinitions.Count - 1);
 			Tracks_Grid.Children.Add(bor);
 			Timelines_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
 
-			Timeline timeline = new Timeline(TimeWidth)
+			Timeline timeline = new Timeline(TimeWidth, TimelineScrubber_Canvas.ActualWidth)
 			{
 				HorizontalAlignment = HorizontalAlignment.Stretch,
 				VerticalAlignment = VerticalAlignment.Stretch,
 				Background = Brushes.Gray,
-				Margin = new Thickness(0, 3, 0, 3)
+				Margin = new Thickness(0, 3, 0, 3),
+				TrackName = "Emma"
 			};
 
 			//Canvas c = new Canvas() { Background = Brushes.Gray, Margin=new Thickness(0,3,0,3)};
@@ -216,38 +218,80 @@ namespace TimelinePlayer
 			InitializeComponent();
 			Console.WriteLine("init");
 			PlayerTimer.Tick += PlayTimer_Tick;
+			KeyUp += TimelinePlayer_KeyUp;
+			ActiveTBblocks.CollectionChanged += ActiveTBblocks_CollectionChanged;
 		}
 
 
-		private void UserControl_Loaded(object sender, RoutedEventArgs e)
+
+		private void TimelinePlayer_KeyUp(object sender, KeyEventArgs e)
 		{
+			if(e.Key == Key.LeftCtrl)
+			{
+				SnapLine.Visibility = Visibility.Hidden; 
+			}
+		}
+
+		private void Scrubber_Loaded(object sender, RoutedEventArgs e)
+		{
+			TimelineScrubber_Canvas.Width = TimelineScrubber_SV.ActualWidth;
+			TimeScrubber_BaseSize = TimelineScrubber_Canvas.Width;
 			RedrawTimeScrubber(TimelineScrubber_Canvas, TimeWidth);
 		}
 
 
 		private void AddTrack_BTN_Click(object sender, RoutedEventArgs e)
 		{
-			Console.WriteLine("AddTrack");
-
-			ContentControl bor = (ContentControl)this.Resources["TimelineBlock_CC"];
 			Tracks_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
-			Grid.SetRow(bor, Tracks_Grid.RowDefinitions.Count - 1);
-			Tracks_Grid.Children.Add(bor);
 			Timelines_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
 
-			Timeline timeline = new Timeline(TimeWidth)
+			Timeline timeline = new Timeline(TimeWidth, TimelineScrubber_Canvas.ActualWidth)
 			{
-				HorizontalAlignment = HorizontalAlignment.Stretch,
+				HorizontalAlignment = HorizontalAlignment.Left,
 				VerticalAlignment = VerticalAlignment.Stretch,
 				Background = Brushes.Gray,
-				Margin = new Thickness(0, 3, 0, 3)
+				Margin = new Thickness(0, 3, 0, 3),
+				TrackName="Emma"
 			};
 			Grid.SetRow(timeline, Tracks_Grid.RowDefinitions.Count - 1);
 			Timelines_Grid.Children.Add(timeline);
 
+			ContentControl bor = (ContentControl)this.Resources["TimelineBlock_CC"];
+			//((TextBlock)bor.("Timeline_Text")).Text = timeline.TrackName;
+			((TextBlock)((StackPanel)((Grid)((Border)(bor.Content)).Child).Children[1]).Children[1]).Text = timeline.TrackName;
+
+			Grid.SetRow(bor, Tracks_Grid.RowDefinitions.Count - 1);
+			Tracks_Grid.Children.Add(bor);
+
+
 			timelines.Add(timeline);
+		}
+
+		private void AddTimeblock(Timeline Destimeline, double LeftPosition)
+		{
+			Tracks_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
+			Timelines_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
+
+			Timeline timeline = new Timeline(TimeWidth, TimelineScrubber_Canvas.ActualWidth)
+			{
+				HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Stretch,
+				Background = Brushes.Gray,
+				Margin = new Thickness(0, 3, 0, 3),
+				TrackName = "Emma"
+			};
+			Grid.SetRow(timeline, Tracks_Grid.RowDefinitions.Count - 1);
+			Timelines_Grid.Children.Add(timeline);
+
+			ContentControl bor = (ContentControl)this.Resources["TimelineBlock_CC"];
+			//((TextBlock)bor.("Timeline_Text")).Text = timeline.TrackName;
+			((TextBlock)((StackPanel)((Grid)((Border)(bor.Content)).Child).Children[1]).Children[1]).Text = timeline.TrackName;
+
+			Grid.SetRow(bor, Tracks_Grid.RowDefinitions.Count - 1);
+			Tracks_Grid.Children.Add(bor);
 
 
+			timelines.Add(timeline);
 		}
 
 		private void Timelines_VertScroll(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -286,22 +330,51 @@ namespace TimelinePlayer
 				Canvas.SetLeft(tb, VisualTreeHelper.GetOffset(tb).X + e.HorizontalChange);
 				tb.StartTime = Canvas.GetLeft(tb) * tb.TimelineParent.TimePerPixel;
 			}
+
+			//snapping
+			if (Keyboard.IsKeyDown(Key.LeftCtrl))
+			{
+				TimeBlock snap_tb = null;
+				foreach (Timeline tline in timelines)
+					if ((snap_tb = GetSnapStatus(tline, tb)) != null) break;
+				if (snap_tb != null)
+				{
+					SetSnap(snap_tb, tb, false);
+				}
+			}
+			tb.StartTime = Canvas.GetLeft(tb) * tb.TimelineParent.TimePerPixel;
 		}
 		private void TimeBlock_Resize_Right(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
 		{
 
 			TimeBlock tb = ((TimeBlock)((Thumb)sender).TemplatedParent);
-			if(tb.Width + e.HorizontalChange > 5)
+			if (tb.Width + e.HorizontalChange > 5)
 				tb.Width += e.HorizontalChange;
-			tb.StartTime = Canvas.GetLeft(tb) * tb.TimelineParent.TimePerPixel;
+			
 
 			double left = Canvas.GetLeft(tb);
 			if (left + tb.Width > tb.TimelineParent.ActualWidth)
 			{ //expands the time line if the block goes off screen
-				tb.TimelineParent.Width = left + tb.Width;
+				tb.Width = left + tb.Width;
+				foreach (Timeline tline in timelines)
+					tline.Width = tb.Width + e.HorizontalChange;
+				TimeScrubber_BaseSize = tb.TimelineParent.Width / ScaleWidth;
 				TimelineScrubber_Canvas.Width = tb.TimelineParent.Width;
 				RedrawTimeScrubber(TimelineScrubber_Canvas, TimeWidth);
 			}
+
+			//snapping
+			if (Keyboard.IsKeyDown(Key.LeftCtrl))
+			{
+				TimeBlock snap_tb = null;
+				foreach (Timeline tline in timelines)
+					if ((snap_tb = GetSnapStatus(tline, tb)) != null) break;
+				if (snap_tb != null && Math.Abs(Canvas.GetLeft(snap_tb) - Mouse.GetPosition(Timelines_Grid).X) <= 5)
+				{
+					SetSnap(snap_tb, tb, false);
+				}
+			}
+			tb.EndTime = (Canvas.GetLeft(tb) + tb.ActualWidth) * tb.TimelineParent.TimePerPixel;
 		}
 
 		private void MoveThumb_Middle_DragDelta(object sender, DragDeltaEventArgs e)
@@ -316,21 +389,98 @@ namespace TimelinePlayer
 				}
 			}
 
-			Console.WriteLine(Grid.GetRow(tb.TimelineParent));
-
-			//don't let the users put timeblock in side eaachother
-
-			//only move the timeblock when the mouse is not over another time block
-
-
 			double left = Canvas.GetLeft(tb);
-			if (left + tb.Width > tb.TimelineParent.ActualWidth)
+			if (left + tb.Width > tb.TimelineParent.Width)
 			{ //expands the time line if the block goes off screen
-				tb.TimelineParent.Width = left + tb.Width;
+				foreach (Timeline tline in timelines)
+					tline.Width = left + tb.Width;
+				TimeScrubber_BaseSize = tb.TimelineParent.Width / ScaleWidth;
 				TimelineScrubber_Canvas.Width = tb.TimelineParent.Width;
 				RedrawTimeScrubber(TimelineScrubber_Canvas, TimeWidth);
 			}
+			//snapping
+			if (Keyboard.IsKeyDown(Key.LeftCtrl))
+			{
+				TimeBlock snap_tb = null;
+				foreach (Timeline tline in timelines)
+					if ((snap_tb = GetSnapStatus(tline, tb)) != null) break;
+				if(snap_tb != null)
+				{
+					SetSnap(snap_tb, tb);
+				}
+			}
+			tb.StartTime = Canvas.GetLeft(tb) * tb.TimelineParent.TimePerPixel;
+		}
 
+		private void SetSnap(TimeBlock ToSnapto_TB, TimeBlock Snap_TB, bool bMove = true)
+		{
+			SnapLine.Visibility = Visibility.Visible;
+			double left = Canvas.GetLeft(Snap_TB);
+			double right = left + Snap_TB.ActualWidth;
+
+			//check to see if the left is within range
+			if ((Math.Abs(Canvas.GetLeft(ToSnapto_TB) + ToSnapto_TB.ActualWidth - left)) <= 5 && bMove)
+			{
+				Canvas.SetLeft(Snap_TB, (Canvas.GetLeft(ToSnapto_TB) + ToSnapto_TB.ActualWidth));
+				SnapLine.X1 = (Canvas.GetLeft(Snap_TB));
+				SnapLine.X2 = (Canvas.GetLeft(Snap_TB));
+
+			}
+			else if ((Math.Abs(Canvas.GetLeft(ToSnapto_TB) + ToSnapto_TB.ActualWidth - left)) <= 5 && !bMove)
+			{
+				Canvas.SetLeft(Snap_TB, (Canvas.GetLeft(ToSnapto_TB) + ToSnapto_TB.ActualWidth));
+				Snap_TB.Width += -1 * (Canvas.GetLeft(ToSnapto_TB) + ToSnapto_TB.ActualWidth - left);
+				SnapLine.X1 =  (Canvas.GetLeft(Snap_TB));
+				SnapLine.X2 =  (Canvas.GetLeft(Snap_TB));
+			}
+
+			//check to see if the right is within range
+			else if ((Math.Abs(right - Canvas.GetLeft(ToSnapto_TB)) <= 5) && bMove)
+			{
+				Canvas.SetLeft(Snap_TB, Canvas.GetLeft(ToSnapto_TB) - Snap_TB.ActualWidth);
+				SnapLine.X1 = (Canvas.GetLeft(Snap_TB) + Snap_TB.ActualWidth);
+				SnapLine.X2 = (Canvas.GetLeft(Snap_TB) + Snap_TB.ActualWidth);
+			}
+			else if ((Math.Abs(right - Canvas.GetLeft(ToSnapto_TB)) <= 5) && !bMove)
+			{
+				Snap_TB.Width = Canvas.GetLeft(ToSnapto_TB) - Canvas.GetLeft(Snap_TB); //+= -1 * (right - Canvas.GetLeft(ToSnapto_TB));
+				SnapLine.X1 = (Canvas.GetLeft(ToSnapto_TB));
+				SnapLine.X2 = (Canvas.GetLeft(ToSnapto_TB));
+			}
+			//return block;
+
+		}
+
+		private TimeBlock GetSnapStatus(Timeline timeline, TimeBlock tblock)
+		{
+			foreach (TimeBlock block in timeline.timeBlocksLL)
+			{
+
+				if (block == tblock) continue;
+				double left = Canvas.GetLeft(tblock);
+				double right = left + tblock.ActualWidth;
+
+				//check to see if the left is within range //left on right
+				if ((Math.Abs(Canvas.GetLeft(block) + block.ActualWidth -left)) <= 5)
+					return block;
+
+				//left on left
+				//if ((Math.Abs(Canvas.GetLeft(block) - left)) <= 5)
+				//	return block;
+
+				//check to see if the right is within range //right on left
+				if ((Math.Abs(right - Canvas.GetLeft(block)) <= 5))
+					return block;
+
+				////right on right
+				//if ((Math.Abs(right - Canvas.GetLeft(block) + tblock.ActualWidth) <= 5))
+				//	return block;
+
+
+
+			}
+			SnapLine.Visibility = Visibility.Hidden;
+			return null;
 		}
 
 		private bool CanMoveTimeBlock(Timeline tline, TimeBlock desiredmove, int left, int right)
@@ -364,61 +514,103 @@ namespace TimelinePlayer
 			ContentControl cc = (ContentControl)((Border)((Grid)((StackPanel)((Button)sender).Parent).Parent).Parent).Parent;
 			Console.WriteLine(Grid.GetRow(cc));
 
-			timelines[Grid.GetRow(cc)].AddTimeBlock(new TimeBlock(timelines[Grid.GetRow(cc)], 0) { Trackname = "Memes", Width = 100, Margin = new Thickness(0, 0, 0, 3) });
+			timelines[Grid.GetRow(cc)].AddTimeBlock(new TimeBlock(timelines[Grid.GetRow(cc)], 0)
+			{
+				Trackname = "Memes",
+				Width = 100,
+				Margin = new Thickness(0, 0, 0, 3)
+			});
 			
 			
 		}
 
 		private void ScrollViewer_MouseWheel(object sender, MouseWheelEventArgs e)
 		{
-			Console.WriteLine("Mouse wheel over tracks");
 			if (e.Delta < 0)
 			{
 				if (ScaleWidth - .2 >= 0.2)
 				{
-					TimelineScrubber_Canvas.RenderTransform = new ScaleTransform(ScaleWidth -= .2, 1.0);
-					foreach(Timeline tline in timelines)
+					ScaleWidth -= .2;
+					//TimelineScrubber_Canvas.RenderTransform = new ScaleTransform(ScaleWidth -= .2, 1.0);
+					foreach (Timeline tline in timelines)
 					{
-						tline.RenderTransform = new ScaleTransform(ScaleWidth, 1.0);
+						//tline.RenderTransform = new ScaleTransform(ScaleWidth, 1.0);
+						
+						tline.SetRenderTransform(TimelineScrubber_Canvas.ActualWidth, ScaleWidth, TimeWidth);
 					}
 				}
 			}
 			else
 			{
-				TimelineScrubber_Canvas.RenderTransform = new ScaleTransform(ScaleWidth += .2, 1.0);
+				ScaleWidth += .2;
+				//TimelineScrubber_Canvas.RenderTransform = new ScaleTransform(ScaleWidth += .2, 1.0);
 				foreach (Timeline tline in timelines)
 				{
-					tline.RenderTransform = new ScaleTransform(ScaleWidth, 1.0);
+					//tline.RenderTransform = new ScaleTransform(ScaleWidth, 1.0);
+					tline.SetRenderTransform(TimelineScrubber_Canvas.ActualWidth, ScaleWidth, TimeWidth);
 				}
 			}
-			RedrawTimeScrubber(TimelineScrubber_Canvas, TimeWidth);
-
+			TimeWidth = (int)(60 * ScaleWidth);
+			RedrawTimeScrubber(TimelineScrubber_Canvas, (int)(TimeWidth));
+			//PlayerTimer.Interval = TimeSpan.FromMilliseconds(1.0/TimeWidth);
+			//PlayLine.X1 *= ScaleWidth; PlayLine.X2 *= ScaleWidth;
 		}
 
 		private void PlayTimeline_BTN_Click(object sender, RoutedEventArgs e)
 		{
-			PlayerTimer.Interval = TimeSpan.FromMilliseconds(16);
+			ActiveTBblocks.Clear();
+			PlayerTimer.Interval = TimeSpan.FromMilliseconds((1.0 / TimeWidth)*1000);
 			PlayerTimer.Start();
+
+			foreach(Timeline tline in timelines)
+				tline.InitActiveBlock(PlayLine.X1 * (1.0 / TimeWidth/ScaleWidth));
+
 		}
 
 		void PlayTimer_Tick(object sender, EventArgs e)
 		{
-			if (Timelines_Grid.ActualWidth -5 > PlayLine.X1) { 
+			if (Timelines_Grid.ActualWidth - 5 > PlayLine.X1)
+			{
 				PlayLine.X1 += 1; PlayLine.X2 += 1; PlayLine.BringIntoView(new Rect(PlayLine.X1, PlayLine.Y1, 2, 100));
 			}
-			else PlayerTimer.Stop();
-			Console.WriteLine("tick");
+			else { PlayerTimer.Stop(); ActiveTBblocks.Clear(); }
+			
+			//scan EVERY timeline for active blocks. 
+			foreach (Timeline tline in timelines)
+			{
+				if (tline.ActiveBlock == null)
+					continue;
+
+				double time = (PlayLine.X1) * (1.0 / TimeWidth);
+				if (time >= tline.ActiveBlock.Value.StartTime && time <= tline.ActiveBlock.Value.EndTime && !ActiveTBblocks.Contains(tline.ActiveBlock.Value))	//add
+				{
+					ActiveTBblocks.Add(tline.ActiveBlock.Value); tline.SetActiveBlock(time);
+				}
+				else if (time > tline.ActiveBlock.Value.EndTime && ActiveTBblocks.Contains(tline.ActiveBlock.Value))//remove
+				{
+					ActiveTBblocks.Remove(tline.ActiveBlock.Value); tline.SetActiveBlock(time);
+				}
+
+			}
 		}
+
+		private void ActiveTBblocks_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+
+		}
+
 
 		private void Timelines_Grid_SizeChanged(object sender, SizeChangedEventArgs e)
 		{
 			PlayLine.Y2 = Tracks_Grid.ActualHeight;
 			TempStartLine.Y2 = Tracks_Grid.ActualHeight;
+			SnapLine.Y2 = Tracks_Grid.ActualHeight;
 		}
 
 		private void PlayerStop_BTN_Click(object sender, RoutedEventArgs e)
 		{
 			PlayerTimer.Stop();
+			ActiveTBblocks.Clear();
 			PlayLine.X1 = TempStartLine.X1; PlayLine.X2 = TempStartLine.X2;
 		}
 
@@ -427,22 +619,42 @@ namespace TimelinePlayer
 			PlayerTimer.Stop();
 		}
 
+	
+
 		private void ScrollViewer_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			//Point Mpos = Mouse.GetPosition((ScrollViewer)sender);
+			//if (Mpos.X < Timelines_Grid.ActualWidth - 1)
+			//	TempStartLine.X1 = Mpos.X; TempStartLine.X2 = Mpos.X + 2;
+		}
+
+		private void ScrollViewer_PreviewMouseMove(object sender, MouseEventArgs e)
+		{
+			//	if(e.LeftButton == MouseButtonState.Pressed)
+			//	{
+			//		Point Mpos = Mouse.GetPosition((ScrollViewer)sender);
+			//		if(Mpos.X < Timelines_Grid.ActualWidth-1)
+			//			TempStartLine.X1 = Mpos.X; TempStartLine.X2 = Mpos.X + 2;
+			//	}
+		}
+
+		private void TimelineScrubber_SV_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
 			Point Mpos = Mouse.GetPosition((ScrollViewer)sender);
 			if (Mpos.X < Timelines_Grid.ActualWidth - 1)
 				TempStartLine.X1 = Mpos.X; TempStartLine.X2 = Mpos.X + 2;
 		}
 
-		private void ScrollViewer_PreviewMouseMove(object sender, MouseEventArgs e)
+		private void TimelineScrubber_SV_PreviewMouseMove(object sender, MouseEventArgs e)
 		{
-			if(e.LeftButton == MouseButtonState.Pressed)
+			if (e.LeftButton == MouseButtonState.Pressed)
 			{
 				Point Mpos = Mouse.GetPosition((ScrollViewer)sender);
-				if(Mpos.X < Timelines_Grid.ActualWidth-1)
+				if (Mpos.X < Timelines_Grid.ActualWidth - 1)
 					TempStartLine.X1 = Mpos.X; TempStartLine.X2 = Mpos.X + 2;
 			}
 		}
+
 	}
 
 	public class NumberedTickBar : TickBar

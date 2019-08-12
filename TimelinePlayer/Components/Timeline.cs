@@ -14,18 +14,83 @@ namespace TimelinePlayer.Components
 {
 	public class Timeline : Canvas
 	{
+		public String TrackName = "";
 		public double TimePerPixel;
+		public LinkedListNode<TimeBlock> ActiveBlock;
 		public LinkedList<TimeBlock> timeBlocksLL
 		{
 			get { return LLTimeBlocks; }
 			set { LLTimeBlocks = new LinkedList<TimeBlock>(value); }
 		}
+
+
+		public IEnumerable ItemsSource
+		{
+			get { return (IEnumerable)GetValue(ItemsSourceProperty); }
+			set { SetValue(ItemsSourceProperty, value); }
+		}
+
+		public static readonly DependencyProperty ItemsSourceProperty =
+				DependencyProperty.Register("ItemsSource", typeof(IEnumerable), typeof(Timeline), new PropertyMetadata(new PropertyChangedCallback(OnItemsSourcePropertyChanged)));
+
+		private static void OnItemsSourcePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+		{
+			var control = sender as Timeline;
+			if (control != null)
+				control.OnItemsSourceChanged((IEnumerable)e.OldValue, (IEnumerable)e.NewValue);
+		}
+
+		private void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
+		{
+			// Remove handler for oldValue.CollectionChanged
+			if (oldValue != null)
+			{
+				((ObservableCollection<Timeline>)oldValue).CollectionChanged -= new NotifyCollectionChangedEventHandler(newValueINotifyCollectionChanged_CollectionChanged);
+			}
+			// Add handler for newValue.CollectionChanged (if possible)
+			if (null != newValue)
+			{
+				((ObservableCollection<Timeline>)newValue).CollectionChanged += new NotifyCollectionChangedEventHandler(newValueINotifyCollectionChanged_CollectionChanged);
+			}
+		}
+
+		void newValueINotifyCollectionChanged_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			//Do your stuff here.
+
+		}
+
+
 		private LinkedList<TimeBlock> LLTimeBlocks = new LinkedList<TimeBlock>();
 
-		public Timeline(int TimeWidth)
+		public Timeline(int TimeWidth, double InitialSize)
 		{
+			this.HorizontalAlignment = HorizontalAlignment.Left;
+			Margin = new Thickness(0);
 			timeBlocksLL = new LinkedList<TimeBlock>();
 			TimePerPixel = 1.0 / TimeWidth;
+			ActiveBlock = timeBlocksLL.First;
+			this.SizeChanged += Timeline_SizeChanged;
+			this.Width = InitialSize;
+		}
+
+		private void Timeline_SizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			foreach (TimeBlock tblock in LLTimeBlocks)
+			{
+				tblock.ScaleToTimeline();
+				//tblock.RenderTransform = this.RenderTransform;
+			}
+		}
+
+		public void SetRenderTransform(double initialsize, double Scalefactor, double TimeWidthPix)
+		{
+			
+			this.TimePerPixel = 1.0 / TimeWidthPix;
+			foreach (TimeBlock tblock in LLTimeBlocks)
+			{
+				//tblock.RenderTransform = this.RenderTransform;
+			}
 		}
 
 		/// <summary>
@@ -35,9 +100,47 @@ namespace TimelinePlayer.Components
 		{
 			LLTimeBlocks.AddLast(timeBlock);
 			this.Children.Add(timeBlock);
+			ActiveBlock = timeBlocksLL.First;
 		}
 
+		public void SetActiveBlock(double CurTime)
+		{
+			if(ActiveBlock.Next != null && CurTime > ActiveBlock.Value.EndTime)
+			{
+				ActiveBlock = ActiveBlock.Next; //advance
+			}
+			else if(ActiveBlock.Next == null && CurTime > ActiveBlock.Value.EndTime)
+			{
+				ActiveBlock = null;
+			}
+		}
 
+		public void InitActiveBlock(double CurTime)
+		{
+			SortTimeBlocksLL();
+			LinkedListNode<TimeBlock> curBlock = LLTimeBlocks.First;
+			while(curBlock != null)
+			{
+				if (CurTime >= curBlock.Value.StartTime && CurTime <= curBlock.Value.EndTime)
+				{
+					ActiveBlock = curBlock;
+					return;
+				}
+				curBlock = curBlock.Next;
+			}
+			ActiveBlock = LLTimeBlocks.First;
+		}
+
+		public void SortTimeBlocksLL()
+		{
+			List<TimeBlock> TempTBlocks = LLTimeBlocks.ToList();
+			TempTBlocks = (List<TimeBlock>)(TempTBlocks.OrderBy(o => o.StartTime).ToList());
+			LLTimeBlocks.Clear();
+			foreach (TimeBlock tblock in TempTBlocks)
+			{
+				LLTimeBlocks.AddLast(tblock);
+			}
+		}
 
 	}
 	/// <summary>

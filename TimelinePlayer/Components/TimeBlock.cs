@@ -32,7 +32,6 @@ namespace TimelinePlayer.Components
 
 		private static void OnTrackNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
-			Console.WriteLine("changed time");
 		}
 		#endregion
 
@@ -49,7 +48,7 @@ namespace TimelinePlayer.Components
 
 		private static void OnSpritePathChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
-			Console.WriteLine("Changed Image Path");
+
 		}
 
 
@@ -73,7 +72,7 @@ namespace TimelinePlayer.Components
 				new PropertyMetadata("Default Text", new PropertyChangedCallback(OnCurrentDialogueChanged)));
 		private static void OnCurrentDialogueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
-			Console.WriteLine("Changed Dialogue");
+
 		}
 
 		#endregion
@@ -117,7 +116,22 @@ namespace TimelinePlayer.Components
 			tb.Duration = tb.EndTime - tb.StartTime;
 		}
 
-		public double EndTime { get; set; }
+		public double EndTime
+		{
+			get { return (double)GetValue(EndTimeProperty); }
+			set { SetValue(EndTimeProperty, value); }
+		}
+		public static readonly DependencyProperty EndTimeProperty =
+			DependencyProperty.Register("EndTime", typeof(double), typeof(TimeBlock),
+				new PropertyMetadata(0.0, new PropertyChangedCallback(OnEndtTimeChange)));
+
+		public static void OnEndtTimeChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			TimeBlock tb = (TimeBlock)d;
+			//tb.EndTime = tb.StartTime + (tb.ActualWidth * tb.TimelineParent.TimePerPixel);
+			tb.Duration = tb.EndTime - tb.StartTime;
+		}
+
 		public double Duration { get; set; }
 
 		#endregion
@@ -134,7 +148,6 @@ namespace TimelinePlayer.Components
 			DataContext = this;
 			this.Loaded += TimeBlock_Loaded;
 			this.StartTime = starttime;
-
 		}
 
 		private void TimeBlock_Loaded(object sender, RoutedEventArgs e)
@@ -143,18 +156,22 @@ namespace TimelinePlayer.Components
 			this.EndTime = StartTime + (this.ActualWidth * TimelineParent.TimePerPixel);
 			this.Duration = EndTime - StartTime;
 		}
+
+		public void ScaleToTimeline()
+		{
+			//start
+			Canvas.SetLeft(this, StartTime / TimelineParent.TimePerPixel);
+			//duration
+			this.Width = Duration / TimelineParent.TimePerPixel;
+		}
+
 		private void TimeBlock_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
 		{
-			Console.WriteLine("moved");
-			Trackname = "Emma";
-			TrackSpritePath = "C:/Users/amorales/Documents/Visual Studio 2017/Projects/ProjectEE/AmethystEngine/images/emma_colors_oc.png";
-			CurrentDialogue = "Sup, Nerd?";
-			AudioFile = ".mp3";
-			
+		}
 
-			//double left = Canvas.GetLeft(this);
-			//if (left + this.Width > TimelineParent.ActualWidth) //expands the time line if the block goes off screen
-			//	TimelineParent.Width = left + this.Width;
+		public override string ToString()
+		{
+			return String.Format("StartTime: {0} EndTime: [1}", StartTime, EndTime);
 		}
 
 
