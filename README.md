@@ -9,7 +9,7 @@ This control works how all other timelines work in any video editor. Here is the
 2. Adding of timeblocks per track via a button
 3. Moving of each timeblock, which uses dependacy properties so when ever
 you move a block around the time variables are automatically updated
-4.Zooming in and out scales the timeline horizontally
+4. Zooming in and out scales the timeline horizontally
 5. There is a time line scrubber to show the time in seconds.
 6. The scaling is done with my math, no longer a transform. so no more
 progating down the stack awkwardly.
