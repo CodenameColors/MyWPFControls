@@ -77,7 +77,12 @@ namespace TimelinePlayer
 		DispatcherTimer PlayerTimer = new DispatcherTimer(DispatcherPriority.Normal);
 		List<Timeline> timelines = new List<Timeline>();
 		double ScaleWidth = 1.0;
-		
+
+		public object SelectedControl = new object();
+
+		public delegate void HookFunction();
+		public HookFunction HookFunction1 = null;
+
 		static TimeBlockDragAdorner _dragAdorner;
 
 		public int TimeWidth
@@ -161,8 +166,6 @@ namespace TimelinePlayer
 				control.OnItemsSourceChanged((IEnumerable)e.OldValue, (IEnumerable)e.NewValue);
 		}
 
-
-
 		private void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
 		{
 			// Remove handler for oldValue.CollectionChanged
@@ -240,7 +243,7 @@ namespace TimelinePlayer
 		}
 
 
-		private void AddTrack_BTN_Click(object sender, RoutedEventArgs e)
+		public void AddTimeline(String TrackName = "")
 		{
 			Tracks_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
 			Timelines_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
@@ -251,7 +254,7 @@ namespace TimelinePlayer
 				VerticalAlignment = VerticalAlignment.Stretch,
 				Background = Brushes.Gray,
 				Margin = new Thickness(0, 3, 0, 3),
-				TrackName="Emma"
+				TrackName = TrackName
 			};
 			Grid.SetRow(timeline, Tracks_Grid.RowDefinitions.Count - 1);
 			Timelines_Grid.Children.Add(timeline);
@@ -262,9 +265,19 @@ namespace TimelinePlayer
 
 			Grid.SetRow(bor, Tracks_Grid.RowDefinitions.Count - 1);
 			Tracks_Grid.Children.Add(bor);
-
+			timeline.MouseDown += Timeline_Click;
 
 			timelines.Add(timeline);
+		}
+
+		public void Timeline_Click(object sender, RoutedEventArgs e)
+		{
+			SelectedControl = (Timeline)sender;
+		}
+
+		private void AddTrack_BTN_Click(object sender, RoutedEventArgs e)
+		{
+			AddTimeline();
 		}
 
 		private void AddTimeblock(Timeline Destimeline, double LeftPosition)
@@ -343,6 +356,7 @@ namespace TimelinePlayer
 				}
 			}
 			tb.StartTime = Canvas.GetLeft(tb) * tb.TimelineParent.TimePerPixel;
+			SelectedControl = tb;
 		}
 		private void TimeBlock_Resize_Right(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
 		{
@@ -375,6 +389,7 @@ namespace TimelinePlayer
 				}
 			}
 			tb.EndTime = (Canvas.GetLeft(tb) + tb.ActualWidth) * tb.TimelineParent.TimePerPixel;
+			SelectedControl = tb;
 		}
 
 		private void MoveThumb_Middle_DragDelta(object sender, DragDeltaEventArgs e)
@@ -410,6 +425,7 @@ namespace TimelinePlayer
 				}
 			}
 			tb.StartTime = Canvas.GetLeft(tb) * tb.TimelineParent.TimePerPixel;
+			SelectedControl = tb;
 		}
 
 		private void SetSnap(TimeBlock ToSnapto_TB, TimeBlock Snap_TB, bool bMove = true)
@@ -562,6 +578,11 @@ namespace TimelinePlayer
 			PlayerTimer.Interval = TimeSpan.FromMilliseconds((1.0 / TimeWidth)*1000);
 			PlayerTimer.Start();
 
+			if(HookFunction1 != null)
+			{
+				HookFunction1();
+			}
+
 			foreach(Timeline tline in timelines)
 				tline.InitActiveBlock(PlayLine.X1 * (1.0 / TimeWidth/ScaleWidth));
 
@@ -653,6 +674,11 @@ namespace TimelinePlayer
 				if (Mpos.X < Timelines_Grid.ActualWidth - 1)
 					TempStartLine.X1 = Mpos.X; TempStartLine.X2 = Mpos.X + 2;
 			}
+		}
+
+		public List<Timeline> GetTimelines()
+		{
+			return timelines;
 		}
 
 	}
