@@ -65,23 +65,47 @@ namespace TimelinePlayer
 	}
 
 
-
-
 	/// <summary>
 	/// Interaction logic for UserControl1.xaml
 	/// </summary>
 	public partial class TimelinePlayer : UserControl
   {
+		#region delegates
+		public delegate void SyncFunction_Hook();
+		public SyncFunction_Hook TimeBlockSync = null;
+
+		public delegate void OnSlectionChange_Hook(object Selected);
+		public OnSlectionChange_Hook SelectionChanged_Hook;
+		#endregion
+
+
 		double TimeScrubber_BaseSize = 0.0;
 		public ObservableCollection<TimeBlock> ActiveTBblocks = new ObservableCollection<TimeBlock>();
 		DispatcherTimer PlayerTimer = new DispatcherTimer(DispatcherPriority.Normal);
 		List<Timeline> timelines = new List<Timeline>();
 		double ScaleWidth = 1.0;
 
-		public object SelectedControl = new object();
+		//public object SelectedControl = new object();
 
-		public delegate void HookFunction();
-		public HookFunction HookFunction1 = null;
+		public object SelectedControl
+		{
+			get { return selectedcontrol; }
+			set
+			{
+				selectedcontrol = value;
+				OnSelectedControl_Changed(value);
+			}
+		}
+		private object selectedcontrol = null;
+
+
+		public void OnSelectedControl_Changed(object sender)
+		{
+			if (SelectionChanged_Hook != null)
+				SelectionChanged_Hook(sender);
+		}
+
+		
 
 		static TimeBlockDragAdorner _dragAdorner;
 
@@ -115,11 +139,7 @@ namespace TimelinePlayer
 
 				position += tlp.TimeWidth; count++;
 			}
-
-
-
 			//TimelineScrubber_Canvas.Children.Add(l);
-
 		}
 
 		private void RedrawTimeScrubber(Canvas timescrubber, int timewidth)
@@ -219,6 +239,7 @@ namespace TimelinePlayer
 		public TimelinePlayer()
     {
 			InitializeComponent();
+			SelectedControl = new object();
 			Console.WriteLine("init");
 			PlayerTimer.Tick += PlayTimer_Tick;
 			KeyUp += TimelinePlayer_KeyUp;
@@ -311,7 +332,6 @@ namespace TimelinePlayer
 		{
 			Tracks_SV.ScrollToVerticalOffset(e.NewValue);
 		}
-
 
 		private void ScrollViewer_Scroll(object sender, ScrollEventArgs e)
 		{
@@ -578,9 +598,9 @@ namespace TimelinePlayer
 			PlayerTimer.Interval = TimeSpan.FromMilliseconds((1.0 / TimeWidth)*1000);
 			PlayerTimer.Start();
 
-			if(HookFunction1 != null)
+			if(TimeBlockSync != null)
 			{
-				HookFunction1();
+				TimeBlockSync();
 			}
 
 			foreach(Timeline tline in timelines)
@@ -680,6 +700,20 @@ namespace TimelinePlayer
 		{
 			return timelines;
 		}
+
+		public int GetTimelinePosition(Timeline tl = null, TimeBlock tb = null)
+		{
+			if (tl != null)
+			{
+				return timelines.IndexOf(tl);
+			}
+			else if(tb != null)
+			{
+				return timelines.IndexOf(tb.TimelineParent);
+			}
+			return -1;
+		}
+		
 
 	}
 
