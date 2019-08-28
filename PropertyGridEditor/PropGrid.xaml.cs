@@ -14,6 +14,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using DrWPF.Windows.Data;
 using DropDownCustomColorPicker;
+using System.Collections.Specialized;
+using System.Collections.ObjectModel;
+using System.Collections;
 
 namespace PropertyGridEditor
 {
@@ -27,14 +30,86 @@ namespace PropertyGridEditor
 		//Value.Item2 is the actual data.
 		//Dictionary<String, Tuple<Control, object>> properties = new Dictionary<string, Tuple<Control, object>>();
 		public ObservableDictionary<String, object> PropDictionary = new ObservableDictionary<string, object>();
-		private ObservableDictionary<String, object> FilteredPropDictionary = new ObservableDictionary<string, object>();
 		public String CurrentProp = "";
 
-		Grid NonFilteredGrid;
+
+		public IEnumerable ItemsSource
+		{
+			get { return (IEnumerable)GetValue(ItemsSourceProperty); }
+			set { SetValue(ItemsSourceProperty, value); }
+		}
+
+		public static readonly DependencyProperty ItemsSourceProperty =
+				DependencyProperty.Register("ItemsSource", typeof(IEnumerable), typeof(PropGrid), new PropertyMetadata(new PropertyChangedCallback(OnItemsSourcePropertyChanged)));
+
+		private static void OnItemsSourcePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+		{
+			var control = sender as PropGrid;
+			if (control != null)
+				control.OnItemsSourceChanged((IEnumerable)e.OldValue, (IEnumerable)e.NewValue);
+		}
+
+		private void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
+		{
+			// Remove handler for oldValue.CollectionChanged
+			if (oldValue != null)
+			{
+				((ObservableCollection<Tuple<String, object, Control>>)oldValue).CollectionChanged -= new NotifyCollectionChangedEventHandler(newValueINotifyCollectionChanged_CollectionChanged);
+			}
+			// Add handler for newValue.CollectionChanged (if possible)
+			if (null != newValue)
+			{
+				((ObservableCollection<Tuple<String, object, Control>>)newValue).CollectionChanged += new NotifyCollectionChangedEventHandler(newValueINotifyCollectionChanged_CollectionChanged);
+				foreach(Tuple<String, object, Control> o in newValue)
+					PropertyAdding(o.Item1, o.Item2, o.Item3);
+			}
+		}
+
+		void newValueINotifyCollectionChanged_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if(e.Action == NotifyCollectionChangedAction.Add)
+			{
+				Console.WriteLine("changed add");
+				foreach(Tuple<String, object, Control> o in e.NewItems)
+					PropertyAdding(o.Item1, o.Item2, o.Item3);
+			}
+			else if(e.Action == NotifyCollectionChangedAction.Remove)
+			{
+				Console.WriteLine("changed remove");
+			}
+			else if(e.Action == NotifyCollectionChangedAction.Replace)
+			{
+				Console.WriteLine("Changed Replace");
+				foreach(Tuple<String, object, Control> o in e.NewItems)
+					SetPropertyData(o.Item1+"_W", o.Item2);
+			}
+
+		}
+
 
 		public PropGrid()
 		{
 			InitializeComponent();
+		}
+
+		public void PropertyAdding(String PName, object pdata, Control c) 
+		{
+			if(pdata is List<String>)
+			{
+				AddProperty(PName, c, pdata);
+			}
+			else if(pdata is String)
+			{
+				AddProperty(PName, (TextBox)c, (String)pdata);
+			}
+			else if(pdata is Boolean)
+			{
+				AddProperty(PName, c, pdata);
+			}
+			else if(pdata is null)
+			{
+				AddProperty(PName, c, pdata);
+			}
 		}
 
 		//THIS IS HERE TO ALLOW DESIGNER TO RENDER
@@ -314,7 +389,6 @@ namespace PropertyGridEditor
 
 			//add the input controls!
 			AddInputControls(LabelsList[1].Content.ToString(), InputControls, data, LabelsList.Count);
-			NonFilteredGrid = Property_Grid;
 			//add the labels to the grid
 			AddLabels(LabelsList); ;
 		}
