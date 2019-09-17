@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using NodeEditor;
+using NodeEditor.Components;
 
 namespace NodeEditor_Tester
 {
@@ -20,9 +23,24 @@ namespace NodeEditor_Tester
 	/// </summary>
 	public partial class NodeEditorTester : Window
 	{
+
+		ObservableCollection<BaseNode> nodes = new ObservableCollection<BaseNode>();
+
 		public NodeEditorTester()
 		{
 			InitializeComponent();
 		}
+
+		private void Window_Loaded(object sender, RoutedEventArgs e)
+		{
+			NodeEditor.ItemsSource = nodes;
+		}
+
+		private void BaseNode_BTN_Click(object sender, RoutedEventArgs e)
+		{
+			nodes.Add(new BaseNode() { Header = "Emma" });
+		}
+
+		
 	}
 }

@@ -4,8 +4,88 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NodeEditor"
+						 xmlns:nec="clr-namespace:NodeEditor.Components"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+	<UserControl.Resources>
+
+		<Style TargetType="{x:Type nec:BaseNode}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type nec:BaseNode}">
+						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
+							<Grid Height="100" Width="150" ShowGridLines="True" Background="#FF494949" ClipToBounds="False" >
+								<Grid.RowDefinitions>
+									<RowDefinition Height="20"/>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="20"/>
+								</Grid.RowDefinitions>
+								<TextBlock Grid.Row="0" Foreground="White" Text="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}" Background="#FF252525"/>
+								<TextBlock Grid.Row="1" Foreground="White" Text="Dialogue Option 1"/>
+
+								<GridSplitter ResizeDirection="Rows" Height="2" Background="White" Grid.Row="1" IsEnabled="False"/>
+								<!--Move thumb-->
+								<ContentPresenter HorizontalAlignment="Stretch" Grid.ColumnSpan="5" Grid.RowSpan="3"
+                                              VerticalAlignment="Stretch"
+                                              x:Name="PART_MiddleIndicator">
+									<ContentPresenter.Content>
+										<Thumb x:Name="MoveThumb_Middle" Cursor="ScrollAll" Background="Transparent" Opacity="0"
+										 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+										 Margin="0,0,5,0" DragDelta="MoveThumb_Middle_DragDelta" />
+									</ContentPresenter.Content>
+								</ContentPresenter>
+
+								<ContentPresenter HorizontalAlignment="Stretch" Grid.ColumnSpan="5" Grid.Row="1"
+                                              VerticalAlignment="Stretch" ClipToBounds="False"
+                                              x:Name="PART_LeftIndicator">
+									<ContentPresenter.Content>
+										<Grid>
+											<Ellipse HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Width="20" Fill="Blue" Margin="-10,-10,-10,-10" Cursor="Hand">
+											</Ellipse>
+											<Thumb x:Name="MoveThumb_Left" HorizontalAlignment="Left" VerticalAlignment="Center" Height="15" Width="15"
+													 Margin="-10,-10,-10,-10" Cursor="Hand" Background="Transparent" Opacity="0"
+													PreviewMouseLeftButtonUp="MoveThumb_Left_MouseLeftButtonUp" PreviewMouseMove="MoveThumb_Left_PreviewMouseMove"	
+														 PreviewDragEnter="MoveThumb_Left_PreviewDragEnter"	/>
+										</Grid>
+									</ContentPresenter.Content>
+								</ContentPresenter>
+
+								<ContentPresenter HorizontalAlignment="Right" Grid.ColumnSpan="5" Grid.Row="1"
+                                              VerticalAlignment="Stretch" ClipToBounds="False"
+                                              x:Name="PART_RightIndicator">
+									<ContentPresenter.Content>
+										<Grid>
+											<Ellipse HorizontalAlignment="Left" VerticalAlignment="Center" Height="15" Width="15" Fill="Red" Margin="-10,-10,-10,-10" Cursor="Hand">
+											</Ellipse>
+											<Thumb x:Name="MoveThumb_Right" HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20"
+													 Margin="-10,-10,-10,-10" Cursor="Hand" Background="Transparent" Opacity="0"
+													  PreviewMouseLeftButtonDown="MoveThumb_Right_MouseLeftButtonDown" />
+										</Grid>
+									</ContentPresenter.Content>
+								</ContentPresenter>
+
+
+								<!--<Ellipse HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="20" Width="20" Fill="Gray" Margin="-10,-10,-10,-10" Cursor="Hand">
+								<Ellipse.Clip>
+									<RectangleGeometry Rect="0,10,10,10"/>
+								</Ellipse.Clip>
+							</Ellipse>-->
+
+
+								<StackPanel Orientation="Horizontal" Grid.Row="100" >
+									<Button x:Name="AddDialogueRow_BTN" Content="+" Width="20" Height="20" Margin="5,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Click="AddDialogueRow_BTN_Click" />
+									<TextBlock Text="Add Row" Foreground="White"/>
+								</StackPanel>
+							</Grid>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		
+		
+		
+	</UserControl.Resources>
 	<Grid Background="#FF1D1D1D">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="100"/>

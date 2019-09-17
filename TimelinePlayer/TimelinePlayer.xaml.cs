@@ -52,16 +52,12 @@ namespace TimelinePlayer
 		public TimeBlockDragAdorner(UIElement uiElement) : base(uiElement)
 		{
 			_adorningContentPresenter = new ContentPresenter();
-			//_adorningContentPresenter.Content = uiElement.DataContext;
-			//_adorningContentPresenter.ContentTemplate = template;
 			_adorningContentPresenter.Opacity = 0.5;
 			_layer = AdornerLayer.GetAdornerLayer(uiElement);
 
 			_layer.Add(this);
 			IsHitTestVisible = false;
 		}
-
-
 	}
 
 

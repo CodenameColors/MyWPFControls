@@ -1,10 +1,15 @@
-﻿using System;
+﻿using NodeEditor.Components;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -21,6 +26,120 @@ namespace NodeEditor
   public partial class NodeEditor : UserControl
   {
 
+		#region ItemSource
+		public IEnumerable ItemsSource
+		{
+			get { return (IEnumerable)GetValue(ItemsSourceProperty); }
+			set { SetValue(ItemsSourceProperty, value); }
+		}
+
+		public static readonly DependencyProperty ItemsSourceProperty =
+				DependencyProperty.Register("ItemsSource", typeof(IEnumerable), typeof(NodeEditor), new PropertyMetadata(new PropertyChangedCallback(OnItemsSourcePropertyChanged)));
+
+		private static void OnItemsSourcePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+		{
+			var control = sender as NodeEditor;
+			if (control != null)
+				control.OnItemsSourceChanged((IEnumerable)e.OldValue, (IEnumerable)e.NewValue);
+		}
+
+		private void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
+		{
+			// Remove handler for oldValue.CollectionChanged
+			if (oldValue != null)
+			{
+				((ObservableCollection<BaseNode>)oldValue).CollectionChanged -= new NotifyCollectionChangedEventHandler(newValueINotifyCollectionChanged_CollectionChanged);
+			}
+			// Add handler for newValue.CollectionChanged (if possible)
+			if (null != newValue)
+			{
+				((ObservableCollection<BaseNode>)newValue).CollectionChanged += new NotifyCollectionChangedEventHandler(newValueINotifyCollectionChanged_CollectionChanged);
+			}
+		}
+		#endregion
+
+		internal class NodeBlockDragAdorner : Adorner
+		{
+			private ContentPresenter _adorningContentPresenter;
+			internal object Data { get; set; }
+			internal DataTemplate Template { get; set; }
+			Point _mousePosition;
+			public Point MousePosition
+			{
+				get
+				{
+					return _mousePosition;
+				}
+				set
+				{
+					if (_mousePosition != value)
+					{
+						_mousePosition = value;
+						_layer.Update(AdornedElement);
+					}
+
+				}
+			}
+
+			AdornerLayer _layer;
+
+			public NodeBlockDragAdorner(UIElement uiElement) : base(uiElement)
+			{
+				_adorningContentPresenter = new ContentPresenter();
+				_adorningContentPresenter.Opacity = 0.5;
+				_layer = AdornerLayer.GetAdornerLayer(uiElement);
+
+				_layer.Add(this);
+				IsHitTestVisible = false;
+			}
+		}
+
+		static NodeBlockDragAdorner _dragAdorner;
+
+		void newValueINotifyCollectionChanged_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if(e.Action == NotifyCollectionChangedAction.Add)
+			{
+				NodeEditor_BackCanvas.Children.Add((BaseNode)e.NewItems[0]);
+			}
+			if(e.Action == NotifyCollectionChangedAction.Remove)
+			{
+
+			}
+
+
+			//ContentControl bor = (ContentControl)this.Resources["TimelineBlock_CC"];
+			//Tracks_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
+			//Grid.SetRow(bor, Tracks_Grid.RowDefinitions.Count - 1);
+			//Tracks_Grid.Children.Add(bor);
+			//Timelines_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
+
+			//Timeline timeline = new Timeline(TimeWidth, TimelineScrubber_Canvas.ActualWidth)
+			//{
+			//	HorizontalAlignment = HorizontalAlignment.Stretch,
+			//	VerticalAlignment = VerticalAlignment.Stretch,
+			//	Background = Brushes.Gray,
+			//	Margin = new Thickness(0, 3, 0, 3),
+			//	TrackName = "Emma"
+			//};
+
+			//Canvas c = new Canvas() { Background = Brushes.Gray, Margin = new Thickness(0, 3, 0, 3) };
+			//c.MouseEnter += C_MouseEnter;
+			//Grid.SetRow(timeline, Tracks_Grid.RowDefinitions.Count - 1);
+
+			////add my custom time block
+			//TimeBlock timeBlock = new TimeBlock(timeline, 0) { Trackname = "Memes", Width = 100, Margin = new Thickness(0, 0, 0, 3) };
+			//Canvas.SetLeft(timeBlock, 1);
+			//timeline.Children.Add(timeBlock);
+			//Timelines_Grid.Children.Add(timeline);
+
+			//timelines.Add(timeline);
+
+		}
+
+
+
+
 
 		Point MPos = new Point();
 		Point GridOffset = new Point();
@@ -28,7 +147,11 @@ namespace NodeEditor
 		private int newx;
 		private int newy;
 		Rectangle selectrect = new Rectangle();
-		bool bAdd = false;
+
+
+		bool isMDown = false;
+		bool isMInNode = false;
+		Point CurveStart = new Point();
 
 
 		public NodeEditor()
@@ -153,6 +276,68 @@ namespace NodeEditor
 
 		}
 
+		private void MoveThumb_Middle_DragDelta(object sender, DragDeltaEventArgs e)
+		{
+			BaseNode BN = ((BaseNode)((Thumb)sender).TemplatedParent);
+			Canvas.SetLeft(BN, VisualTreeHelper.GetOffset(BN).X + e.HorizontalChange);
+			Canvas.SetTop(BN, VisualTreeHelper.GetOffset(BN).Y + e.VerticalChange);
+		}
 
+		private void AddDialogueRow_BTN_Click(object sender, RoutedEventArgs e)
+		{
+			
+		}
+
+		private void MoveThumb_Right_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			Console.WriteLine("Mouse Down on Output");
+			isMDown = true;
+			CurveStart = Mouse.GetPosition(NodeEditor_BackCanvas);
+
+		}
+
+		private void MoveThumb_Left_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+		{
+			Console.WriteLine("Mouse Up on Input");
+		}
+
+		private void MoveThumb_Left_PreviewMouseMove(object sender, MouseEventArgs e)
+		{
+			Console.WriteLine("MouseMoving in Input");
+			if(isMDown)
+			{
+				Point end = Mouse.GetPosition(NodeEditor_BackCanvas);
+				BezierSegment bs = new BezierSegment()
+				{
+					Point1 = CurveStart,
+					Point2 = new Point((CurveStart.X + end.X) / 2, end.Y),
+					Point3 = end,
+				};
+
+				PathGeometry pathGeometry = new PathGeometry();
+
+				PathFigure pathFigure = new PathFigure();
+				pathFigure.StartPoint = bs.Point1;
+				pathFigure.IsClosed = false;
+
+				pathGeometry.Figures.Add(pathFigure);
+				pathFigure.Segments.Add(bs);
+
+				Path p = new Path();
+				p.Stroke = Brushes.White;
+				p.StrokeThickness = 5;
+				p.Data = pathGeometry;
+
+				NodeEditor_BackCanvas.Children.Add(p);
+				isMDown = false;
+			}
+			
+		}
+
+
+		private void MoveThumb_Left_PreviewDragEnter(object sender, DragEventArgs e)
+		{
+			Console.WriteLine("Mouse Dragged into Input");
+		}
 	}
 }
