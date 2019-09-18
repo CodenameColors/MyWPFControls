@@ -25,6 +25,11 @@ namespace NodeEditor.Components
 			NodeData = new List<object>();
 		}
 
+		public override void OnApplyTemplate()
+		{
+			base.OnApplyTemplate();
+		}
+
 		public event PropertyChangedEventHandler PropertyChanged;
 	}
 }

@@ -100,41 +100,17 @@ namespace NodeEditor
 		{
 			if(e.Action == NotifyCollectionChangedAction.Add)
 			{
-				NodeEditor_BackCanvas.Children.Add((BaseNode)e.NewItems[0]);
+				BaseNode bn = (BaseNode)e.NewItems[0];
+				NodeEditor_Canvas.Children.Add(bn);
+				Point p = new Point(0, 10); Point p1 = new Point(150, 20 + 20);
+				bn.InputNodes.Add(new ConnectionNode("EnterNode", p));
+				bn.OutputNodes.Add(new ConnectionNode("OutputNode1", p1));
+
 			}
 			if(e.Action == NotifyCollectionChangedAction.Remove)
 			{
 
 			}
-
-
-			//ContentControl bor = (ContentControl)this.Resources["TimelineBlock_CC"];
-			//Tracks_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
-			//Grid.SetRow(bor, Tracks_Grid.RowDefinitions.Count - 1);
-			//Tracks_Grid.Children.Add(bor);
-			//Timelines_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
-
-			//Timeline timeline = new Timeline(TimeWidth, TimelineScrubber_Canvas.ActualWidth)
-			//{
-			//	HorizontalAlignment = HorizontalAlignment.Stretch,
-			//	VerticalAlignment = VerticalAlignment.Stretch,
-			//	Background = Brushes.Gray,
-			//	Margin = new Thickness(0, 3, 0, 3),
-			//	TrackName = "Emma"
-			//};
-
-			//Canvas c = new Canvas() { Background = Brushes.Gray, Margin = new Thickness(0, 3, 0, 3) };
-			//c.MouseEnter += C_MouseEnter;
-			//Grid.SetRow(timeline, Tracks_Grid.RowDefinitions.Count - 1);
-
-			////add my custom time block
-			//TimeBlock timeBlock = new TimeBlock(timeline, 0) { Trackname = "Memes", Width = 100, Margin = new Thickness(0, 0, 0, 3) };
-			//Canvas.SetLeft(timeBlock, 1);
-			//timeline.Children.Add(timeBlock);
-			//Timelines_Grid.Children.Add(timeline);
-
-			//timelines.Add(timeline);
-
 		}
 
 
@@ -152,17 +128,13 @@ namespace NodeEditor
 		bool isMDown = false;
 		bool isMInNode = false;
 		Point CurveStart = new Point();
+		BaseNode SelectedNode = null;
 
 
 		public NodeEditor()
     {
         InitializeComponent();
     }
-
-
-
-
-
 
 		/// <summary>
 		/// This method takes care of mouse movement events on the main level editor canvas.
@@ -177,21 +149,25 @@ namespace NodeEditor
 			String point = String.Format("({0}, {1}) OFF:({2}, {3})", (int)p.X, (int)p.Y, (int)Canvas_grid.Viewport.X, (int)Canvas_grid.Viewport.Y);
 
 			//which way is mouse moving?
-			MPos -= (Vector)e.GetPosition(LevelEditor_Canvas);
+			MPos -= (Vector)e.GetPosition(NodeEditor_Canvas);
 			//is the middle mouse button down?
 			if (e.MiddleButton == MouseButtonState.Pressed)
 			{
 				LevelEditorPan();
 			}
 
-			MPos = e.GetPosition(LevelEditor_Canvas); //set this for the iteration
+			//reset selection vars
+			if (e.LeftButton == MouseButtonState.Released)
+			{ isMDown = false; SelectedNode = null; }
+
+			MPos = e.GetPosition(NodeEditor_Canvas); //set this for the iteration
 		}
 
 		private Point RelativeGridSnap(Point p, bool abs = true)
 		{
 
 			//find the Relative grid size in pixels
-			int relgridsize = (int)(40 * Math.Round(LevelEditor_Canvas.RenderTransform.Value.M11, 1));
+			int relgridsize = (int)(40 * Math.Round(NodeEditor_Canvas.RenderTransform.Value.M11, 1));
 			//find the offset amount.
 			int Xoff = (int)(Math.Abs(Canvas_grid.Viewport.X));
 			int YOff = (int)(Math.Abs(Canvas_grid.Viewport.Y));
@@ -204,8 +180,8 @@ namespace NodeEditor
 			Xoff = 40 - Xoff;
 			YOff = 40 - YOff;
 
-			Xoff = (int)(Xoff * LevelEditor_Canvas.RenderTransform.Value.M11);
-			YOff = (int)(YOff * LevelEditor_Canvas.RenderTransform.Value.M11);
+			Xoff = (int)(Xoff * NodeEditor_Canvas.RenderTransform.Value.M11);
+			YOff = (int)(YOff * NodeEditor_Canvas.RenderTransform.Value.M11);
 
 			if (Xoff == 40) Xoff = 0;
 			if (YOff == 40) YOff = 0;
@@ -243,7 +219,7 @@ namespace NodeEditor
 		private void LevelEditorPan()
 		{
 			//this is here so when we pan the tiles work with the relative cords we are moving to. Its allows the tiles to maintain position data.
-			foreach (UIElement child in LevelEditor_Canvas.Children)
+			foreach (UIElement child in NodeEditor_Canvas.Children)
 			{
 
 				double x = Canvas.GetLeft(child);
@@ -269,10 +245,10 @@ namespace NodeEditor
 			newx = (int)p.X; newy = (int)p.Y;
 			//NewPos_TB.Text = p.ToString();
 
-			if (LevelEditor_Canvas.Children.Contains(selectrect))
-				LevelEditor_Canvas.Children.Remove(selectrect);
+			if (NodeEditor_Canvas.Children.Contains(selectrect))
+				NodeEditor_Canvas.Children.Remove(selectrect);
 			Canvas.SetLeft(selectrect, newx); Canvas.SetTop(selectrect, newy); Canvas.SetZIndex(selectrect, 100);
-			LevelEditor_Canvas.Children.Add(selectrect);
+			NodeEditor_Canvas.Children.Add(selectrect);
 
 		}
 
@@ -281,6 +257,58 @@ namespace NodeEditor
 			BaseNode BN = ((BaseNode)((Thumb)sender).TemplatedParent);
 			Canvas.SetLeft(BN, VisualTreeHelper.GetOffset(BN).X + e.HorizontalChange);
 			Canvas.SetTop(BN, VisualTreeHelper.GetOffset(BN).Y + e.VerticalChange);
+			
+			for(int i = 0; i < BN.InputNodes.Count;i++)
+			{
+				BN.InputNodes[i].NodeLocation.X += e.HorizontalChange;
+				BN.InputNodes[i].NodeLocation.Y += e.VerticalChange;
+			}
+			for (int i = 0; i < BN.OutputNodes.Count; i++)
+			{
+				BN.OutputNodes[i].NodeLocation.X += e.HorizontalChange;
+				BN.OutputNodes[i].NodeLocation.Y += e.VerticalChange;
+			}
+
+			if (NodeEditor_BackCanvas.Children.Count > 1)
+			{
+				if (BN.InputNodes[0].ConnectedNodes.Count != 0) //Move the "right side" node
+				{
+					Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); //end.Y +=(10); //the 10 is middle of circle
+					for (int i = 0; i < BN.InputNodes[0].Curves.Count; i++)
+					{
+						if (BN.InputNodes[0].Name.Contains("Enter"))
+						{
+							Point end1 = end; end1.Y += 10;
+							SetCurveEndPoint(BN.InputNodes[0].Curves[i], end1);
+						}
+					}
+				}
+				else if (BN.OutputNodes[0].ConnectedNodes.Count != 0) //move the "left side" node
+				{
+					Point start = new Point(Canvas.GetLeft(BN)+150, Canvas.GetTop(BN)); start.Y += 40+ (10); //the 10 is middle of circle
+					for(int i = 0;i< BN.OutputNodes[0].Curves.Count; i++)
+						SetCurveStartPoint(BN.OutputNodes[0].Curves[i], start);
+					//Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); end.Y += 40 + (10); //the 10 is middle of circle
+					//SetCurveEndPoint((Path)NodeEditor_BackCanvas.Children[1], end);
+				}
+			}
+
+		}
+
+		private void SetCurveEndPoint(Path p, Point end)
+		{
+			PathFigure pf = ((PathGeometry)p.Data).Figures[0];
+			BezierSegment bsOld = (BezierSegment)pf.Segments[0];
+			bsOld.Point3 = end;
+			bsOld.Point2 = new Point((end.X + bsOld.Point1.X)/2, end.Y);
+		}
+		private void SetCurveStartPoint(Path p, Point start)
+		{
+			PathFigure pf = ((PathGeometry)p.Data).Figures[0];
+			pf.StartPoint = start;
+			BezierSegment bsOld = (BezierSegment)pf.Segments[0];
+			bsOld.Point1 = start;
+			bsOld.Point2 = new Point((start.X + bsOld.Point3.X) / 2, start.Y);
 		}
 
 		private void AddDialogueRow_BTN_Click(object sender, RoutedEventArgs e)
@@ -293,6 +321,17 @@ namespace NodeEditor
 			Console.WriteLine("Mouse Down on Output");
 			isMDown = true;
 			CurveStart = Mouse.GetPosition(NodeEditor_BackCanvas);
+			try
+			{
+				SelectedNode = (BaseNode)((Thumb)sender).TemplatedParent;
+			}
+			catch
+			{
+				//im a garbo coder at times. So this is making sure my REF is set
+				if (SelectedNode == null)
+					SelectedNode = (BaseNode)((Grid)((Grid)sender).Parent).TemplatedParent;
+			}
+			
 
 		}
 
@@ -306,38 +345,87 @@ namespace NodeEditor
 			Console.WriteLine("MouseMoving in Input");
 			if(isMDown)
 			{
+				BaseNode BN = (BaseNode)((Thumb)sender).TemplatedParent;
 				Point end = Mouse.GetPosition(NodeEditor_BackCanvas);
-				BezierSegment bs = new BezierSegment()
-				{
-					Point1 = CurveStart,
-					Point2 = new Point((CurveStart.X + end.X) / 2, end.Y),
-					Point3 = end,
-				};
 
-				PathGeometry pathGeometry = new PathGeometry();
-
-				PathFigure pathFigure = new PathFigure();
-				pathFigure.StartPoint = bs.Point1;
-				pathFigure.IsClosed = false;
-
-				pathGeometry.Figures.Add(pathFigure);
-				pathFigure.Segments.Add(bs);
-
-				Path p = new Path();
-				p.Stroke = Brushes.White;
-				p.StrokeThickness = 5;
-				p.Data = pathGeometry;
-
+				Path p = CreateBezierCurve(CurveStart, end);
 				NodeEditor_BackCanvas.Children.Add(p);
 				isMDown = false;
+
+				BN.InputNodes[0].ConnectedNodes.Add(SelectedNode); BN.InputNodes[0].Curves.Add(p);
+				SelectedNode.OutputNodes[0].ConnectedNodes.Add(BN); SelectedNode.OutputNodes[0].Curves.Add(p);
+
 			}
 			
+		}
+
+		private Path CreateBezierCurve(Point start, Point end)
+		{
+			BezierSegment bs = new BezierSegment()
+			{
+				Point1 = start,
+				Point2 = new Point((start.X + end.X) / 2, end.Y),
+				Point3 = end,
+			};
+
+			PathGeometry pathGeometry = new PathGeometry();
+
+			PathFigure pathFigure = new PathFigure();
+			pathFigure.StartPoint = bs.Point1;
+			pathFigure.IsClosed = false;
+
+			pathGeometry.Figures.Add(pathFigure);
+			pathFigure.Segments.Add(bs);
+
+			Path p = new Path();
+			p.Stroke = Brushes.White;
+			p.StrokeThickness = 5;
+			p.Data = pathGeometry;
+			return p;
 		}
 
 
 		private void MoveThumb_Left_PreviewDragEnter(object sender, DragEventArgs e)
 		{
 			Console.WriteLine("Mouse Dragged into Input");
+		}
+
+		private void AddDialogueOutput_BTN_Click(object sender, RoutedEventArgs e)
+		{
+			Grid basegrid = (Grid)((Button)sender).Parent;
+			Grid OutputGrid = null;
+			foreach (UIElement item in basegrid.Children)
+			{
+				if (item is Grid && ((Grid)item).Name.Contains("Output"))
+				{ OutputGrid = item as Grid; break; }
+			}
+			//add the dialouge textblock
+			OutputGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(40) });
+			TextBlock tb = new TextBlock() { Text = "Memes" , Margin = new Thickness(5),
+				HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment=VerticalAlignment.Top};
+			Grid.SetRow(tb, OutputGrid.RowDefinitions.Count-1); Grid.SetColumn(tb, 1);
+			OutputGrid.Children.Add(tb);
+
+			//add the output node
+			ContentControl cc = (ContentControl)this.Resources["OutputNode"];
+			Grid.SetRow(cc, OutputGrid.RowDefinitions.Count - 1); Grid.SetColumn(cc, 2);
+
+			Grid g = new Grid() { ShowGridLines = true, Width = 20, Height = 20 };
+			Ellipse ee = new Ellipse() { Height = 20, Width = 20, Fill = Brushes.Red,
+				Cursor=Cursors.Hand, Margin = new Thickness(-10,-10,-10,-10), HorizontalAlignment = HorizontalAlignment.Right,
+				VerticalAlignment = VerticalAlignment.Center
+			};
+			g.Children.Add(ee);
+			Grid.SetRow(g, OutputGrid.RowDefinitions.Count - 1); Grid.SetColumn(g, 2);
+			g.PreviewMouseLeftButtonDown += MoveThumb_Right_MouseLeftButtonDown;
+
+
+			OutputGrid.Children.Add(g);
+		}
+
+		private void AddDialogueInput_BTN_Click(object sender, RoutedEventArgs e)
+		{
+
 		}
 	}
 }
