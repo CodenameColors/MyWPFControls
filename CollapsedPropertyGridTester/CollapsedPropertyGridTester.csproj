@@ -35,9 +35,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CustomColorPicker, Version=1.0.7142.29111, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Visual Studio 2017\Projects\WPFColorPicker\DropDownCustomColorPicker\bin\Debug\CustomColorPicker.dll</HintPath>
+    <Reference Include="CustomColorPicker">
+      <HintPath>..\..\..\..\ProjectEE\ProjectEE\AmethystEngine\Resources\CustomColorPicker.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

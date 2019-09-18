@@ -58,7 +58,7 @@ namespace PropGridTester
 			bb.DictionaryValues.Add(new Tuple<string, object, Control>("Text", "data", tb));
 			bb.DictionaryValues.Add(new Tuple<string, object, Control>("ComboBox", new List<String>() { "one", "two", "three" }, new ComboBox()));
 			bb.DictionaryValues.Add(new Tuple<string, object, Control>("CheckBox", true, new CheckBox()));
-			bb.DictionaryValues.Add(new Tuple<string, object, Control>("Custom", null, new DropDownCustomColorPicker.CustomColorPicker()));
+			//bb.DictionaryValues.Add(new Tuple<string, object, Control>("Custom", null, new DropDownCustomColorPicker.CustomColorPicker()));
 
 		}
 

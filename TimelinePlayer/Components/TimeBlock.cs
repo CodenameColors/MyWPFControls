@@ -15,6 +15,13 @@ namespace TimelinePlayer.Components
 
 		public Timeline TimelineParent;
 
+		#region PTR
+		/// <summary>
+		/// this var is a String Name to serve as a pointer to all external settings
+		/// </summary>
+		public String LinkedTextBoxName { get; set; }
+		#endregion
+
 		#region Sprite
 
 		//Sprite Name

@@ -13,7 +13,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using DrWPF.Windows.Data;
-using DropDownCustomColorPicker;
 using System.Collections.Specialized;
 using System.Collections.ObjectModel;
 using System.Collections;
@@ -339,21 +338,21 @@ namespace PropertyGridEditor
 					InnerPropGrid.Children.Add(ctype); //add the desired control type.
 				}
 			}
-			else if (ctype is CustomColorPicker)
-			{
-				ctype.HorizontalAlignment = HorizontalAlignment.Left;
-				ctype.VerticalAlignment = VerticalAlignment.Center;
-				ctype.Margin = new Thickness(10, 2, 10, 2);
-				ctype.Height = 30;
+			//else if (ctype is CustomColorPicker)
+			//{
+			//	ctype.HorizontalAlignment = HorizontalAlignment.Left;
+			//	ctype.VerticalAlignment = VerticalAlignment.Center;
+			//	ctype.Margin = new Thickness(10, 2, 10, 2);
+			//	ctype.Height = 30;
 
-				Grid.SetRow(ctype, num);
-				Grid.SetColumn(ctype, 1);
-				ctype.BringIntoView();
-				ctype.Tag = PropName; //used for EZ dictionary access later
-				//((CustomColorPicker)ctype).SelectedColorChanged += ;
+			//	Grid.SetRow(ctype, num);
+			//	Grid.SetColumn(ctype, 1);
+			//	ctype.BringIntoView();
+			//	ctype.Tag = PropName; //used for EZ dictionary access later
+			//	//((CustomColorPicker)ctype).SelectedColorChanged += ;
 
-				InnerPropGrid.Children.Add(ctype); //add the desired control type.
-			}
+			//	InnerPropGrid.Children.Add(ctype); //add the desired control type.
+			//}
 
 		}
 

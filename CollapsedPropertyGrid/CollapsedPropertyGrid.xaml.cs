@@ -129,6 +129,9 @@ namespace CollapsedPropertyGrid
 			{
 				PGrid_TreeView.Items.Clear();
 			}
+			//quick and dirty fix for now00
+			foreach (TreeViewItem tvi in PGrid_TreeView.Items)
+				tvi.IsExpanded = true;
 		}
 
 		public CollapsedPropertyGrid()
@@ -146,7 +149,7 @@ namespace CollapsedPropertyGrid
 				if (obj != null)
 				{
 					Type t = obj.GetType();
-					PropertyInfo prop = t.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
+					PropertyInfo prop = t.GetPropertyData(propertyName, BindingFlags.Instance | BindingFlags.Public);
 					if (prop != null)
 					{
 						object val = prop.GetValue(obj, null);
