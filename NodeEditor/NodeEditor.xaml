@@ -17,11 +17,13 @@
 							<Grid MinHeight="100" MinWidth="150" ShowGridLines="True" Background="#FF494949" ClipToBounds="False" >
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
+									<RowDefinition Height="Auto"/>
 									<RowDefinition Height="*"/>
 									<RowDefinition Height="20"/>
 								</Grid.RowDefinitions>
 								<TextBlock Grid.Row="0" Foreground="White" Text="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}" Background="#FF252525"/>
 
+								<!--enter node thumb--> 
 								<ContentPresenter HorizontalAlignment="Stretch" Grid.Column="0"
                                               VerticalAlignment="Stretch" ClipToBounds="False"
                                               x:Name="PART_EnterIndicator">
@@ -50,8 +52,17 @@
 										 Margin="0,0,5,0" DragDelta="MoveThumb_Middle_DragDelta" />
 									</ContentPresenter.Content>
 								</ContentPresenter>
-								<!--Dialogue choices grid-->
-								<Grid Grid.Row="1" IsHitTestVisible="True" x:Name="DialogueOutput_Grid">
+								<!--Dialogue choices grid (output)-->
+								<Grid x:Name="DialogueInput_Grid" Grid.Row="1" >
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="20"/>
+										<ColumnDefinition Width="Auto"/>
+										<ColumnDefinition Width="Auto"/>
+									</Grid.ColumnDefinitions>
+								</Grid>
+								
+								<!--Dialogue choices grid (output)-->
+								<Grid Grid.Row="2" IsHitTestVisible="True" x:Name="DialogueOutput_Grid">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="1"/>
 										<ColumnDefinition Width="*"/>
@@ -97,17 +108,17 @@
                                               x:Name="PART_RightIndicator">
 										<ContentPresenter.Content>
 											<Grid>
-												<Ellipse HorizontalAlignment="Left" VerticalAlignment="Center" Height="15" Width="15" Fill="Red" Margin="-10,-10,-10,-10" Cursor="Hand">
+												<Ellipse HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20" Fill="#E5FD2929" Margin="0,0,-10,0" Cursor="Hand">
 												</Ellipse>
 												<Thumb x:Name="OutNode1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20"
-													 Margin="-10,-10,-10,-10" Cursor="Hand" Background="Transparent" Opacity="0"
+													 Margin="0,0,-10,0" Cursor="Hand" Background="Transparent" Opacity="0"
 													  PreviewMouseLeftButtonDown="MoveThumb_Right_MouseLeftButtonDown" />
 											</Grid>
 										</ContentPresenter.Content>
 									</ContentPresenter>
 								</Grid>
-								<Button x:Name="AddInputNode_BTN" Grid.Row="2" Content="+" Width="15" Height="15" Margin="5,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Click="AddDialogueInput_BTN_Click" />
-								<Button x:Name="AddOutputNode_BTN" Grid.Row="2" Content="+" Width="15" Height="15" Margin="0,0,5,0" HorizontalAlignment="Right" VerticalAlignment="Center" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Click="AddDialogueOutput_BTN_Click" />
+								<Button x:Name="AddInputNode_BTN" Grid.Row="3" Content="+" Width="15" Height="15" Margin="5,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Click="AddDialogueInput_BTN_Click" />
+								<Button x:Name="AddOutputNode_BTN" Grid.Row="3" Content="+" Width="15" Height="15" Margin="0,0,5,0" HorizontalAlignment="Right" VerticalAlignment="Center" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Click="AddDialogueOutput_BTN_Click" />
 							</Grid>
 						</Border>
 					</ControlTemplate>

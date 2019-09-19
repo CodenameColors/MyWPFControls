@@ -129,6 +129,7 @@ namespace NodeEditor
 		bool isMInNode = false;
 		Point CurveStart = new Point();
 		BaseNode SelectedNode = null;
+		int SelectedNodeRow = 0;
 
 
 		public NodeEditor()
@@ -158,7 +159,7 @@ namespace NodeEditor
 
 			//reset selection vars
 			if (e.LeftButton == MouseButtonState.Released)
-			{ isMDown = false; SelectedNode = null; }
+			{ isMDown = false; SelectedNode = null;  SelectedNodeRow = -1; }
 
 			MPos = e.GetPosition(NodeEditor_Canvas); //set this for the iteration
 		}
@@ -281,15 +282,23 @@ namespace NodeEditor
 							Point end1 = end; end1.Y += 10;
 							SetCurveEndPoint(BN.InputNodes[0].Curves[i], end1);
 						}
+						else
+						{
+
+						}
 					}
 				}
 				else if (BN.OutputNodes[0].ConnectedNodes.Count != 0) //move the "left side" node
 				{
-					Point start = new Point(Canvas.GetLeft(BN)+150, Canvas.GetTop(BN)); start.Y += 40+ (10); //the 10 is middle of circle
-					for(int i = 0;i< BN.OutputNodes[0].Curves.Count; i++)
-						SetCurveStartPoint(BN.OutputNodes[0].Curves[i], start);
-					//Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); end.Y += 40 + (10); //the 10 is middle of circle
-					//SetCurveEndPoint((Path)NodeEditor_BackCanvas.Children[1], end);
+					
+					for (int i = 0; i < BN.OutputNodes.Count; i++)
+					{
+						Point start = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN)); start.Y += 40 + (40 * i); //the 10 is middle of circle
+						for (int j = 0; j < BN.OutputNodes[i].Curves.Count; j++)
+							SetCurveStartPoint(BN.OutputNodes[i].Curves[j], start);
+						//Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); end.Y += 40 + (10); //the 10 is middle of circle
+						//SetCurveEndPoint((Path)NodeEditor_BackCanvas.Children[1], end);
+					}
 				}
 			}
 
@@ -324,12 +333,16 @@ namespace NodeEditor
 			try
 			{
 				SelectedNode = (BaseNode)((Thumb)sender).TemplatedParent;
+				SelectedNodeRow = Grid.GetRow((Thumb)sender);
 			}
 			catch
 			{
 				//im a garbo coder at times. So this is making sure my REF is set
 				if (SelectedNode == null)
+				{
 					SelectedNode = (BaseNode)((Grid)((Grid)sender).Parent).TemplatedParent;
+					SelectedNodeRow = Grid.GetRow((Grid)sender);
+				}
 			}
 			
 
@@ -353,7 +366,7 @@ namespace NodeEditor
 				isMDown = false;
 
 				BN.InputNodes[0].ConnectedNodes.Add(SelectedNode); BN.InputNodes[0].Curves.Add(p);
-				SelectedNode.OutputNodes[0].ConnectedNodes.Add(BN); SelectedNode.OutputNodes[0].Curves.Add(p);
+				SelectedNode.OutputNodes[SelectedNodeRow].ConnectedNodes.Add(BN); SelectedNode.OutputNodes[SelectedNodeRow].Curves.Add(p);
 
 			}
 			
@@ -381,6 +394,7 @@ namespace NodeEditor
 			p.Stroke = Brushes.White;
 			p.StrokeThickness = 5;
 			p.Data = pathGeometry;
+			Canvas.SetZIndex(p, -1);
 			return p;
 		}
 
@@ -406,10 +420,7 @@ namespace NodeEditor
 			Grid.SetRow(tb, OutputGrid.RowDefinitions.Count-1); Grid.SetColumn(tb, 1);
 			OutputGrid.Children.Add(tb);
 
-			//add the output node
-			ContentControl cc = (ContentControl)this.Resources["OutputNode"];
-			Grid.SetRow(cc, OutputGrid.RowDefinitions.Count - 1); Grid.SetColumn(cc, 2);
-
+			//add the output node Display wise
 			Grid g = new Grid() { ShowGridLines = true, Width = 20, Height = 20 };
 			Ellipse ee = new Ellipse() { Height = 20, Width = 20, Fill = Brushes.Red,
 				Cursor=Cursors.Hand, Margin = new Thickness(-10,-10,-10,-10), HorizontalAlignment = HorizontalAlignment.Right,
@@ -418,14 +429,36 @@ namespace NodeEditor
 			g.Children.Add(ee);
 			Grid.SetRow(g, OutputGrid.RowDefinitions.Count - 1); Grid.SetColumn(g, 2);
 			g.PreviewMouseLeftButtonDown += MoveThumb_Right_MouseLeftButtonDown;
-
-
 			OutputGrid.Children.Add(g);
+
+			//add the output node data wise
+			BaseNode BN = (BaseNode)((Button)sender).TemplatedParent;
+			Point p = new Point(Canvas.GetLeft(BN)+ 150, Canvas.GetTop(BN) + 20 + (20 * OutputGrid.RowDefinitions.Count));
+			BN.OutputNodes.Add(new ConnectionNode("OutputNode" + OutputGrid.RowDefinitions.Count, p));
+
 		}
 
 		private void AddDialogueInput_BTN_Click(object sender, RoutedEventArgs e)
 		{
+			Grid basegrid = (Grid)((Button)sender).Parent;
+			Grid OutputGrid = null;
+			foreach (UIElement item in basegrid.Children)
+			{
+				if (item is Grid && ((Grid)item).Name.Contains("Input"))
+				{ OutputGrid = item as Grid; break; }
+			}
 
+			//add the dialouge textblock
+			OutputGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(40) });
+			TextBlock tb = new TextBlock()
+			{
+				Text = "Memes",
+				Margin = new Thickness(5),
+				HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Top
+			};
+			Grid.SetRow(tb, OutputGrid.RowDefinitions.Count - 1); Grid.SetColumn(tb, 1);
+			OutputGrid.Children.Add(tb);
 		}
 	}
 }
