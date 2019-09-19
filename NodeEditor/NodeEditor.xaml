@@ -57,7 +57,7 @@
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="20"/>
 										<ColumnDefinition Width="Auto"/>
-										<ColumnDefinition Width="Auto"/>
+										<ColumnDefinition Width="*"/>
 									</Grid.ColumnDefinitions>
 								</Grid>
 								
@@ -108,7 +108,7 @@
                                               x:Name="PART_RightIndicator">
 										<ContentPresenter.Content>
 											<Grid>
-												<Ellipse HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20" Fill="#E5FD2929" Margin="0,0,-10,0" Cursor="Hand">
+												<Ellipse HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20" Fill="White" Margin="0,0,-10,0" Cursor="Hand">
 												</Ellipse>
 												<Thumb x:Name="OutNode1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20"
 													 Margin="0,0,-10,0" Cursor="Hand" Background="Transparent" Opacity="0"
@@ -206,17 +206,22 @@
 
 <!--MouseWheel="LevelEditor_Canvas_MouseWheel" SizeChanged="LevelEditor_BackCanvas_SizeChanged"-->
 			<Canvas Grid.Row="1" x:Name="NodeEditor_BackCanvas" IsHitTestVisible="True" Grid.Column="1" 
-										
 										ClipToBounds="True" MouseMove="LevelEditor_BackCanvas_MouseMove" Visibility="Visible">
-			<Canvas.Background>
+				<!--<Canvas.RenderTransform>
+					<ScaleTransform ScaleX=".5" ScaleY=".5" />
+				</Canvas.RenderTransform>-->
+				<Canvas.Background>
 				<VisualBrush x:Name="Canvas_grid" TileMode="Tile" Stretch="Uniform" Viewport="0,0,20,20" ViewportUnits="Absolute" >
 					<VisualBrush.Visual>
 						<Rectangle Width="20" Height="20" Fill="Black" Stroke="Gray" StrokeThickness=".4" />
 					</VisualBrush.Visual>
 				</VisualBrush>
 			</Canvas.Background>
-			<Canvas x:Name="NodeEditor_Canvas" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-		</Canvas>
+				<Canvas x:Name="NodeEditor_Canvas" Background="Transparent" 
+							HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+					
+				</Canvas>
+			</Canvas>
 		</Grid>
 
 		<GridSplitter ResizeDirection="Columns" Grid.Column="0" Width="2" Background="White"/>

@@ -103,8 +103,8 @@ namespace NodeEditor
 				BaseNode bn = (BaseNode)e.NewItems[0];
 				NodeEditor_Canvas.Children.Add(bn);
 				Point p = new Point(0, 10); Point p1 = new Point(150, 20 + 20);
-				bn.InputNodes.Add(new ConnectionNode("EnterNode", p));
-				bn.OutputNodes.Add(new ConnectionNode("OutputNode1", p1));
+				bn.InputNodes.Add(new ConnectionNode("EnterNode", p, ECOnnectionType.Enter));
+				bn.OutputNodes.Add(new ConnectionNode("OutputNode1", p1, ECOnnectionType.Exit));
 
 			}
 			if(e.Action == NotifyCollectionChangedAction.Remove)
@@ -258,8 +258,8 @@ namespace NodeEditor
 			BaseNode BN = ((BaseNode)((Thumb)sender).TemplatedParent);
 			Canvas.SetLeft(BN, VisualTreeHelper.GetOffset(BN).X + e.HorizontalChange);
 			Canvas.SetTop(BN, VisualTreeHelper.GetOffset(BN).Y + e.VerticalChange);
-			
-			for(int i = 0; i < BN.InputNodes.Count;i++)
+
+			for (int i = 0; i < BN.InputNodes.Count; i++)
 			{
 				BN.InputNodes[i].NodeLocation.X += e.HorizontalChange;
 				BN.InputNodes[i].NodeLocation.Y += e.VerticalChange;
@@ -272,28 +272,29 @@ namespace NodeEditor
 
 			if (NodeEditor_BackCanvas.Children.Count > 1)
 			{
-				if (BN.InputNodes[0].ConnectedNodes.Count != 0) //Move the "right side" node
+				for (int i = 0; i < BN.InputNodes.Count; i++)
 				{
 					Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); //end.Y +=(10); //the 10 is middle of circle
-					for (int i = 0; i < BN.InputNodes[0].Curves.Count; i++)
+					for (int j = 0; j < BN.InputNodes[i].Curves.Count; j++)
 					{
-						if (BN.InputNodes[0].Name.Contains("Enter"))
+						if (BN.InputNodes[i].Name.Contains("Enter"))
 						{
 							Point end1 = end; end1.Y += 10;
-							SetCurveEndPoint(BN.InputNodes[0].Curves[i], end1);
+							SetCurveEndPoint(BN.InputNodes[i].Curves[j], end1);
 						}
 						else
 						{
-
+							Point end1 = end; end1.Y += 20 + (20 * i);
+							SetCurveEndPoint(BN.InputNodes[i].Curves[j], end1);
 						}
 					}
 				}
-				else if (BN.OutputNodes[0].ConnectedNodes.Count != 0) //move the "left side" node
+
+				if (BN.OutputNodes.Count > 0) //move the "left side" node
 				{
-					
 					for (int i = 0; i < BN.OutputNodes.Count; i++)
 					{
-						Point start = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN)); start.Y += 40 + (40 * i); //the 10 is middle of circle
+						Point start = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN)); start.Y += 40 + (40 * (BN.InputNodes.Count - 1)) + (40 * i); //the 10 is middle of circle
 						for (int j = 0; j < BN.OutputNodes[i].Curves.Count; j++)
 							SetCurveStartPoint(BN.OutputNodes[i].Curves[j], start);
 						//Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); end.Y += 40 + (10); //the 10 is middle of circle
@@ -301,8 +302,8 @@ namespace NodeEditor
 					}
 				}
 			}
-
 		}
+		
 
 		private void SetCurveEndPoint(Path p, Point end)
 		{
@@ -358,18 +359,36 @@ namespace NodeEditor
 			Console.WriteLine("MouseMoving in Input");
 			if(isMDown)
 			{
-				BaseNode BN = (BaseNode)((Thumb)sender).TemplatedParent;
+				BaseNode BN = null; int inrow = 0;
+				try
+				{
+					BN = (BaseNode)((Thumb)sender).TemplatedParent;
+				}
+				catch
+				{
+					BN = (BaseNode)((Grid)((Grid)sender).Parent).TemplatedParent;
+					inrow = Grid.GetRow(((Grid)sender)) + 1; //the one offset is for the enter node.
+				}
+				if (BN == null) return;
+
+				//do the types match?
+				if (SelectedNode.OutputNodes[SelectedNodeRow].NodeType != BN.InputNodes[inrow].NodeType)
+				{
+					if (SelectedNode.OutputNodes[SelectedNodeRow].NodeType == ECOnnectionType.Exit && BN.InputNodes[inrow].NodeType == ECOnnectionType.Enter) { } //this is just an ignore.
+					else if (SelectedNode.OutputNodes[SelectedNodeRow].NodeType != BN.InputNodes[inrow].NodeType) return;
+				}
+				
+
 				Point end = Mouse.GetPosition(NodeEditor_BackCanvas);
 
 				Path p = CreateBezierCurve(CurveStart, end);
 				NodeEditor_BackCanvas.Children.Add(p);
 				isMDown = false;
 
-				BN.InputNodes[0].ConnectedNodes.Add(SelectedNode); BN.InputNodes[0].Curves.Add(p);
+				BN.InputNodes[inrow].ConnectedNodes.Add(SelectedNode); BN.InputNodes[inrow].Curves.Add(p);
 				SelectedNode.OutputNodes[SelectedNodeRow].ConnectedNodes.Add(BN); SelectedNode.OutputNodes[SelectedNodeRow].Curves.Add(p);
-
+					
 			}
-			
 		}
 
 		private Path CreateBezierCurve(Point start, Point end)
@@ -421,9 +440,20 @@ namespace NodeEditor
 			OutputGrid.Children.Add(tb);
 
 			//add the output node Display wise
-			Grid g = new Grid() { ShowGridLines = true, Width = 20, Height = 20 };
-			Ellipse ee = new Ellipse() { Height = 20, Width = 20, Fill = Brushes.Red,
-				Cursor=Cursors.Hand, Margin = new Thickness(-10,-10,-10,-10), HorizontalAlignment = HorizontalAlignment.Right,
+			Grid g = new Grid()
+			{
+				ShowGridLines = true,
+				Width = 20,
+				Height = 20
+			};
+			Ellipse ee = new Ellipse()
+			{
+				Height = 20,
+				Width = 20,
+				Fill = Brushes.White,
+				Cursor = Cursors.Hand,
+				Margin = new Thickness(-10, -10, -10, -10),
+				HorizontalAlignment = HorizontalAlignment.Right,
 				VerticalAlignment = VerticalAlignment.Center
 			};
 			g.Children.Add(ee);
@@ -434,31 +464,121 @@ namespace NodeEditor
 			//add the output node data wise
 			BaseNode BN = (BaseNode)((Button)sender).TemplatedParent;
 			Point p = new Point(Canvas.GetLeft(BN)+ 150, Canvas.GetTop(BN) + 20 + (20 * OutputGrid.RowDefinitions.Count));
-			BN.OutputNodes.Add(new ConnectionNode("OutputNode" + OutputGrid.RowDefinitions.Count, p));
+			BN.OutputNodes.Add(new ConnectionNode("OutputNode" + OutputGrid.RowDefinitions.Count, p, ECOnnectionType.Exit));
+
+
+			//add an input node IF row definition count is 2. This is the dialogue choice val. ONLY CAN HAVE ONE
+			if (OutputGrid.RowDefinitions.Count != 2) return;
+			Grid inputGrid = null;
+			foreach (UIElement item in basegrid.Children)
+			{
+				if (item is Grid && ((Grid)item).Name.Contains("Input"))
+				{ inputGrid = item as Grid; break; }
+			}
+
+			if (inputGrid.RowDefinitions.Count >= 2) return; //imit out dialogue nodes to TWO inputs only
+
+			//add the dialouge textblock
+			inputGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(40) });
+			TextBlock tbb = new TextBlock()
+			{
+				Text = "Choice Val",
+				Margin = new Thickness(5),
+				HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Top,
+				Foreground = Brushes.White
+			};
+			Grid.SetRow(tbb, inputGrid.RowDefinitions.Count - 1); Grid.SetColumn(tbb, 1);
+			inputGrid.Children.Add(tbb);
+
+			//add the output node Display wise
+			Grid gg = new Grid() { ShowGridLines = true, Width = 20, Height = 20 };
+			Ellipse eee = new Ellipse()
+			{
+				Height = 20,
+				Width = 20,
+				Fill = Brushes.BlueViolet,
+				Cursor = Cursors.Hand,
+				Margin = new Thickness(-10, -10, -10, -10),
+				HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Center
+			};
+			gg.Children.Add(eee);
+			Grid.SetRow(gg, inputGrid.RowDefinitions.Count - 1); Grid.SetColumn(gg, 0);
+			gg.PreviewMouseMove += MoveThumb_Left_PreviewMouseMove;
+			inputGrid.Children.Add(gg);
+
+			//Add the combo box to tell/change what data type is allow on this node
+			ComboBox cb = new ComboBox() { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center};
+			cb.Items.Add("Bool"); cb.Items.Add("Int");
+			cb.SelectedIndex = 1;
+			Grid.SetRow(cb, inputGrid.RowDefinitions.Count - 1); Grid.SetColumn(cb, 2);
+			inputGrid.Children.Add(cb);
+
+			//add the Input node data wise
+			Point pp = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN) + 20 + (20 * inputGrid.RowDefinitions.Count));
+			BN.InputNodes.Add(new ConnectionNode("InputNode" + inputGrid.RowDefinitions.Count, pp, ECOnnectionType.Int));
+
+
+
+
 
 		}
 
 		private void AddDialogueInput_BTN_Click(object sender, RoutedEventArgs e)
 		{
 			Grid basegrid = (Grid)((Button)sender).Parent;
-			Grid OutputGrid = null;
+			Grid inputGrid = null;
 			foreach (UIElement item in basegrid.Children)
 			{
 				if (item is Grid && ((Grid)item).Name.Contains("Input"))
-				{ OutputGrid = item as Grid; break; }
+				{ inputGrid = item as Grid; break; }
 			}
 
+			if (inputGrid.RowDefinitions.Count >= 2) return; //imit out dialogue nodes to TWO inputs only
+
 			//add the dialouge textblock
-			OutputGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(40) });
+			inputGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(40) });
 			TextBlock tb = new TextBlock()
 			{
-				Text = "Memes",
+				Text = "Unlocking Var",
 				Margin = new Thickness(5),
 				HorizontalAlignment = HorizontalAlignment.Left,
-				VerticalAlignment = VerticalAlignment.Top
+				VerticalAlignment = VerticalAlignment.Top,
+				Foreground = Brushes.White
 			};
-			Grid.SetRow(tb, OutputGrid.RowDefinitions.Count - 1); Grid.SetColumn(tb, 1);
-			OutputGrid.Children.Add(tb);
+			Grid.SetRow(tb, inputGrid.RowDefinitions.Count - 1); Grid.SetColumn(tb, 1);
+			inputGrid.Children.Add(tb);
+
+			//add the output node Display wise
+			Grid g = new Grid() { ShowGridLines = true, Width = 20, Height = 20 };
+			Ellipse ee = new Ellipse()
+			{
+				Height = 20,
+				Width = 20,
+				Fill = Brushes.Red,
+				Cursor = Cursors.Hand,
+				Margin = new Thickness(-10, -10, -10, -10),
+				HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Center
+			};
+			g.Children.Add(ee);
+			Grid.SetRow(g, inputGrid.RowDefinitions.Count - 1); Grid.SetColumn(g, 0);
+			g.PreviewMouseMove += MoveThumb_Left_PreviewMouseMove;
+			inputGrid.Children.Add(g);
+
+			//Add the combo box to tell/change what data type is allow on this node
+			ComboBox cb = new ComboBox() { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
+			cb.Items.Add("Bool"); cb.Items.Add("Int");
+			cb.SelectedIndex = 0;
+			Grid.SetRow(cb, inputGrid.RowDefinitions.Count - 1); Grid.SetColumn(cb, 2);
+			inputGrid.Children.Add(cb);
+
+			//add the Input node data wise
+			BaseNode BN = (BaseNode)((Button)sender).TemplatedParent;
+			Point p = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN) + 20 + (20 * inputGrid.RowDefinitions.Count));
+			BN.InputNodes.Add(new ConnectionNode("InputNode" + inputGrid.RowDefinitions.Count, p, ECOnnectionType.Bool));
+
 		}
 	}
 }
