@@ -22,7 +22,7 @@ namespace CollapsedPropertyGridTest
 			observableDictionary.Add("Text", "Default Text"); //textblock and or label
 			observableDictionary.Add("Check Box", true); //check box
 			observableDictionary.Add("Text Box", "Writable Text");
-			observableDictionary.Add("Custom Controls", new DropDownCustomColorPicker.ColorPicker());
+			//observableDictionary.Add("Custom Controls", new DropDownCustomColorPicker.ColorPicker());
 			Name = "";
 			//DictionaryValues = new ObservableCollection<object>(observableDictionary.Values); //sync
 		}
