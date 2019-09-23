@@ -48,14 +48,40 @@ namespace NodeEditor
 			// Remove handler for oldValue.CollectionChanged
 			if (oldValue != null)
 			{
-				((ObservableCollection<BaseNode>)oldValue).CollectionChanged -= new NotifyCollectionChangedEventHandler(newValueINotifyCollectionChanged_CollectionChanged);
+				((ObservableCollection<DialogueNodeBlock>)oldValue).CollectionChanged -= new NotifyCollectionChangedEventHandler(newValueINotifyCollectionChanged_CollectionChanged);
 			}
 			// Add handler for newValue.CollectionChanged (if possible)
 			if (null != newValue)
 			{
-				((ObservableCollection<BaseNode>)newValue).CollectionChanged += new NotifyCollectionChangedEventHandler(newValueINotifyCollectionChanged_CollectionChanged);
+				((ObservableCollection<object>)newValue).CollectionChanged += new NotifyCollectionChangedEventHandler(newValueINotifyCollectionChanged_CollectionChanged);
 			}
 		}
+
+		void newValueINotifyCollectionChanged_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.Action == NotifyCollectionChangedAction.Add)
+			{
+				if (e.NewItems[0] is DialogueNodeBlock)
+				{
+					DialogueNodeBlock bn = (DialogueNodeBlock)e.NewItems[0];
+					NodeEditor_Canvas.Children.Add(bn);
+					Point p = new Point(0, 10); Point p1 = new Point(150, 20 + 20);
+					bn.InputNodes.Add(new ConnectionNode("EnterNode", p, ECOnnectionType.Enter));
+					bn.OutputNodes.Add(new ConnectionNode("OutputNode1", p1, ECOnnectionType.Exit));
+				}
+				else if (e.NewItems[0] is ConstantNodeBlock)
+				{
+					ConstantNodeBlock bn = (ConstantNodeBlock)e.NewItems[0];
+					NodeEditor_Canvas.Children.Add(bn);
+				}
+			}
+			if (e.Action == NotifyCollectionChangedAction.Remove)
+			{
+
+			}
+		}
+
+
 		#endregion
 
 		/// <summary>
@@ -115,23 +141,7 @@ namespace NodeEditor
 
 		static NodeBlockDragAdorner _dragAdorner;
 
-		void newValueINotifyCollectionChanged_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			if(e.Action == NotifyCollectionChangedAction.Add)
-			{
-				BaseNode bn = (BaseNode)e.NewItems[0];
-				NodeEditor_Canvas.Children.Add(bn);
-				Point p = new Point(0, 10); Point p1 = new Point(150, 20 + 20);
-				bn.InputNodes.Add(new ConnectionNode("EnterNode", p, ECOnnectionType.Enter));
-				bn.OutputNodes.Add(new ConnectionNode("OutputNode1", p1, ECOnnectionType.Exit));
-
-			}
-			if(e.Action == NotifyCollectionChangedAction.Remove)
-			{
-
-			}
-		}
-
+		
 		Point MPos = new Point();
 		Point GridOffset = new Point();
 		private ImageBrush imgtilebrush;
@@ -142,7 +152,7 @@ namespace NodeEditor
 		bool isMDown = false;
 		bool isMInNode = false;
 		Point CurveStart = new Point();
-		BaseNode SelectedBlockNode = null;
+		DialogueNodeBlock SelectedBlockNode = null;
 		ConnectionNode SelectedNode = null;
 		int SelectedNodeRow = 0;
 
@@ -275,7 +285,7 @@ namespace NodeEditor
 
 		private void MoveThumb_Middle_DragDelta(object sender, DragDeltaEventArgs e)
 		{
-			BaseNode BN = ((BaseNode)((Thumb)sender).TemplatedParent);
+			DialogueNodeBlock BN = ((DialogueNodeBlock)((Thumb)sender).TemplatedParent);
 			Canvas.SetLeft(BN, VisualTreeHelper.GetOffset(BN).X + e.HorizontalChange);
 			Canvas.SetTop(BN, VisualTreeHelper.GetOffset(BN).Y + e.VerticalChange);
 
@@ -353,7 +363,7 @@ namespace NodeEditor
 			CurveStart = Mouse.GetPosition(NodeEditor_BackCanvas);
 			try
 			{
-				SelectedBlockNode = (BaseNode)((Thumb)sender).TemplatedParent;
+				SelectedBlockNode = (DialogueNodeBlock)((Thumb)sender).TemplatedParent;
 				SelectedNodeRow = Grid.GetRow((Thumb)sender);
 				SelectedNode = SelectedBlockNode.OutputNodes[SelectedNodeRow];
 			}
@@ -362,7 +372,7 @@ namespace NodeEditor
 				//im a garbo coder at times. So this is making sure my REF is set
 				if (SelectedBlockNode == null)
 				{
-					SelectedBlockNode = (BaseNode)((Grid)((Grid)sender).Parent).TemplatedParent;
+					SelectedBlockNode = (DialogueNodeBlock)((Grid)((Grid)sender).Parent).TemplatedParent;
 					SelectedNodeRow = Grid.GetRow((Grid)sender);
 					SelectedNode = SelectedBlockNode.OutputNodes[SelectedNodeRow];
 				}
@@ -381,14 +391,14 @@ namespace NodeEditor
 			Console.WriteLine("MouseMoving in Input");
 			if(isMDown)
 			{
-				BaseNode BN = null; int inrow = 0;
+				DialogueNodeBlock BN = null; int inrow = 0;
 				try
 				{
-					BN = (BaseNode)((Thumb)sender).TemplatedParent;
+					BN = (DialogueNodeBlock)((Thumb)sender).TemplatedParent;
 				}
 				catch
 				{
-					BN = (BaseNode)((Grid)((Grid)sender).Parent).TemplatedParent;
+					BN = (DialogueNodeBlock)((Grid)((Grid)sender).Parent).TemplatedParent;
 					inrow = Grid.GetRow(((Grid)sender)) + 1; //the one offset is for the enter node.
 				}
 				if (BN == null) return;
@@ -484,7 +494,7 @@ namespace NodeEditor
 			OutputGrid.Children.Add(g);
 
 			//add the output node data wise
-			BaseNode BN = (BaseNode)((Button)sender).TemplatedParent;
+			DialogueNodeBlock BN = (DialogueNodeBlock)((Button)sender).TemplatedParent;
 			Point p = new Point(Canvas.GetLeft(BN)+ 150, Canvas.GetTop(BN) + 20 + (20 * OutputGrid.RowDefinitions.Count));
 			BN.OutputNodes.Add(new ConnectionNode("OutputNode" + OutputGrid.RowDefinitions.Count, p, ECOnnectionType.Exit));
 
@@ -599,7 +609,7 @@ namespace NodeEditor
 			inputGrid.Children.Add(cb);
 
 			//add the Input node data wise
-			BaseNode BN = (BaseNode)((Button)sender).TemplatedParent;
+			DialogueNodeBlock BN = (DialogueNodeBlock)((Button)sender).TemplatedParent;
 			Point p = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN) + 20 + (20 * inputGrid.RowDefinitions.Count));
 			BN.InputNodes.Add(new ConnectionNode("InputNode" + inputGrid.RowDefinitions.Count, p, ECOnnectionType.Bool));
 
@@ -622,19 +632,15 @@ namespace NodeEditor
 					if ((sender as ComboBox).SelectedIndex == 0)
 					{
 						ell.Fill = Brushes.Red;
-						(nodegrid.TemplatedParent as BaseNode).InputNodes[(Grid.GetRow(sender as ComboBox))].NodeType = ECOnnectionType.Bool;
+						(nodegrid.TemplatedParent as DialogueNodeBlock).InputNodes[(Grid.GetRow(sender as ComboBox))].NodeType = ECOnnectionType.Bool;
 					}
 					else if((sender as ComboBox).SelectedIndex == 1)
 					{
 						ell.Fill = Brushes.BlueViolet;
-						(nodegrid.TemplatedParent as BaseNode).InputNodes[(Grid.GetRow(sender as ComboBox))].NodeType = ECOnnectionType.Int;
+						(nodegrid.TemplatedParent as DialogueNodeBlock).InputNodes[(Grid.GetRow(sender as ComboBox))].NodeType = ECOnnectionType.Int;
 					}
-
-
 				}
 			}
-
-
 		}
 
 		/// <summary>
@@ -647,7 +653,7 @@ namespace NodeEditor
 			if (AllowNodeDeletion)
 			{
 				Point p = Mouse.GetPosition(NodeEditor_BackCanvas);
-				SelectedBlockNode = (BaseNode)(sender as Grid).TemplatedParent;
+				SelectedBlockNode = (DialogueNodeBlock)(sender as Grid).TemplatedParent;
 				ContextMenu cm = this.FindResource("DeleteBaseNode_CM") as ContextMenu;
 				cm.PlacementTarget = sender as ContentControl;
 				cm.IsOpen = true;
@@ -663,7 +669,7 @@ namespace NodeEditor
 		private void COnnectionNode_RightClick(object sender, MouseButtonEventArgs e)
 		{
 			Point p = Mouse.GetPosition(NodeEditor_BackCanvas);
-			SelectedBlockNode = (BaseNode)(sender as Grid).TemplatedParent;
+			SelectedBlockNode = (DialogueNodeBlock)(sender as Grid).TemplatedParent;
 			String TempStr = "";
 
 			if ((sender as Grid).Name.Contains("Entry"))

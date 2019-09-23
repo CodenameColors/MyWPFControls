@@ -19,11 +19,44 @@
 			</MenuItem>
 			<Separator/>
 		</ContextMenu>
-		
-		<Style TargetType="{x:Type nec:BaseNode}">
+
+		<Style TargetType="{x:Type nec:ConstantNodeBlock}">
 			<Setter Property="Template">
 				<Setter.Value>
-					<ControlTemplate TargetType="{x:Type nec:BaseNode}">
+					<ControlTemplate>
+						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
+							<Grid Width="100">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="20"/>
+									<RowDefinition Height="40"/>
+								</Grid.RowDefinitions>
+								<TextBlock Grid.Row="0" Foreground="White" Text="Constant" Background="#FF252525"/>
+
+								<ContentPresenter HorizontalAlignment="Right" Grid.Row="1" IsHitTestVisible="True"
+                                              VerticalAlignment="Stretch" ClipToBounds="False"
+                                              x:Name="PART_RightIndicator">
+									<ContentPresenter.Content>
+										<Grid x:Name="OutNode1_Grid" PreviewMouseRightButtonDown="COnnectionNode_RightClick">
+											<Ellipse HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20" Fill="White" Margin="0,0,-10,0" Cursor="Hand">
+											</Ellipse>
+											<Thumb x:Name="OutNode1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20"
+													 Margin="0,0,-10,0" Cursor="Hand" Background="Transparent" Opacity="0"
+													  PreviewMouseLeftButtonDown="MoveThumb_Right_MouseLeftButtonDown" />
+										</Grid>
+									</ContentPresenter.Content>
+								</ContentPresenter>
+
+							</Grid>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<Style TargetType="{x:Type nec:DialogueNodeBlock}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type nec:DialogueNodeBlock}">
 						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
 							<Grid MinHeight="100" MinWidth="150" ShowGridLines="True" Background="#FF494949" ClipToBounds="False" MouseRightButtonDown="BaseNodeRight_BTN_Click" >
 								<Grid.RowDefinitions>

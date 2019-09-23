@@ -24,7 +24,7 @@ namespace NodeEditor_Tester
 	public partial class NodeEditorTester : Window
 	{
 
-		ObservableCollection<BaseNode> nodes = new ObservableCollection<BaseNode>();
+		ObservableCollection<object> nodes = new ObservableCollection<object>();
 
 		public NodeEditorTester()
 		{
@@ -38,7 +38,8 @@ namespace NodeEditor_Tester
 
 		private void BaseNode_BTN_Click(object sender, RoutedEventArgs e)
 		{
-			nodes.Add(new BaseNode() { Header = "Emma" });
+			nodes.Add(new DialogueNodeBlock() { Header = "Emma" });
+			nodes.Add(new ConstantNodeBlock());
 		}
 
 		

@@ -8,7 +8,7 @@ using System.Windows.Controls;
 
 namespace NodeEditor.Components
 {
-	public class BaseNode : Button, INotifyPropertyChanged
+	public class DialogueNodeBlock : Button, INotifyPropertyChanged
 	{
 		public String Header { get; set; }
 		public List<ConnectionNode> InputNodes { get; set; }
@@ -17,7 +17,7 @@ namespace NodeEditor.Components
 
 
 
-		public BaseNode()
+		public DialogueNodeBlock()
 		{
 			Header = String.Empty;
 			InputNodes = new List<ConnectionNode>();

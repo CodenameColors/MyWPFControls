@@ -52,8 +52,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="Components\BaseNode.cs" />
+    <Compile Include="Components\ConstantNodeBlock.cs" />
+    <Compile Include="Components\DialogueNodeBlock.cs" />
     <Compile Include="Components\ConnectionNode.cs" />
+    <Compile Include="Components\LogicNodeBlock.cs" />
     <Compile Include="NodeEditor.xaml.cs">
       <DependentUpon>NodeEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
