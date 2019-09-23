@@ -9,12 +9,23 @@
              d:DesignHeight="450" d:DesignWidth="800">
 	<UserControl.Resources>
 
+		<ContextMenu x:Key="DeleteBaseNode_CM">
+			<MenuItem x:Name="DeleteBN_MI" IsChecked="False" Header="Delete Node" PreviewMouseLeftButtonDown="DeleteBaseNode_Click">
+			</MenuItem>
+		</ContextMenu>
+
+		<ContextMenu x:Key="DeleteConnections_CM">
+			<MenuItem x:Name="DeleteConnections_MI" IsChecked="False" Header="Delete All" PreviewMouseLeftButtonDown="DeleteConnections_Click">
+			</MenuItem>
+			<Separator/>
+		</ContextMenu>
+		
 		<Style TargetType="{x:Type nec:BaseNode}">
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate TargetType="{x:Type nec:BaseNode}">
 						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
-							<Grid MinHeight="100" MinWidth="150" ShowGridLines="True" Background="#FF494949" ClipToBounds="False" >
+							<Grid MinHeight="100" MinWidth="150" ShowGridLines="True" Background="#FF494949" ClipToBounds="False" MouseRightButtonDown="BaseNodeRight_BTN_Click" >
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
 									<RowDefinition Height="Auto"/>
@@ -28,7 +39,7 @@
                                               VerticalAlignment="Stretch" ClipToBounds="False"
                                               x:Name="PART_EnterIndicator">
 									<ContentPresenter.Content>
-										<Grid>
+										<Grid x:Name="EntryNode_Grid" PreviewMouseRightButtonDown="COnnectionNode_RightClick">
 											<Ellipse HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Width="20" Fill="White" Margin="-10,-10,-10,-10" Cursor="Hand">
 												<Ellipse.Clip>
 													<RectangleGeometry Rect="0,0,10,20"/>
@@ -107,7 +118,7 @@
                                               VerticalAlignment="Stretch" ClipToBounds="False"
                                               x:Name="PART_RightIndicator">
 										<ContentPresenter.Content>
-											<Grid>
+											<Grid x:Name="OutNode1_Grid" PreviewMouseRightButtonDown="COnnectionNode_RightClick">
 												<Ellipse HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20" Fill="White" Margin="0,0,-10,0" Cursor="Hand">
 												</Ellipse>
 												<Thumb x:Name="OutNode1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20"

@@ -149,7 +149,7 @@ namespace CollapsedPropertyGrid
 				if (obj != null)
 				{
 					Type t = obj.GetType();
-					PropertyInfo prop = t.GetPropertyData(propertyName, BindingFlags.Instance | BindingFlags.Public);
+					PropertyInfo prop = t.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
 					if (prop != null)
 					{
 						object val = prop.GetValue(obj, null);

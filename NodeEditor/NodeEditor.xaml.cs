@@ -58,6 +58,25 @@ namespace NodeEditor
 		}
 		#endregion
 
+		/// <summary>
+		/// This Dependency property is here to either allow base node right click deletion
+		/// </summary>
+		#region AllowNodeDeletion
+		public bool AllowNodeDeletion
+		{
+			get { return (bool)GetValue(AllowNodeDeletionProperty); }
+			set { SetValue(AllowNodeDeletionProperty, value); }
+		}
+
+		public static readonly DependencyProperty AllowNodeDeletionProperty =
+					DependencyProperty.Register("AllowNodeDeletion", typeof(bool), typeof(NodeEditor),
+						new PropertyMetadata(false, new PropertyChangedCallback(OnAllowNodeDeletionChange)));
+		private static void OnAllowNodeDeletionChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+
+		}
+		#endregion
+
 		internal class NodeBlockDragAdorner : Adorner
 		{
 			private ContentPresenter _adorningContentPresenter;
@@ -113,10 +132,6 @@ namespace NodeEditor
 			}
 		}
 
-
-
-
-
 		Point MPos = new Point();
 		Point GridOffset = new Point();
 		private ImageBrush imgtilebrush;
@@ -124,11 +139,11 @@ namespace NodeEditor
 		private int newy;
 		Rectangle selectrect = new Rectangle();
 
-
 		bool isMDown = false;
 		bool isMInNode = false;
 		Point CurveStart = new Point();
-		BaseNode SelectedNode = null;
+		BaseNode SelectedBlockNode = null;
+		ConnectionNode SelectedNode = null;
 		int SelectedNodeRow = 0;
 
 
@@ -159,7 +174,12 @@ namespace NodeEditor
 
 			//reset selection vars
 			if (e.LeftButton == MouseButtonState.Released)
-			{ isMDown = false; SelectedNode = null;  SelectedNodeRow = -1; }
+			{
+				isMDown = false;
+				if(!(this.FindResource("DeleteBaseNode_CM") as ContextMenu).IsOpen)
+					SelectedBlockNode = null;
+				SelectedNodeRow = -1;
+			}
 
 			MPos = e.GetPosition(NodeEditor_Canvas); //set this for the iteration
 		}
@@ -294,7 +314,7 @@ namespace NodeEditor
 				{
 					for (int i = 0; i < BN.OutputNodes.Count; i++)
 					{
-						Point start = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN)); start.Y += 40 + (40 * (BN.InputNodes.Count - 1)) + (40 * i); //the 10 is middle of circle
+						Point start = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN)); start.Y += 40 + (40 * (BN.OutputNodes.Count - 1)) + (40 * i); //the 10 is middle of circle
 						for (int j = 0; j < BN.OutputNodes[i].Curves.Count; j++)
 							SetCurveStartPoint(BN.OutputNodes[i].Curves[j], start);
 						//Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); end.Y += 40 + (10); //the 10 is middle of circle
@@ -333,16 +353,18 @@ namespace NodeEditor
 			CurveStart = Mouse.GetPosition(NodeEditor_BackCanvas);
 			try
 			{
-				SelectedNode = (BaseNode)((Thumb)sender).TemplatedParent;
+				SelectedBlockNode = (BaseNode)((Thumb)sender).TemplatedParent;
 				SelectedNodeRow = Grid.GetRow((Thumb)sender);
+				SelectedNode = SelectedBlockNode.OutputNodes[SelectedNodeRow];
 			}
 			catch
 			{
 				//im a garbo coder at times. So this is making sure my REF is set
-				if (SelectedNode == null)
+				if (SelectedBlockNode == null)
 				{
-					SelectedNode = (BaseNode)((Grid)((Grid)sender).Parent).TemplatedParent;
+					SelectedBlockNode = (BaseNode)((Grid)((Grid)sender).Parent).TemplatedParent;
 					SelectedNodeRow = Grid.GetRow((Grid)sender);
+					SelectedNode = SelectedBlockNode.OutputNodes[SelectedNodeRow];
 				}
 			}
 			
@@ -372,10 +394,10 @@ namespace NodeEditor
 				if (BN == null) return;
 
 				//do the types match?
-				if (SelectedNode.OutputNodes[SelectedNodeRow].NodeType != BN.InputNodes[inrow].NodeType)
+				if (SelectedBlockNode.OutputNodes[SelectedNodeRow].NodeType != BN.InputNodes[inrow].NodeType)
 				{
-					if (SelectedNode.OutputNodes[SelectedNodeRow].NodeType == ECOnnectionType.Exit && BN.InputNodes[inrow].NodeType == ECOnnectionType.Enter) { } //this is just an ignore.
-					else if (SelectedNode.OutputNodes[SelectedNodeRow].NodeType != BN.InputNodes[inrow].NodeType) return;
+					if (SelectedBlockNode.OutputNodes[SelectedNodeRow].NodeType == ECOnnectionType.Exit && BN.InputNodes[inrow].NodeType == ECOnnectionType.Enter) { } //this is just an ignore.
+					else if (SelectedBlockNode.OutputNodes[SelectedNodeRow].NodeType != BN.InputNodes[inrow].NodeType) return;
 				}
 				
 
@@ -386,7 +408,7 @@ namespace NodeEditor
 				isMDown = false;
 
 				BN.InputNodes[inrow].ConnectedNodes.Add(SelectedNode); BN.InputNodes[inrow].Curves.Add(p);
-				SelectedNode.OutputNodes[SelectedNodeRow].ConnectedNodes.Add(BN); SelectedNode.OutputNodes[SelectedNodeRow].Curves.Add(p);
+				SelectedBlockNode.OutputNodes[SelectedNodeRow].ConnectedNodes.Add(BN.InputNodes[inrow]); SelectedBlockNode.OutputNodes[SelectedNodeRow].Curves.Add(p);
 					
 			}
 		}
@@ -509,7 +531,7 @@ namespace NodeEditor
 			inputGrid.Children.Add(gg);
 
 			//Add the combo box to tell/change what data type is allow on this node
-			ComboBox cb = new ComboBox() { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center};
+			ComboBox cb = new ComboBox() { IsEnabled = false, HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center};
 			cb.Items.Add("Bool"); cb.Items.Add("Int");
 			cb.SelectedIndex = 1;
 			Grid.SetRow(cb, inputGrid.RowDefinitions.Count - 1); Grid.SetColumn(cb, 2);
@@ -571,6 +593,8 @@ namespace NodeEditor
 			ComboBox cb = new ComboBox() { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
 			cb.Items.Add("Bool"); cb.Items.Add("Int");
 			cb.SelectedIndex = 0;
+			cb.SelectionChanged += DialogueInput_SelectionChanged;
+
 			Grid.SetRow(cb, inputGrid.RowDefinitions.Count - 1); Grid.SetColumn(cb, 2);
 			inputGrid.Children.Add(cb);
 
@@ -580,5 +604,120 @@ namespace NodeEditor
 			BN.InputNodes.Add(new ConnectionNode("InputNode" + inputGrid.RowDefinitions.Count, p, ECOnnectionType.Bool));
 
 		}
+
+		private void DialogueInput_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			//change the circle color display wise
+
+			//first find the circle
+			Grid nodegrid = ((Grid)((ComboBox)sender).Parent);
+			for (int i =0; i < nodegrid.Children.Count; i++)
+			{
+				if ((nodegrid.Children[i] is Grid) && Grid.GetRow(nodegrid.Children[i] as Grid) == Grid.GetRow(sender as ComboBox))
+				{
+					Ellipse ell = null;
+					if (((Grid)nodegrid.Children[i]).Children[0] is Ellipse)
+						ell = (Ellipse)((Grid)nodegrid.Children[i]).Children[0];
+					//change the color
+					if ((sender as ComboBox).SelectedIndex == 0)
+					{
+						ell.Fill = Brushes.Red;
+						(nodegrid.TemplatedParent as BaseNode).InputNodes[(Grid.GetRow(sender as ComboBox))].NodeType = ECOnnectionType.Bool;
+					}
+					else if((sender as ComboBox).SelectedIndex == 1)
+					{
+						ell.Fill = Brushes.BlueViolet;
+						(nodegrid.TemplatedParent as BaseNode).InputNodes[(Grid.GetRow(sender as ComboBox))].NodeType = ECOnnectionType.Int;
+					}
+
+
+				}
+			}
+
+
+		}
+
+		/// <summary>
+		/// Right click on a base node. Opens up the context menu
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void BaseNodeRight_BTN_Click(object sender, MouseButtonEventArgs e)
+		{
+			if (AllowNodeDeletion)
+			{
+				Point p = Mouse.GetPosition(NodeEditor_BackCanvas);
+				SelectedBlockNode = (BaseNode)(sender as Grid).TemplatedParent;
+				ContextMenu cm = this.FindResource("DeleteBaseNode_CM") as ContextMenu;
+				cm.PlacementTarget = sender as ContentControl;
+				cm.IsOpen = true;
+			}
+		}
+
+		private void DeleteBaseNode_Click(object sender, RoutedEventArgs e)
+		{
+			Console.WriteLine("right clicked on node.");
+			NodeEditor_Canvas.Children.Remove(SelectedBlockNode);
+		}
+
+		private void COnnectionNode_RightClick(object sender, MouseButtonEventArgs e)
+		{
+			Point p = Mouse.GetPosition(NodeEditor_BackCanvas);
+			SelectedBlockNode = (BaseNode)(sender as Grid).TemplatedParent;
+			String TempStr = "";
+
+			if ((sender as Grid).Name.Contains("Entry"))
+			{
+				SelectedNodeRow = 0;//Grid.GetRow((Grid)(sender as Grid));
+				SelectedNode = SelectedBlockNode.InputNodes[0];
+				TempStr = "In";
+			}
+			else if ((sender as Grid).Name.Contains("Out"))
+			{
+				SelectedNodeRow = Grid.GetRow((Grid)(sender as Grid));
+				SelectedNode = SelectedBlockNode.OutputNodes[SelectedNodeRow];
+				TempStr = "Out";
+			}
+			else
+			{
+				SelectedNodeRow = Grid.GetRow((Grid)(sender as Grid)) + 1;
+				SelectedNode = SelectedBlockNode.InputNodes[SelectedNodeRow];
+				TempStr = "In";
+			}
+
+			ContextMenu cm = this.FindResource("DeleteConnections_CM") as ContextMenu;
+
+			for (int i = cm.Items.Count-1; i >= 2; i--)
+				cm.Items.RemoveAt(i);
+
+			
+			for(int i = 0; i < SelectedNode.ConnectedNodes.Count; i++)
+			{
+				MenuItem mi = new MenuItem() { Header = String.Format("{0}:{1}", TempStr, i+1)};
+				mi.PreviewMouseLeftButtonDown += DeleteConnections_Click;
+				cm.Items.Add(mi);
+			}
+
+			cm.PlacementTarget = sender as ContentControl;
+			cm.IsOpen = true;
+		}
+
+		private void DeleteConnections_Click(object sender, MouseButtonEventArgs e)
+		{
+			Console.WriteLine("Clicked Deletion of Node");
+			int ival = ((ContextMenu)(sender as MenuItem).Parent).Items.IndexOf(sender); ival -= 2;
+			NodeEditor_BackCanvas.Children.Remove(SelectedNode.Curves[ival]);
+			SelectedNode.ConnectedNodes[ival].Curves.Remove(SelectedNode.Curves[ival]);
+			SelectedNode.Curves.RemoveAt(ival);
+
+			if(SelectedNode.ConnectedNodes[ival].ConnectedNodes.IndexOf(SelectedNode) >= 0)
+				SelectedNode.ConnectedNodes[ival].ConnectedNodes.Remove(SelectedNode);
+
+			
+			SelectedNode.ConnectedNodes.RemoveAt(ival);
+
+		}
+
+
 	}
 }

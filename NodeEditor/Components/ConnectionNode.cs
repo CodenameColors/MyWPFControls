@@ -24,7 +24,7 @@ namespace NodeEditor.Components
 	{
 		public String Name { get; set; }
 
-		public List<BaseNode> ConnectedNodes = new List<BaseNode>();
+		public List<ConnectionNode> ConnectedNodes = new List<ConnectionNode>();
 		public Point NodeLocation;
 		public List<Path> Curves = new List<Path>();
 		public ECOnnectionType NodeType;

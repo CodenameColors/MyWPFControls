@@ -10,7 +10,7 @@
         Title="MainWindow" Height="450" Width="800">
 	<Grid HorizontalAlignment="Left" VerticalAlignment="Top">
 		<TextBlock Text="Node Editor:" Foreground="White"/>
-		<ne:NodeEditor x:Name="NodeEditor" Margin="10,27,0,0" HorizontalAlignment="Left" Width="772" Height="347" VerticalAlignment="Top" BorderBrush="#FFBDBDBD" BorderThickness="2"/>
+		<ne:NodeEditor x:Name="NodeEditor" AllowNodeDeletion="True" Margin="10,27,0,0" HorizontalAlignment="Left" Width="772" Height="347" VerticalAlignment="Top" BorderBrush="#FFBDBDBD" BorderThickness="2"/>
 
 
 		<Button x:Name="BaseNode_BTN" Margin="383,379,306,-32" Content="Add Node" Click="BaseNode_BTN_Click"/>
