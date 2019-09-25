@@ -32,12 +32,24 @@
 								</Grid.RowDefinitions>
 								<TextBlock Grid.Row="0" Foreground="White" Text="Constant" Background="#FF252525"/>
 
+
+								<!--Drag thumb-->
+								<ContentPresenter HorizontalAlignment="Stretch" Grid.ColumnSpan="5" Grid.RowSpan="3"
+                                              VerticalAlignment="Stretch"
+                                              x:Name="PART_MiddleIndicator">
+									<ContentPresenter.Content>
+										<Thumb x:Name="MoveThumb_Middle" Cursor="ScrollAll" Background="Transparent" Opacity="0"
+										 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+										 Margin="0,0,5,0" DragDelta="MoveThumb_Middle_DragDelta" />
+									</ContentPresenter.Content>
+								</ContentPresenter>
+
 								<ContentPresenter HorizontalAlignment="Right" Grid.Row="1" IsHitTestVisible="True"
                                               VerticalAlignment="Stretch" ClipToBounds="False"
                                               x:Name="PART_RightIndicator">
 									<ContentPresenter.Content>
 										<Grid x:Name="OutNode1_Grid" PreviewMouseRightButtonDown="COnnectionNode_RightClick">
-											<Ellipse HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20" Fill="White" Margin="0,0,-10,0" Cursor="Hand">
+											<Ellipse HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20" Fill="PaleVioletRed" Margin="0,0,-10,0" Cursor="Hand">
 											</Ellipse>
 											<Thumb x:Name="OutNode1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20"
 													 Margin="0,0,-10,0" Cursor="Hand" Background="Transparent" Opacity="0"

@@ -15,12 +15,12 @@ namespace NodeEditor.Components
 
 		public ConstantNodeBlock()
 		{
-
+			output = (new ConnectionNode() { Name = "Output1", NodeType = ECOnnectionType.Bool });
 		}
 
 		public ConstantNodeBlock(ECOnnectionType type)
 		{
-			output.ConnectedNodes.Add(new ConnectionNode() { Name = "Output1", NodeType = ECOnnectionType.Exit });
+			output = (new ConnectionNode() { Name = "Output1", NodeType = ECOnnectionType.Bool });
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
