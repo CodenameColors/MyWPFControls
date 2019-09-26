@@ -69,9 +69,14 @@ namespace NodeEditor
 					bn.InputNodes.Add(new ConnectionNode("EnterNode", p, ECOnnectionType.Enter));
 					bn.OutputNodes.Add(new ConnectionNode("OutputNode1", p1, ECOnnectionType.Exit));
 				}
-				else if (e.NewItems[0] is ConstantNodeBlock)
+				else if (e.NewItems[0] is GetConstantNodeBlock)
 				{
-					ConstantNodeBlock bn = (ConstantNodeBlock)e.NewItems[0];
+					GetConstantNodeBlock bn = (GetConstantNodeBlock)e.NewItems[0];
+					NodeEditor_Canvas.Children.Add(bn);
+				}
+				else if(e.NewItems[0] is SetConstantNodeBlock)
+				{
+					SetConstantNodeBlock bn = (SetConstantNodeBlock)e.NewItems[0];
 					NodeEditor_Canvas.Children.Add(bn);
 				}
 			}
@@ -288,15 +293,21 @@ namespace NodeEditor
 			object obj = ((Thumb)sender).TemplatedParent;
 			if (obj is DialogueNodeBlock)
 				MoveDialogueBlock(sender, e);
-			else if(obj is ConstantNodeBlock)
+			else if(obj is GetConstantNodeBlock)
 			{
-				ConstantNodeBlock BN = ((ConstantNodeBlock)((Thumb)sender).TemplatedParent);
+				GetConstantNodeBlock BN = ((GetConstantNodeBlock)((Thumb)sender).TemplatedParent);
 				Canvas.SetLeft(BN, VisualTreeHelper.GetOffset(BN).X + e.HorizontalChange);
 				Canvas.SetTop(BN, VisualTreeHelper.GetOffset(BN).Y + e.VerticalChange);
 
 				Point Start = new Point (Canvas.GetLeft(BN) + 100, Canvas.GetTop(BN) + 40);
 				for (int j = 0; j < BN.output.Curves.Count; j++)
 					SetCurveStartPoint(BN.output.Curves[j], Start);
+			}
+			else if (obj is SetConstantNodeBlock)
+			{
+				SetConstantNodeBlock BN = ((SetConstantNodeBlock)((Thumb)sender).TemplatedParent);
+				Canvas.SetLeft(BN, VisualTreeHelper.GetOffset(BN).X + e.HorizontalChange);
+				Canvas.SetTop(BN, VisualTreeHelper.GetOffset(BN).Y + e.VerticalChange);
 			}
 		}
 		
@@ -378,7 +389,7 @@ namespace NodeEditor
 
 			if (obj is DialogueNodeBlock)
 				StartDrawingDialogueNodeCurve(sender);
-			else if(obj is ConstantNodeBlock)
+			else if(obj is GetConstantNodeBlock)
 				StartDrawingConstantNode(sender);
 		}
 
@@ -404,9 +415,9 @@ namespace NodeEditor
 
 		private void StartDrawingConstantNode(object sender)
 		{
-			SelectedBlockNode = (ConstantNodeBlock)((Thumb)sender).TemplatedParent;
+			SelectedBlockNode = (GetConstantNodeBlock)((Thumb)sender).TemplatedParent;
 			SelectedNodeRow = Grid.GetRow((Thumb)sender); 
-			SelectedNode = ((ConstantNodeBlock)SelectedBlockNode).output;
+			SelectedNode = ((GetConstantNodeBlock)SelectedBlockNode).output;
 		}
 
 		private void MoveThumb_Left_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -427,10 +438,15 @@ namespace NodeEditor
 
 				if (obj is DialogueNodeBlock)
 					EndDrawingCurveDialogueBlock(sender);
-				else if (obj is ConstantNodeBlock)
+				else if (obj is GetConstantNodeBlock)
 				{
 					EndDrawingCurveConstantBlock(sender);
 				}
+				else if (obj is SetConstantNodeBlock)
+				{
+
+				}
+
 			}
 		}
 
@@ -468,15 +484,15 @@ namespace NodeEditor
 				((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].ConnectedNodes.Add(BN.InputNodes[inrow]);
 				((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].Curves.Add(p);
 			}
-			else if (SelectedBlockNode is ConstantNodeBlock) //the previous selected node is a CONSTANT node block
+			else if (SelectedBlockNode is GetConstantNodeBlock) //the previous selected node is a CONSTANT node block
 			{
 				//the constant node can ONLY output data types. SO they must match
-				if (((ConstantNodeBlock)SelectedBlockNode).output.NodeType != BN.InputNodes[inrow].NodeType) return; //doesn't match
+				if (((GetConstantNodeBlock)SelectedBlockNode).output.NodeType != BN.InputNodes[inrow].NodeType) return; //doesn't match
 				NodeEditor_BackCanvas.Children.Add(p);
 				isMDown = false;
 				BN.InputNodes[inrow].ConnectedNodes.Add(SelectedNode); BN.InputNodes[inrow].Curves.Add(p);
-				((ConstantNodeBlock)SelectedBlockNode).output.ConnectedNodes.Add(BN.InputNodes[inrow]);
-				((ConstantNodeBlock)SelectedBlockNode).output.Curves.Add(p);
+				((GetConstantNodeBlock)SelectedBlockNode).output.ConnectedNodes.Add(BN.InputNodes[inrow]);
+				((GetConstantNodeBlock)SelectedBlockNode).output.Curves.Add(p);
 			}
 		}
 
@@ -694,12 +710,12 @@ namespace NodeEditor
 					if ((sender as ComboBox).SelectedIndex == 0)
 					{
 						ell.Fill = Brushes.Red;
-						(nodegrid.TemplatedParent as DialogueNodeBlock).InputNodes[(Grid.GetRow(sender as ComboBox))].NodeType = ECOnnectionType.Bool;
+						(nodegrid.TemplatedParent as DialogueNodeBlock).InputNodes[(Grid.GetRow(sender as ComboBox)) + 1].NodeType = ECOnnectionType.Bool;
 					}
 					else if((sender as ComboBox).SelectedIndex == 1)
 					{
 						ell.Fill = Brushes.BlueViolet;
-						(nodegrid.TemplatedParent as DialogueNodeBlock).InputNodes[(Grid.GetRow(sender as ComboBox))].NodeType = ECOnnectionType.Int;
+						(nodegrid.TemplatedParent as DialogueNodeBlock).InputNodes[(Grid.GetRow(sender as ComboBox)) + 1].NodeType = ECOnnectionType.Int;
 					}
 				}
 			}
@@ -727,7 +743,7 @@ namespace NodeEditor
 			Console.WriteLine("right clicked on node.");
 			if (SelectedBlockNode is DialogueNodeBlock)
 				NodeEditor_Canvas.Children.Remove(((DialogueNodeBlock)SelectedBlockNode));
-			else if (SelectedBlockNode is ConstantNodeBlock)
+			else if (SelectedBlockNode is GetConstantNodeBlock)
 			{
 
 			}

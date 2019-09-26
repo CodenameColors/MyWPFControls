@@ -39,7 +39,8 @@ namespace NodeEditor_Tester
 		private void BaseNode_BTN_Click(object sender, RoutedEventArgs e)
 		{
 			nodes.Add(new DialogueNodeBlock() { Header = "Emma" });
-			nodes.Add(new ConstantNodeBlock());
+			nodes.Add(new GetConstantNodeBlock());
+			nodes.Add(new SetConstantNodeBlock(ECOnnectionType.Int));
 		}
 
 		
