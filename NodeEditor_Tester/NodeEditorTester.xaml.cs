@@ -38,11 +38,17 @@ namespace NodeEditor_Tester
 
 		private void BaseNode_BTN_Click(object sender, RoutedEventArgs e)
 		{
-			nodes.Add(new DialogueNodeBlock() { Header = "Emma" });
-			nodes.Add(new GetConstantNodeBlock());
+			nodes.Add(new DialogueNodeBlock("Emma"));
+		}
+		private void BaseNode_BTN_Click1(object sender, RoutedEventArgs e)
+		{
+			nodes.Add(new GetConstantNodeBlock(ECOnnectionType.Int));
+		}
+		private void BaseNode_BTN_Click2(object sender, RoutedEventArgs e)
+		{
 			nodes.Add(new SetConstantNodeBlock(ECOnnectionType.Int));
 		}
 
-		
+
 	}
 }

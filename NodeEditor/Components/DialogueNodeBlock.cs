@@ -8,18 +8,15 @@ using System.Windows.Controls;
 
 namespace NodeEditor.Components
 {
-	public class DialogueNodeBlock : Button, INotifyPropertyChanged
+	public class DialogueNodeBlock : BaseNodeBlock, INotifyPropertyChanged
 	{
-		public String Header { get; set; }
-		public List<ConnectionNode> InputNodes { get; set; }
-		public List<ConnectionNode> OutputNodes { get; set; }
 		public List<object> NodeData { get; set; }
 
 
 
-		public DialogueNodeBlock()
+		public DialogueNodeBlock(String Header)
 		{
-			Header = String.Empty;
+			this.Header = Header;
 			InputNodes = new List<ConnectionNode>();
 			OutputNodes = new List<ConnectionNode>();
 			NodeData = new List<object>();

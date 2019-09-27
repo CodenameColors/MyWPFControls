@@ -44,12 +44,25 @@
 									</ContentPresenter.Content>
 								</ContentPresenter>
 
+								<!--output node-->
 								<ContentPresenter HorizontalAlignment="Right" Grid.Row="1" IsHitTestVisible="True"
                                               VerticalAlignment="Stretch" ClipToBounds="False"
                                               x:Name="PART_RightIndicator">
 									<ContentPresenter.Content>
 										<Grid x:Name="OutNode1_Grid" PreviewMouseRightButtonDown="COnnectionNode_RightClick">
-											<Ellipse HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20" Fill="PaleVioletRed" Margin="0,0,-10,0" Cursor="Hand">
+											<Ellipse HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20" Margin="0,0,-10,0" Cursor="Hand">
+												<Ellipse.Style>
+													<Style TargetType="Ellipse">
+														<Style.Triggers>
+															<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="3">
+																<Setter Property="Fill" Value="BlueViolet"></Setter>
+															</DataTrigger>
+															<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="4">
+																<Setter Property="Fill" Value="PaleVioletRed"></Setter>
+															</DataTrigger>
+														</Style.Triggers>
+													</Style>
+												</Ellipse.Style>
 											</Ellipse>
 											<Thumb x:Name="OutNode1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20"
 													 Margin="0,0,-10,0" Cursor="Hand" Background="Transparent" Opacity="0"
@@ -73,7 +86,8 @@
 							<Grid Width="150" MinHeight="60">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
-									<RowDefinition Height="40"/>
+									<RowDefinition Height="30"/>
+									<RowDefinition Height="30"/>
 								</Grid.RowDefinitions>
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="0"/>
@@ -85,12 +99,25 @@
 								<TextBlock Grid.Row="0" Grid.Column="1" Foreground="White" Text="Set Constant" Background="#FF252525"/>
 
 								<!--default Exit thumb-->
+								<TextBlock Grid.Row="1" Grid.Column="1" Text="Out" Foreground="White" Margin="25,5,0,0" HorizontalAlignment="Right" VerticalAlignment="Top" IsHitTestVisible="False"/>
 								<ContentPresenter HorizontalAlignment="Right" Grid.Column="2" IsHitTestVisible="True"
                                               VerticalAlignment="Stretch" ClipToBounds="False"
                                               x:Name="PART_RightIndicator">
 									<ContentPresenter.Content>
 										<Grid x:Name="OutNode1_Grid" PreviewMouseRightButtonDown="COnnectionNode_RightClick">
 											<Ellipse HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20" Fill="White" Margin="0,0,-10,0" Cursor="Hand">
+												<Ellipse.Style>
+													<Style TargetType="Ellipse">
+														<Style.Triggers>
+															<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="3">
+																<Setter Property="Fill" Value="BlueViolet"></Setter>
+															</DataTrigger>
+															<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="4">
+																<Setter Property="Fill" Value="PaleVioletRed"></Setter>
+															</DataTrigger>
+														</Style.Triggers>
+													</Style>
+												</Ellipse.Style>
 											</Ellipse>
 											<Thumb x:Name="OutNode1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20"
 													 Margin="0,0,-10,0" Cursor="Hand" Background="Transparent" Opacity="0"
@@ -99,7 +126,8 @@
 									</ContentPresenter.Content>
 								</ContentPresenter>
 
-								<!--default input thumb-->
+								<!--old value input thumb-->
+								<TextBlock Grid.Row="2" Grid.Column="1" Text="Old" Foreground="White" Margin="35,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False"/>
 								<ContentPresenter HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="0" IsHitTestVisible="True"
                                               VerticalAlignment="Stretch" ClipToBounds="False"
                                               x:Name="PART_LeftIndicator">
@@ -112,10 +140,10 @@
 												<Ellipse.Style>
 													<Style TargetType="Ellipse">
 														<Style.Triggers>
-															<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+															<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="3">
 																<Setter Property="Fill" Value="BlueViolet"></Setter>
 															</DataTrigger>
-															<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="False">
+															<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="4">
 																<Setter Property="Fill" Value="PaleVioletRed"></Setter>
 															</DataTrigger>
 														</Style.Triggers>
@@ -130,6 +158,38 @@
 									</ContentPresenter.Content>
 								</ContentPresenter>
 
+								<!--New value input thumb-->
+								<TextBlock Grid.Row="1" Grid.Column="1" Text="New" Foreground="White" Margin="35,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False"/>
+								<ContentPresenter HorizontalAlignment="Stretch" Grid.Row="2" Grid.Column="0" IsHitTestVisible="True"
+                                              VerticalAlignment="Stretch" ClipToBounds="False"
+                                              >
+									<ContentPresenter.Content>
+										<Grid>
+											<Ellipse HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Width="20" Margin="-10,-10,-10,-10" Cursor="Hand">
+												<Ellipse.Clip>
+													<RectangleGeometry Rect="10,0,10,20"/>
+												</Ellipse.Clip>
+												<Ellipse.Style>
+													<Style TargetType="Ellipse">
+														<Style.Triggers>
+															<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="3">
+																<Setter Property="Fill" Value="BlueViolet"></Setter>
+															</DataTrigger>
+															<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="4">
+																<Setter Property="Fill" Value="PaleVioletRed"></Setter>
+															</DataTrigger>
+														</Style.Triggers>
+													</Style>
+												</Ellipse.Style>
+											</Ellipse>
+											<Thumb HorizontalAlignment="Left" VerticalAlignment="Center" Height="15" Width="15"
+													 Margin="-10,-10,-10,-10" Cursor="Hand" Background="Transparent" Opacity="0"
+													PreviewMouseLeftButtonUp="MoveThumb_Left_MouseLeftButtonUp" PreviewMouseMove="MoveThumb_Left_PreviewMouseMove"	
+														 PreviewDragEnter="MoveThumb_Left_PreviewDragEnter"	/>
+										</Grid>
+									</ContentPresenter.Content>
+								</ContentPresenter>
+								
 								<!--Data output node-->
 								<ContentPresenter HorizontalAlignment="Right" Grid.Row="1" Grid.Column="2" IsHitTestVisible="True"
                                               VerticalAlignment="Stretch" ClipToBounds="False"
@@ -143,10 +203,10 @@
 												<Ellipse.Style>
 													<Style TargetType="Ellipse">
 														<Style.Triggers>
-															<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+															<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="3">
 																<Setter Property="Fill" Value="BlueViolet"></Setter>
 															</DataTrigger>
-															<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="False">
+															<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="4">
 																<Setter Property="Fill" Value="PaleVioletRed"></Setter>
 															</DataTrigger>
 														</Style.Triggers>
@@ -190,6 +250,36 @@
 									</ContentPresenter.Content>
 								</ContentPresenter>
 
+								<TextBox Grid.Row="2" Grid.Column="1" Width="30" Height="20" Margin="2,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
+									
+								</TextBox>
+
+								<ComboBox Grid.Row="2" Grid.Column="1" Width="30" Height="20" Margin="2,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
+									<ComboBoxItem>
+										<TextBlock Text="T"/>
+									</ComboBoxItem>
+									<ComboBoxItem>
+										<TextBlock Text="F"/>
+									</ComboBoxItem>
+									<ComboBox.Style>
+										<Style TargetType="ComboBox">
+											<Style.Triggers>
+												<DataTrigger Binding="{Binding Path=NewValConnected, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="False">
+													<Setter Property="Visibility" Value="Visible"></Setter>
+												</DataTrigger>
+												<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="3">
+													<Setter Property="Visibility" Value="Hidden"></Setter>
+												</DataTrigger>
+												<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="4">
+													<Setter Property="Visibility" Value="Visible"></Setter>
+												</DataTrigger>
+												<DataTrigger Binding="{Binding Path=NewValConnected, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+													<Setter Property="Visibility" Value="Hidden"></Setter>
+												</DataTrigger>
+											</Style.Triggers>
+										</Style>
+									</ComboBox.Style>
+								</ComboBox>
 
 							</Grid>
 						</Border>
