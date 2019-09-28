@@ -38,7 +38,7 @@ namespace NodeEditor.Components
 			dtype = type;
 			Header = String.Format("Get Constant [{0}]", type.ToString());
 			OutputNodes = new List<ConnectionNode>(); //There is only ONE output
-			OutputNodes.Add(new ConnectionNode() { Name = "Output1", NodeType = ECOnnectionType.Bool });
+			OutputNodes.Add(new ConnectionNode() { Name = "Output1", NodeType = type });
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;

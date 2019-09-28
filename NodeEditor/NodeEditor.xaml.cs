@@ -66,7 +66,7 @@ namespace NodeEditor
 					DialogueNodeBlock bn = (DialogueNodeBlock)e.NewItems[0];
 					NodeEditor_Canvas.Children.Add(bn);
 					Point p = new Point(0, 10); Point p1 = new Point(150, 20 + 20);
-					bn.InputNodes.Add(new ConnectionNode("EnterNode", p, ECOnnectionType.Enter));
+					bn.EntryNode = (new ConnectionNode("EnterNode", p, ECOnnectionType.Enter));
 					bn.OutputNodes.Add(new ConnectionNode("OutputNode1", p1, ECOnnectionType.Exit));
 				}
 				else if (e.NewItems[0] is GetConstantNodeBlock)
@@ -305,9 +305,7 @@ namespace NodeEditor
 			}
 			else if (obj is SetConstantNodeBlock)
 			{
-				SetConstantNodeBlock BN = ((SetConstantNodeBlock)((Thumb)sender).TemplatedParent);
-				Canvas.SetLeft(BN, VisualTreeHelper.GetOffset(BN).X + e.HorizontalChange);
-				Canvas.SetTop(BN, VisualTreeHelper.GetOffset(BN).Y + e.VerticalChange);
+				MoveConstantBlock(sender, e);
 			}
 		}
 		
@@ -315,6 +313,57 @@ namespace NodeEditor
 		private void MoveDialogueBlock(object sender, DragDeltaEventArgs e)
 		{
 			DialogueNodeBlock BN = ((DialogueNodeBlock)((Thumb)sender).TemplatedParent);
+			Canvas.SetLeft(BN, VisualTreeHelper.GetOffset(BN).X + e.HorizontalChange);
+			Canvas.SetTop(BN, VisualTreeHelper.GetOffset(BN).Y + e.VerticalChange);
+
+			if (NodeEditor_BackCanvas.Children.Count > 1)
+			{
+				//move all inputs
+				for (int i = 0; i < BN.InputNodes.Count; i++)
+				{
+					Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); //end.Y +=(10); //the 10 is middle of circle
+					for (int j = 0; j < BN.InputNodes[i].Curves.Count; j++)
+					{
+						if (BN.InputNodes[i].Name.Contains("Enter"))
+						{
+							Point end1 = end; end1.Y += 10;
+							SetCurveEndPoint(BN.InputNodes[i].Curves[j], end1);
+						}
+						else
+						{
+							Point end1 = end; end1.Y += 20 + (40 * (i)) + 20;
+							SetCurveEndPoint(BN.InputNodes[i].Curves[j], end1);
+						}
+					}
+				}
+
+				//move all curves to the entry node
+				for (int j = 0; j < BN.EntryNode.Curves.Count; j++)
+				{
+					Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); //end.Y +=(10); //the 10 is middle of circle
+					Point end1 = end; end1.Y += 10;
+					SetCurveEndPoint(BN.EntryNode.Curves[j], end1);
+				}
+
+
+				if (BN.OutputNodes.Count > 0) //move the "left most" node
+				{
+					for (int i = 0; i < BN.OutputNodes.Count; i++)
+					{
+						Point start = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN)); start.Y += 20 + (40 * 
+							( BN.InputNodes.Count - 2 < 0 ? 0 : (BN.InputNodes.Count - 1))) + (40 * i) + 20; //the 20 is middle of circle
+						for (int j = 0; j < BN.OutputNodes[i].Curves.Count; j++)
+							SetCurveStartPoint(BN.OutputNodes[i].Curves[j], start);
+						//Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); end.Y += 40 + (10); //the 10 is middle of circle
+						//SetCurveEndPoint((Path)NodeEditor_BackCanvas.Children[1], end);
+					}
+				}
+			}
+		}
+
+		private void MoveConstantBlock(object sender, DragDeltaEventArgs e)
+		{
+			SetConstantNodeBlock BN = ((SetConstantNodeBlock)((Thumb)sender).TemplatedParent);
 			Canvas.SetLeft(BN, VisualTreeHelper.GetOffset(BN).X + e.HorizontalChange);
 			Canvas.SetTop(BN, VisualTreeHelper.GetOffset(BN).Y + e.VerticalChange);
 
@@ -332,18 +381,34 @@ namespace NodeEditor
 						}
 						else
 						{
-							Point end1 = end; end1.Y += 40 + (20 * i);
+							Point end1 = end; end1.Y += 20 + (30 * (i)) + 15;
 							SetCurveEndPoint(BN.InputNodes[i].Curves[j], end1);
 						}
 					}
 				}
 
+				//move all curves to the entry node
+				for (int j = 0; j < BN.EntryNode.Curves.Count; j++)
+				{
+					Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); //end.Y +=(10); //the 10 is middle of circle
+					Point end1 = end; end1.Y += 10;
+					SetCurveEndPoint(BN.EntryNode.Curves[j], end1);
+				}
+
+				//move all curves to the exit node
+				for (int j = 0; j < BN.ExitNode.Curves.Count; j++)
+				{
+					Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); //end.Y +=(10); //the 10 is middle of circle
+					Point end1 = end; end1.X += 150; end1.Y += 10;
+					SetCurveStartPoint(BN.ExitNode.Curves[j], end1);
+				}
+
+
 				if (BN.OutputNodes.Count > 0) //move the "left most" node
 				{
 					for (int i = 0; i < BN.OutputNodes.Count; i++)
 					{
-						Point start = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN)); start.Y += 20 + (40 * 
-							( BN.InputNodes.Count - 2 < 0 ? 0 : (BN.InputNodes.Count - 1))) + (40 * i) + 20; //the 20 is middle of circle
+						Point start = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN)); start.Y += 20 + 15;
 						for (int j = 0; j < BN.OutputNodes[i].Curves.Count; j++)
 							SetCurveStartPoint(BN.OutputNodes[i].Curves[j], start);
 						//Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); end.Y += 40 + (10); //the 10 is middle of circle
@@ -352,7 +417,6 @@ namespace NodeEditor
 				}
 			}
 		}
-
 
 		private void SetCurveEndPoint(Path p, Point end)
 		{
@@ -382,8 +446,8 @@ namespace NodeEditor
 			CurveStart = Mouse.GetPosition(NodeEditor_BackCanvas);
 
 			object obj = null;
-			if (sender is Thumb)
-				obj = ((Thumb)sender).TemplatedParent;
+			if (sender is Grid)
+				obj = ((Grid)sender).TemplatedParent;
 			else if (sender is Grid)
 				obj = ((Grid)((Grid)sender).Parent).TemplatedParent; //the input nodes are added to style templated ON RUNTIME
 
@@ -391,14 +455,16 @@ namespace NodeEditor
 				StartDrawingDialogueNodeCurve(sender);
 			else if(obj is GetConstantNodeBlock)
 				StartDrawingConstantNode(sender);
+			else if(obj is SetConstantNodeBlock)
+				StartDrawingConstantNode(sender);
 		}
 
 		private void StartDrawingDialogueNodeCurve(object sender)
 		{
 			try
 			{
-				SelectedBlockNode = (DialogueNodeBlock)((Thumb)sender).TemplatedParent;
-				SelectedNodeRow = Grid.GetRow((Thumb)sender);
+				SelectedBlockNode = (DialogueNodeBlock)((Grid)sender).TemplatedParent;
+				SelectedNodeRow = Grid.GetRow((Grid)sender);
 				SelectedNode = ((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow];
 			}
 			catch
@@ -415,9 +481,12 @@ namespace NodeEditor
 
 		private void StartDrawingConstantNode(object sender)
 		{
-			SelectedBlockNode = (GetConstantNodeBlock)((Thumb)sender).TemplatedParent;
-			SelectedNodeRow = Grid.GetRow((Thumb)sender); 
-			SelectedNode = ((GetConstantNodeBlock)SelectedBlockNode).output;
+			SelectedBlockNode = (BaseNodeBlock)((Grid)sender).TemplatedParent;
+			SelectedNodeRow = Grid.GetRow((Grid)sender);
+			if (!((Grid)sender).Name.Contains("Exit"))
+				SelectedNode = ((BaseNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow];
+			else
+				SelectedNode = ((BaseNodeBlock)SelectedBlockNode).ExitNode;
 		}
 
 		private void MoveThumb_Left_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -431,9 +500,8 @@ namespace NodeEditor
 			if(isMDown)
 			{
 				object obj = null;
-				if (sender is Thumb)
-					obj = ((Thumb)sender).TemplatedParent;
-				else if (sender is Grid)
+				obj = ((Grid)sender).TemplatedParent;
+				if (obj is null)
 					obj = ((Grid)((Grid)sender).Parent).TemplatedParent; //the input nodes are added to style templated ON RUNTIME
 
 				if (obj is DialogueNodeBlock)
@@ -444,7 +512,7 @@ namespace NodeEditor
 				}
 				else if (obj is SetConstantNodeBlock)
 				{
-
+					EndDrawingCurveConstantBlock(sender);
 				}
 
 			}
@@ -453,15 +521,14 @@ namespace NodeEditor
 		private void EndDrawingCurveDialogueBlock(object sender)
 		{
 			if (SelectedBlockNode == null) return;
-			DialogueNodeBlock BN = null; int inrow = 0;
-			try
+			BaseNodeBlock BN = null; int inrow = 0;
+
+			BN = (BaseNodeBlock)((Grid)sender).TemplatedParent;
+			inrow = Grid.GetRow(((Grid)sender)); //the one offset is for the enter node.
+			if(BN is null)
 			{
-				BN = (DialogueNodeBlock)((Thumb)sender).TemplatedParent;
-			}
-			catch
-			{
-				BN = (DialogueNodeBlock)((Grid)((Grid)sender).Parent).TemplatedParent;
-				inrow = Grid.GetRow(((Grid)sender)) + 1; //the one offset is for the enter node.
+				BN = (BaseNodeBlock)((Grid)((Grid)sender).Parent).TemplatedParent;
+				inrow = Grid.GetRow(((Grid)sender)); //the one offset is for the enter node.
 			}
 			if (BN == null) return;
 			//get paths
@@ -471,18 +538,31 @@ namespace NodeEditor
 			if (SelectedBlockNode is DialogueNodeBlock)
 			{
 				//types match check
-				if (((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].NodeType != BN.InputNodes[inrow].NodeType)
+				if (SelectedNode.NodeType != ECOnnectionType.Exit)
 				{
-					if (((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].NodeType == ECOnnectionType.Exit && BN.InputNodes[inrow].NodeType == ECOnnectionType.Enter) { } //this is just an ignore.
-					else if (((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].NodeType != BN.InputNodes[inrow].NodeType) return;
-				}
-				//Draw the curve
-				NodeEditor_BackCanvas.Children.Add(p);
-				isMDown = false;
+					if (((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].NodeType != BN.InputNodes[inrow].NodeType)
+					{
+						if (((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].NodeType == ECOnnectionType.Exit && BN.InputNodes[inrow].NodeType == ECOnnectionType.Enter) { } //this is just an ignore.
+						else if (((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].NodeType != BN.InputNodes[inrow].NodeType) return;
+					}
+					//Draw the curve
+					NodeEditor_BackCanvas.Children.Add(p);
+					isMDown = false;
 
-				BN.InputNodes[inrow].ConnectedNodes.Add(SelectedNode); BN.InputNodes[inrow].Curves.Add(p);
-				((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].ConnectedNodes.Add(BN.InputNodes[inrow]);
-				((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].Curves.Add(p);
+					BN.InputNodes[inrow].ConnectedNodes.Add(SelectedNode); BN.InputNodes[inrow].Curves.Add(p);
+					((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].ConnectedNodes.Add(BN.InputNodes[inrow]);
+					((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].Curves.Add(p);
+				}
+				else
+				{
+					//Draw the curve
+					NodeEditor_BackCanvas.Children.Add(p);
+					isMDown = false;
+
+					BN.EntryNode.ConnectedNodes.Add(SelectedNode); BN.EntryNode.Curves.Add(p);
+					((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].ConnectedNodes.Add(BN.EntryNode);
+					((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].Curves.Add(p);
+				}
 			}
 			else if (SelectedBlockNode is GetConstantNodeBlock) //the previous selected node is a CONSTANT node block
 			{
@@ -494,11 +574,76 @@ namespace NodeEditor
 				((GetConstantNodeBlock)SelectedBlockNode).output.ConnectedNodes.Add(BN.InputNodes[inrow]);
 				((GetConstantNodeBlock)SelectedBlockNode).output.Curves.Add(p);
 			}
+			else if (SelectedBlockNode is SetConstantNodeBlock)
+			{
+				if (SelectedNode.NodeType == ECOnnectionType.Exit && ((Grid)sender).Name.Contains("Entry"))
+				{
+					//the types are matching
+					NodeEditor_BackCanvas.Children.Add(p);
+					isMDown = false;
+
+					BN.EntryNode.ConnectedNodes.Add(SelectedNode); BN.EntryNode.Curves.Add(p);
+					SelectedNode.ConnectedNodes.Add(BN.EntryNode); SelectedNode.Curves.Add(p);
+				}
+				else if(SelectedNode.NodeType != ECOnnectionType.Exit)
+				{
+					if (SelectedNode.NodeType != BN.InputNodes[inrow].NodeType) return;
+					//the types are matching
+					NodeEditor_BackCanvas.Children.Add(p);
+					isMDown = false;
+
+					BN.InputNodes[inrow].ConnectedNodes.Add(SelectedNode); BN.InputNodes[inrow].Curves.Add(p);
+					SelectedNode.ConnectedNodes.Add(BN.InputNodes[inrow]); SelectedNode.Curves.Add(p);
+				}
+			}
 		}
 
 		private void EndDrawingCurveConstantBlock(object sender)
 		{
-			Console.WriteLine("this SHOULD NEVER be called... ");
+			Console.WriteLine("entered the set node inputs");
+			if (SelectedBlockNode == null) return;
+			BaseNodeBlock BN = null; int inrow = 0;
+
+			BN = (BaseNodeBlock)((Grid)sender).TemplatedParent;
+			inrow = Grid.GetRow(((Grid)sender)); //the one offset is for the enter node.
+			if (BN is null)
+			{
+				BN = (BaseNodeBlock)((Grid)((Grid)sender).Parent).TemplatedParent;
+				inrow = Grid.GetRow(((Grid)sender)); //the one offset is for the enter node.
+			}
+			if (BN == null) return;
+			Point end = Mouse.GetPosition(NodeEditor_BackCanvas);
+			Path p = CreateBezierCurve(CurveStart, end);
+			//what is the previous selected node
+			if(SelectedBlockNode is DialogueNodeBlock)
+			{//IT CAN ONLY BE AN EXIT NODE
+				if (SelectedNode.NodeType != ECOnnectionType.Exit) return;
+					//Draw the curve
+				NodeEditor_BackCanvas.Children.Add(p);
+				isMDown = false;
+
+				BN.EntryNode.ConnectedNodes.Add(SelectedNode); BN.EntryNode.Curves.Add(p);
+				((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].ConnectedNodes.Add(BN.EntryNode);
+				((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].Curves.Add(p);
+			}
+			else if (SelectedBlockNode is GetConstantNodeBlock)
+			{
+				//CAN ONLY BE A DATA TYPE
+				if (SelectedNode.NodeType != BN.InputNodes[inrow].NodeType) return; //it doesn't match
+				//Draw the curve
+				NodeEditor_BackCanvas.Children.Add(p);
+				isMDown = false;
+
+				BN.InputNodes[inrow].ConnectedNodes.Add(SelectedNode); BN.InputNodes[inrow].Curves.Add(p);
+				((GetConstantNodeBlock)SelectedBlockNode).output.ConnectedNodes.Add(BN.InputNodes[inrow]);
+				((GetConstantNodeBlock)SelectedBlockNode).output.Curves.Add(p);
+
+			}
+			else if (SelectedBlockNode is ArithmeticBlockNode)
+			{
+
+			}
+
 		}
 
 		private Path CreateBezierCurve(Point start, Point end)
@@ -710,12 +855,12 @@ namespace NodeEditor
 					if ((sender as ComboBox).SelectedIndex == 0)
 					{
 						ell.Fill = Brushes.Red;
-						(nodegrid.TemplatedParent as DialogueNodeBlock).InputNodes[(Grid.GetRow(sender as ComboBox)) + 1].NodeType = ECOnnectionType.Bool;
+						(nodegrid.TemplatedParent as DialogueNodeBlock).InputNodes[(Grid.GetRow(sender as ComboBox))].NodeType = ECOnnectionType.Bool;
 					}
 					else if((sender as ComboBox).SelectedIndex == 1)
 					{
 						ell.Fill = Brushes.BlueViolet;
-						(nodegrid.TemplatedParent as DialogueNodeBlock).InputNodes[(Grid.GetRow(sender as ComboBox)) + 1].NodeType = ECOnnectionType.Int;
+						(nodegrid.TemplatedParent as DialogueNodeBlock).InputNodes[(Grid.GetRow(sender as ComboBox))].NodeType = ECOnnectionType.Int;
 					}
 				}
 			}
@@ -753,25 +898,31 @@ namespace NodeEditor
 		private void COnnectionNode_RightClick(object sender, MouseButtonEventArgs e)
 		{
 			Point p = Mouse.GetPosition(NodeEditor_BackCanvas);
-			SelectedBlockNode = (DialogueNodeBlock)(sender as Grid).TemplatedParent;
+			SelectedBlockNode = (BaseNodeBlock)(sender as Grid).TemplatedParent;
 			String TempStr = "";
 
 			if ((sender as Grid).Name.Contains("Entry"))
 			{
 				SelectedNodeRow = 0;//Grid.GetRow((Grid)(sender as Grid));
-				SelectedNode = ((DialogueNodeBlock)SelectedBlockNode).InputNodes[0];
+				SelectedNode = ((BaseNodeBlock)SelectedBlockNode).EntryNode;
 				TempStr = "In";
+			}
+			else if ((sender as Grid).Name.Contains("Exit"))
+			{
+				SelectedNodeRow = 0;//Grid.GetRow((Grid)(sender as Grid));
+				SelectedNode = ((BaseNodeBlock)SelectedBlockNode).EntryNode;
+				TempStr = "Out";
 			}
 			else if ((sender as Grid).Name.Contains("Out"))
 			{
 				SelectedNodeRow = Grid.GetRow((Grid)(sender as Grid));
-				SelectedNode = ((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow];
+				SelectedNode = ((BaseNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow];
 				TempStr = "Out";
 			}
 			else
 			{
 				SelectedNodeRow = Grid.GetRow((Grid)(sender as Grid)) + 1;
-				SelectedNode = ((DialogueNodeBlock)SelectedBlockNode).InputNodes[SelectedNodeRow];
+				SelectedNode = ((BaseNodeBlock)SelectedBlockNode).InputNodes[SelectedNodeRow];
 				TempStr = "In";
 			}
 
