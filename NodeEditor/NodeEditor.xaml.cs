@@ -714,6 +714,8 @@ namespace NodeEditor
 			g.Children.Add(ee);
 			Grid.SetRow(g, OutputGrid.RowDefinitions.Count - 1); Grid.SetColumn(g, 2);
 			g.PreviewMouseLeftButtonDown += MoveThumb_Right_MouseLeftButtonDown;
+			g.PreviewMouseRightButtonDown += COnnectionNode_RightClick;
+			g.Name = "OutputNode" + OutputGrid.RowDefinitions.Count;
 			OutputGrid.Children.Add(g);
 
 			//add the output node data wise
@@ -761,6 +763,8 @@ namespace NodeEditor
 			gg.Children.Add(eee);
 			Grid.SetRow(gg, inputGrid.RowDefinitions.Count - 1); Grid.SetColumn(gg, 0);
 			gg.PreviewMouseMove += MoveThumb_Left_PreviewMouseMove;
+			gg.PreviewMouseRightButtonDown += COnnectionNode_RightClick;
+			gg.Name = "InputNode" + inputGrid.RowDefinitions.Count;
 			inputGrid.Children.Add(gg);
 
 			//Add the combo box to tell/change what data type is allow on this node
@@ -773,11 +777,6 @@ namespace NodeEditor
 			//add the Input node data wise
 			Point pp = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN) + 20 + (20 * inputGrid.RowDefinitions.Count));
 			BN.InputNodes.Add(new ConnectionNode("InputNode" + inputGrid.RowDefinitions.Count, pp, ECOnnectionType.Int));
-
-
-
-
-
 		}
 
 		private void AddDialogueInput_BTN_Click(object sender, RoutedEventArgs e)
@@ -820,6 +819,8 @@ namespace NodeEditor
 			g.Children.Add(ee);
 			Grid.SetRow(g, inputGrid.RowDefinitions.Count - 1); Grid.SetColumn(g, 0);
 			g.PreviewMouseMove += MoveThumb_Left_PreviewMouseMove;
+			g.PreviewMouseRightButtonDown += COnnectionNode_RightClick;
+			g.Name = "InputNode" + inputGrid.RowDefinitions.Count;
 			inputGrid.Children.Add(g);
 
 			//Add the combo box to tell/change what data type is allow on this node
@@ -899,6 +900,8 @@ namespace NodeEditor
 		{
 			Point p = Mouse.GetPosition(NodeEditor_BackCanvas);
 			SelectedBlockNode = (BaseNodeBlock)(sender as Grid).TemplatedParent;
+			if (SelectedBlockNode == null)
+				SelectedBlockNode = (BaseNodeBlock)((Grid)((Grid)sender).Parent).TemplatedParent;
 			String TempStr = "";
 
 			if ((sender as Grid).Name.Contains("Entry"))
@@ -910,7 +913,7 @@ namespace NodeEditor
 			else if ((sender as Grid).Name.Contains("Exit"))
 			{
 				SelectedNodeRow = 0;//Grid.GetRow((Grid)(sender as Grid));
-				SelectedNode = ((BaseNodeBlock)SelectedBlockNode).EntryNode;
+				SelectedNode = ((BaseNodeBlock)SelectedBlockNode).ExitNode;
 				TempStr = "Out";
 			}
 			else if ((sender as Grid).Name.Contains("Out"))
@@ -921,7 +924,7 @@ namespace NodeEditor
 			}
 			else
 			{
-				SelectedNodeRow = Grid.GetRow((Grid)(sender as Grid)) + 1;
+				SelectedNodeRow = Grid.GetRow((Grid)(sender as Grid));
 				SelectedNode = ((BaseNodeBlock)SelectedBlockNode).InputNodes[SelectedNodeRow];
 				TempStr = "In";
 			}

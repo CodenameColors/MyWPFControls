@@ -178,7 +178,7 @@
                                               VerticalAlignment="Stretch" ClipToBounds="False"
                                               x:Name="PART_LeftIndicator">
 										<ContentPresenter.Content>
-											<Grid Grid.Row="0" PreviewMouseMove="MoveThumb_Left_PreviewMouseMove">
+											<Grid Grid.Row="0" PreviewMouseMove="MoveThumb_Left_PreviewMouseMove"  PreviewMouseRightButtonDown="COnnectionNode_RightClick">
 												<Ellipse HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Width="20" Margin="-10,-10,-10,-10" Cursor="Hand">
 													<Ellipse.Clip>
 														<RectangleGeometry Rect="10,0,10,20"/>
@@ -206,7 +206,7 @@
                                               VerticalAlignment="Stretch" ClipToBounds="False"
                                               >
 										<ContentPresenter.Content>
-											<Grid Grid.Row="1" PreviewMouseMove="MoveThumb_Left_PreviewMouseMove">
+											<Grid Grid.Row="1" PreviewMouseMove="MoveThumb_Left_PreviewMouseMove" PreviewMouseRightButtonDown="COnnectionNode_RightClick">
 												<Ellipse HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Width="20" Margin="-10,-10,-10,-10" Cursor="Hand">
 													<Ellipse.Clip>
 														<RectangleGeometry Rect="10,0,10,20"/>
