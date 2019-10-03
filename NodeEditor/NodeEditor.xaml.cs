@@ -167,6 +167,8 @@ namespace NodeEditor
         InitializeComponent();
     }
 
+		#region Panning
+
 		/// <summary>
 		/// This method takes care of mouse movement events on the main level editor canvas.
 		/// Panning is handled in here.
@@ -191,7 +193,7 @@ namespace NodeEditor
 			if (e.LeftButton == MouseButtonState.Released)
 			{
 				isMDown = false;
-				if(!(this.FindResource("DeleteBaseNode_CM") as ContextMenu).IsOpen)
+				if (!(this.FindResource("DeleteBaseNode_CM") as ContextMenu).IsOpen)
 					SelectedBlockNode = null;
 				SelectedNodeRow = -1;
 			}
@@ -270,36 +272,100 @@ namespace NodeEditor
 			GridOffset.X -= MPos.X / 10; //keeps in sync
 			GridOffset.Y -= MPos.Y / 10;
 		}
+		#endregion
 
-
-		private void LevelEditor_BackCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		#region Drawing
+		private void SetCurveEndPoint(Path p, Point end)
 		{
-			Point pos = Mouse.GetPosition(NodeEditor_BackCanvas);
-			//Point p = GetGridSnapCords(Mouse.GetPosition(LevelEditor_Canvas));
-			Point p = GetGridSnapCords(pos);
+			PathFigure pf = ((PathGeometry)p.Data).Figures[0];
+			BezierSegment bsOld = (BezierSegment)pf.Segments[0];
+			bsOld.Point3 = end;
+			bsOld.Point2 = new Point((end.X + bsOld.Point1.X) / 2, end.Y);
+		}
+		private void SetCurveStartPoint(Path p, Point start)
+		{
+			PathFigure pf = ((PathGeometry)p.Data).Figures[0];
+			pf.StartPoint = start;
+			BezierSegment bsOld = (BezierSegment)pf.Segments[0];
+			bsOld.Point1 = start;
+			bsOld.Point2 = new Point((start.X + bsOld.Point3.X) / 2, start.Y);
+		}
+		private Path CreateBezierCurve(Point start, Point end)
+		{
+			BezierSegment bs = new BezierSegment()
+			{
+				Point1 = start,
+				Point2 = new Point((start.X + end.X) / 2, end.Y),
+				Point3 = end,
+			};
 
-			newx = (int)p.X; newy = (int)p.Y;
-			//NewPos_TB.Text = p.ToString();
+			PathGeometry pathGeometry = new PathGeometry();
 
-			if (NodeEditor_Canvas.Children.Contains(selectrect))
-				NodeEditor_Canvas.Children.Remove(selectrect);
-			Canvas.SetLeft(selectrect, newx); Canvas.SetTop(selectrect, newy); Canvas.SetZIndex(selectrect, 100);
-			NodeEditor_Canvas.Children.Add(selectrect);
+			PathFigure pathFigure = new PathFigure();
+			pathFigure.StartPoint = bs.Point1;
+			pathFigure.IsClosed = false;
 
+			pathGeometry.Figures.Add(pathFigure);
+			pathFigure.Segments.Add(bs);
+
+			Path p = new Path();
+			p.Stroke = Brushes.White;
+			p.StrokeThickness = 5;
+			p.Data = pathGeometry;
+			Canvas.SetZIndex(p, -1);
+			return p;
 		}
 
+
+		#region Constants
+
+		private void StartDrawingDialogueNodeCurve(object sender)
+		{
+			try
+			{
+				SelectedBlockNode = (DialogueNodeBlock)((Grid)sender).TemplatedParent;
+				SelectedNodeRow = Grid.GetRow((Grid)sender);
+				SelectedNode = ((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow];
+			}
+			catch
+			{
+				//im a garbo coder at times. So this is making sure my REF is set
+				if (SelectedBlockNode == null)
+				{
+					SelectedBlockNode = (DialogueNodeBlock)((Grid)((Grid)sender).Parent).TemplatedParent;
+					SelectedNodeRow = Grid.GetRow((Grid)sender);
+					SelectedNode = ((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow];
+				}
+			}
+		}
+
+		private void StartDrawingConstantNode(object sender)
+		{
+			SelectedBlockNode = (BaseNodeBlock)((Grid)sender).TemplatedParent;
+			SelectedNodeRow = Grid.GetRow((Grid)sender);
+			if (!((Grid)sender).Name.Contains("Exit"))
+				SelectedNode = ((BaseNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow];
+			else
+				SelectedNode = ((BaseNodeBlock)SelectedBlockNode).ExitNode;
+		}
+
+		#endregion
+
+		#endregion
+
+		#region MoveBlockNodes
 		private void MoveThumb_Middle_DragDelta(object sender, DragDeltaEventArgs e)
 		{
 			object obj = ((Thumb)sender).TemplatedParent;
 			if (obj is DialogueNodeBlock)
 				MoveDialogueBlock(sender, e);
-			else if(obj is GetConstantNodeBlock)
+			else if (obj is GetConstantNodeBlock)
 			{
 				GetConstantNodeBlock BN = ((GetConstantNodeBlock)((Thumb)sender).TemplatedParent);
 				Canvas.SetLeft(BN, VisualTreeHelper.GetOffset(BN).X + e.HorizontalChange);
 				Canvas.SetTop(BN, VisualTreeHelper.GetOffset(BN).Y + e.VerticalChange);
 
-				Point Start = new Point (Canvas.GetLeft(BN) + 100, Canvas.GetTop(BN) + 40);
+				Point Start = new Point(Canvas.GetLeft(BN) + 100, Canvas.GetTop(BN) + 40);
 				for (int j = 0; j < BN.output.Curves.Count; j++)
 					SetCurveStartPoint(BN.output.Curves[j], Start);
 			}
@@ -308,7 +374,7 @@ namespace NodeEditor
 				MoveConstantBlock(sender, e);
 			}
 		}
-		
+
 
 		private void MoveDialogueBlock(object sender, DragDeltaEventArgs e)
 		{
@@ -350,8 +416,8 @@ namespace NodeEditor
 				{
 					for (int i = 0; i < BN.OutputNodes.Count; i++)
 					{
-						Point start = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN)); start.Y += 20 + (40 * 
-							( BN.InputNodes.Count - 2 < 0 ? 0 : (BN.InputNodes.Count - 1))) + (40 * i) + 20; //the 20 is middle of circle
+						Point start = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN)); start.Y += 20 + (40 *
+							(BN.InputNodes.Count - 2 < 0 ? 0 : (BN.InputNodes.Count - 1))) + (40 * i) + 20; //the 20 is middle of circle
 						for (int j = 0; j < BN.OutputNodes[i].Curves.Count; j++)
 							SetCurveStartPoint(BN.OutputNodes[i].Curves[j], start);
 						//Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); end.Y += 40 + (10); //the 10 is middle of circle
@@ -418,86 +484,19 @@ namespace NodeEditor
 			}
 		}
 
-		private void SetCurveEndPoint(Path p, Point end)
-		{
-			PathFigure pf = ((PathGeometry)p.Data).Figures[0];
-			BezierSegment bsOld = (BezierSegment)pf.Segments[0];
-			bsOld.Point3 = end;
-			bsOld.Point2 = new Point((end.X + bsOld.Point1.X)/2, end.Y);
-		}
-		private void SetCurveStartPoint(Path p, Point start)
-		{
-			PathFigure pf = ((PathGeometry)p.Data).Figures[0];
-			pf.StartPoint = start;
-			BezierSegment bsOld = (BezierSegment)pf.Segments[0];
-			bsOld.Point1 = start;
-			bsOld.Point2 = new Point((start.X + bsOld.Point3.X) / 2, start.Y);
-		}
+		#endregion
 
-		private void AddDialogueRow_BTN_Click(object sender, RoutedEventArgs e)
-		{
-			
-		}
+		#region Connecting
 
-		private void MoveThumb_Right_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-		{
-			Console.WriteLine("Mouse Down on Output");
-			isMDown = true;
-			CurveStart = Mouse.GetPosition(NodeEditor_BackCanvas);
-
-			object obj = null;
-			if (sender is Grid)
-				obj = ((Grid)sender).TemplatedParent;
-			else if (sender is Grid)
-				obj = ((Grid)((Grid)sender).Parent).TemplatedParent; //the input nodes are added to style templated ON RUNTIME
-
-			if (obj is DialogueNodeBlock)
-				StartDrawingDialogueNodeCurve(sender);
-			else if(obj is GetConstantNodeBlock)
-				StartDrawingConstantNode(sender);
-			else if(obj is SetConstantNodeBlock)
-				StartDrawingConstantNode(sender);
-		}
-
-		private void StartDrawingDialogueNodeCurve(object sender)
-		{
-			try
-			{
-				SelectedBlockNode = (DialogueNodeBlock)((Grid)sender).TemplatedParent;
-				SelectedNodeRow = Grid.GetRow((Grid)sender);
-				SelectedNode = ((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow];
-			}
-			catch
-			{
-				//im a garbo coder at times. So this is making sure my REF is set
-				if (SelectedBlockNode == null)
-				{
-					SelectedBlockNode = (DialogueNodeBlock)((Grid)((Grid)sender).Parent).TemplatedParent;
-					SelectedNodeRow = Grid.GetRow((Grid)sender);
-					SelectedNode = ((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow];
-				}
-			}
-		}
-
-		private void StartDrawingConstantNode(object sender)
-		{
-			SelectedBlockNode = (BaseNodeBlock)((Grid)sender).TemplatedParent;
-			SelectedNodeRow = Grid.GetRow((Grid)sender);
-			if (!((Grid)sender).Name.Contains("Exit"))
-				SelectedNode = ((BaseNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow];
-			else
-				SelectedNode = ((BaseNodeBlock)SelectedBlockNode).ExitNode;
-		}
-
-		private void MoveThumb_Left_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-		{
-			Console.WriteLine("Mouse Up on Input");
-		}
-
+		/// <summary>
+		/// This method is here for drawing AND connecting the selected to node to the current node. (Input) So output -> input
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void MoveThumb_Left_PreviewMouseMove(object sender, MouseEventArgs e)
 		{
 			Console.WriteLine("MouseMoving in Input");
-			if(isMDown)
+			if (isMDown)
 			{
 				object obj = null;
 				obj = ((Grid)sender).TemplatedParent;
@@ -518,6 +517,8 @@ namespace NodeEditor
 			}
 		}
 
+		#region Dialogue
+
 		private void EndDrawingCurveDialogueBlock(object sender)
 		{
 			if (SelectedBlockNode == null) return;
@@ -525,7 +526,7 @@ namespace NodeEditor
 
 			BN = (BaseNodeBlock)((Grid)sender).TemplatedParent;
 			inrow = Grid.GetRow(((Grid)sender)); //the one offset is for the enter node.
-			if(BN is null)
+			if (BN is null)
 			{
 				BN = (BaseNodeBlock)((Grid)((Grid)sender).Parent).TemplatedParent;
 				inrow = Grid.GetRow(((Grid)sender)); //the one offset is for the enter node.
@@ -585,7 +586,7 @@ namespace NodeEditor
 					BN.EntryNode.ConnectedNodes.Add(SelectedNode); BN.EntryNode.Curves.Add(p);
 					SelectedNode.ConnectedNodes.Add(BN.EntryNode); SelectedNode.Curves.Add(p);
 				}
-				else if(SelectedNode.NodeType != ECOnnectionType.Exit)
+				else if (SelectedNode.NodeType != ECOnnectionType.Exit)
 				{
 					if (SelectedNode.NodeType != BN.InputNodes[inrow].NodeType) return;
 					//the types are matching
@@ -597,7 +598,9 @@ namespace NodeEditor
 				}
 			}
 		}
+		#endregion
 
+		#region Constants
 		private void EndDrawingCurveConstantBlock(object sender)
 		{
 			Console.WriteLine("entered the set node inputs");
@@ -615,10 +618,10 @@ namespace NodeEditor
 			Point end = Mouse.GetPosition(NodeEditor_BackCanvas);
 			Path p = CreateBezierCurve(CurveStart, end);
 			//what is the previous selected node
-			if(SelectedBlockNode is DialogueNodeBlock)
+			if (SelectedBlockNode is DialogueNodeBlock)
 			{//IT CAN ONLY BE AN EXIT NODE
 				if (SelectedNode.NodeType != ECOnnectionType.Exit) return;
-					//Draw the curve
+				//Draw the curve
 				NodeEditor_BackCanvas.Children.Add(p);
 				isMDown = false;
 
@@ -630,7 +633,7 @@ namespace NodeEditor
 			{
 				//CAN ONLY BE A DATA TYPE
 				if (SelectedNode.NodeType != BN.InputNodes[inrow].NodeType) return; //it doesn't match
-				//Draw the curve
+																																						//Draw the curve
 				NodeEditor_BackCanvas.Children.Add(p);
 				isMDown = false;
 
@@ -639,40 +642,74 @@ namespace NodeEditor
 				((GetConstantNodeBlock)SelectedBlockNode).output.Curves.Add(p);
 
 			}
-			else if (SelectedBlockNode is ArithmeticBlockNode)
+			else if (SelectedBlockNode is BaseArithmeticBlockNode)
 			{
 
 			}
 
 		}
+		#endregion
 
-		private Path CreateBezierCurve(Point start, Point end)
+
+
+		#endregion
+
+		private void LevelEditor_BackCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
-			BezierSegment bs = new BezierSegment()
-			{
-				Point1 = start,
-				Point2 = new Point((start.X + end.X) / 2, end.Y),
-				Point3 = end,
-			};
+			Point pos = Mouse.GetPosition(NodeEditor_BackCanvas);
+			//Point p = GetGridSnapCords(Mouse.GetPosition(LevelEditor_Canvas));
+			Point p = GetGridSnapCords(pos);
 
-			PathGeometry pathGeometry = new PathGeometry();
+			newx = (int)p.X; newy = (int)p.Y;
+			//NewPos_TB.Text = p.ToString();
 
-			PathFigure pathFigure = new PathFigure();
-			pathFigure.StartPoint = bs.Point1;
-			pathFigure.IsClosed = false;
+			if (NodeEditor_Canvas.Children.Contains(selectrect))
+				NodeEditor_Canvas.Children.Remove(selectrect);
+			Canvas.SetLeft(selectrect, newx); Canvas.SetTop(selectrect, newy); Canvas.SetZIndex(selectrect, 100);
+			NodeEditor_Canvas.Children.Add(selectrect);
 
-			pathGeometry.Figures.Add(pathFigure);
-			pathFigure.Segments.Add(bs);
+		}
 
-			Path p = new Path();
-			p.Stroke = Brushes.White;
-			p.StrokeThickness = 5;
-			p.Data = pathGeometry;
-			Canvas.SetZIndex(p, -1);
-			return p;
+		
+
+		private void AddDialogueRow_BTN_Click(object sender, RoutedEventArgs e)
+		{
+			
+		}
+
+		/// <summary>
+		/// This method sets the reference, and drawing position of the FIRST NODE. or the "Output" of a Output->Input relationship
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void MoveThumb_Right_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			Console.WriteLine("Mouse Down on Output");
+			isMDown = true;
+			CurveStart = Mouse.GetPosition(NodeEditor_BackCanvas);
+
+			object obj = null;
+			if (sender is Grid)
+				obj = ((Grid)sender).TemplatedParent;
+			else if (sender is Grid)
+				obj = ((Grid)((Grid)sender).Parent).TemplatedParent; //the input nodes are added to style templated ON RUNTIME
+
+			if (obj is DialogueNodeBlock)
+				StartDrawingDialogueNodeCurve(sender);
+			else if(obj is GetConstantNodeBlock)
+				StartDrawingConstantNode(sender);
+			else if(obj is SetConstantNodeBlock)
+				StartDrawingConstantNode(sender);
+		}
+
+		private void MoveThumb_Left_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+		{
+			Console.WriteLine("Mouse Up on Input");
 		}
 
 
+
+		
 		private void MoveThumb_Left_PreviewDragEnter(object sender, DragEventArgs e)
 		{
 			Console.WriteLine("Mouse Dragged into Input");
@@ -839,6 +876,11 @@ namespace NodeEditor
 
 		}
 
+		/// <summary>
+		/// THis method is activated when the user changed the input type for a dialogue block node.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void DialogueInput_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			//change the circle color display wise
@@ -868,7 +910,8 @@ namespace NodeEditor
 		}
 
 		/// <summary>
-		/// Right click on a base node. Opens up the context menu
+		/// Right click on a base node. Opens up the context menu for node deletion
+		/// ONLY IS ALLOWED IF SET IN XAML
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
@@ -884,6 +927,11 @@ namespace NodeEditor
 			}
 		}
 
+		/// <summary>
+		/// Deletes the currently selected Node.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void DeleteBaseNode_Click(object sender, RoutedEventArgs e)
 		{
 			Console.WriteLine("right clicked on node.");
@@ -896,6 +944,11 @@ namespace NodeEditor
 
 		}
 
+		/// <summary>
+		/// This method occurs when the user RIGHT clicks on a connection node (Ellipse).
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void COnnectionNode_RightClick(object sender, MouseButtonEventArgs e)
 		{
 			Point p = Mouse.GetPosition(NodeEditor_BackCanvas);
@@ -946,6 +999,12 @@ namespace NodeEditor
 			cm.IsOpen = true;
 		}
 
+		/// <summary>
+		/// This method occurs when the user RIGHT clicks on a connection node (Ellipse).
+		/// and the user has clicked on delete node in the context menu
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void DeleteConnections_Click(object sender, MouseButtonEventArgs e)
 		{
 			Console.WriteLine("Clicked Deletion of Node");
@@ -961,7 +1020,24 @@ namespace NodeEditor
 			SelectedNode.ConnectedNodes.RemoveAt(ival);
 
 		}
+	}
 
+	/// <summary>
+	/// This is the starting pointer for a given graph
+	/// CONTAINS ONE OUTPUT (EXIT NODE)
+	/// </summary>
+	public class StartBlockNode
+	{
 
 	}
+
+	/// <summary>
+	/// THis is the Stopping pointer for a given graph
+	/// CONTAINS ONE INPUT (ENTRY NODE)
+	/// </summary>
+	public class ExitBlockNode
+	{
+
+	}
+
 }

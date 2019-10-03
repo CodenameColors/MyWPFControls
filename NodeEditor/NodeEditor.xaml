@@ -276,7 +276,7 @@
 								</Grid.RowDefinitions>
 								<TextBlock Grid.Row="0" Foreground="White" Text="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}" Background="#FF252525"/>
 
-								<!--enter node thumb--> 
+								<!--enter node thumb-->
 								<ContentPresenter HorizontalAlignment="Stretch" Grid.Column="0"
                                               VerticalAlignment="Stretch" ClipToBounds="False"
                                               x:Name="PART_EnterIndicator">
@@ -290,7 +290,7 @@
 										</Grid>
 									</ContentPresenter.Content>
 								</ContentPresenter>
-								
+
 								<!--Drag thumb-->
 								<ContentPresenter HorizontalAlignment="Stretch" Grid.ColumnSpan="5" Grid.RowSpan="3"
                                               VerticalAlignment="Stretch"
@@ -309,7 +309,7 @@
 										<ColumnDefinition Width="*"/>
 									</Grid.ColumnDefinitions>
 								</Grid>
-								
+
 								<!--Dialogue choices grid (output)-->
 								<Grid Grid.Row="2" IsHitTestVisible="True" x:Name="DialogueOutput_Grid">
 									<Grid.ColumnDefinitions>
@@ -372,8 +372,8 @@
 			</Setter>
 		</Style>
 
-		
-		
+
+
 		<ContentControl x:Key="OutputNode" x:Shared="False">
 			<ContentPresenter HorizontalAlignment="Right" Grid.Column="2" IsHitTestVisible="True"
                                               VerticalAlignment="Stretch" ClipToBounds="False"
@@ -386,19 +386,51 @@
 				</ContentPresenter.Content>
 			</ContentPresenter>
 		</ContentControl>
-		
-		
+
+
 	</UserControl.Resources>
 	<Grid Background="#FF1D1D1D">
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="100"/>
+			<ColumnDefinition Width="200"/>
 			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
 
 		<!--Tester Vars-->
 		<Grid Grid.Column="0">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="20"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
 			<TextBlock Text="Testing Vars:" Foreground="White" VerticalAlignment="Top"/>
-			<Line X1="0" X2="100" Y1="15" Y2="15" Fill="White" Stroke="White"/>
+			<GridSplitter Height="2" ResizeDirection="Columns" IsEnabled="False" Margin="0,20,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+			<!--<Line X1="0" X2="100" Y1="15" Y2="15" Fill="White" Stroke="White"/>-->
+
+			<TextBlock Grid.Row="0" Text="Add Variable" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,2,29,2"/>
+			<Button Content="+" Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="1" Width="20" Margin="0,0,5,0" HorizontalAlignment="Right" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
+
+			<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*"/>
+						<ColumnDefinition Width="*"/>
+						<ColumnDefinition Width="50"/>
+					</Grid.ColumnDefinitions>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="20"/>
+					</Grid.RowDefinitions>
+					<TextBlock Text="Choice Var" Foreground="White"/>
+					<TextBox Grid.Column="1" Height="20" VerticalAlignment="Top"/>
+					<ComboBox Grid.Row="0" Grid.Column="2" Height="20" HorizontalAlignment="Stretch" VerticalAlignment="Top" >
+						<ComboBoxItem>
+							<TextBlock Text="Bool"/>
+						</ComboBoxItem>
+						<ComboBoxItem>
+							<TextBlock Text="Int"/>
+						</ComboBoxItem>
+					</ComboBox>
+				</Grid>
+			</ScrollViewer>
+
 		</Grid>
 
 		<!-- Node editor -->
@@ -407,9 +439,9 @@
 				<RowDefinition Height="20"/>
 				<RowDefinition Height="*"/>
 			</Grid.RowDefinitions>
-			
-			
-		<!--Task bar-->
+
+
+			<!--Task bar-->
 			<Grid>
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="Auto"/>
@@ -447,22 +479,22 @@
 
 			</Grid>
 
-<!--MouseWheel="LevelEditor_Canvas_MouseWheel" SizeChanged="LevelEditor_BackCanvas_SizeChanged"-->
+			<!--MouseWheel="LevelEditor_Canvas_MouseWheel" SizeChanged="LevelEditor_BackCanvas_SizeChanged"-->
 			<Canvas Grid.Row="1" x:Name="NodeEditor_BackCanvas" IsHitTestVisible="True" Grid.Column="1" 
 										ClipToBounds="True" MouseMove="LevelEditor_BackCanvas_MouseMove" Visibility="Visible">
 				<!--<Canvas.RenderTransform>
 					<ScaleTransform ScaleX=".5" ScaleY=".5" />
 				</Canvas.RenderTransform>-->
 				<Canvas.Background>
-				<VisualBrush x:Name="Canvas_grid" TileMode="Tile" Stretch="Uniform" Viewport="0,0,20,20" ViewportUnits="Absolute" >
-					<VisualBrush.Visual>
-						<Rectangle Width="20" Height="20" Fill="Black" Stroke="Gray" StrokeThickness=".4" />
-					</VisualBrush.Visual>
-				</VisualBrush>
-			</Canvas.Background>
+					<VisualBrush x:Name="Canvas_grid" TileMode="Tile" Stretch="Uniform" Viewport="0,0,20,20" ViewportUnits="Absolute" >
+						<VisualBrush.Visual>
+							<Rectangle Width="20" Height="20" Fill="Black" Stroke="Gray" StrokeThickness=".4" />
+						</VisualBrush.Visual>
+					</VisualBrush>
+				</Canvas.Background>
 				<Canvas x:Name="NodeEditor_Canvas" Background="Transparent" 
 							HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
-					
+
 				</Canvas>
 			</Canvas>
 		</Grid>

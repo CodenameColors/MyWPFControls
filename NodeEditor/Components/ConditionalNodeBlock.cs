@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NodeEditor.Components
 {
-	public class LogicNodeBlock
+	public class ConditionalNodeBlock
 	{
 	}
 }

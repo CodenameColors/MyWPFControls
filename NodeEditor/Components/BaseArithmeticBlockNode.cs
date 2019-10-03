@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NodeEditor.Components
 {
-	public class ArithmeticBlockNode : BaseNodeBlock
+	public class BaseArithmeticBlockNode : BaseNodeBlock
 	{
 
 	}
