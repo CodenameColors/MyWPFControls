@@ -1,4 +1,5 @@
 ﻿using NodeEditor.Components;
+using NodeEditor.Forms;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -161,6 +162,7 @@ namespace NodeEditor
 		ConnectionNode SelectedNode = null;
 		int SelectedNodeRow = 0;
 
+		public List<TestingVars> TestingVars_list = new List<TestingVars>();
 
 		public NodeEditor()
     {
@@ -417,7 +419,7 @@ namespace NodeEditor
 					for (int i = 0; i < BN.OutputNodes.Count; i++)
 					{
 						Point start = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN)); start.Y += 20 + (40 *
-							(BN.InputNodes.Count - 2 < 0 ? 0 : (BN.InputNodes.Count - 1))) + (40 * i) + 20; //the 20 is middle of circle
+							(BN.InputNodes.Count - 1 < 0 ? 0 : (BN.InputNodes.Count ))) + (40 * i) + 20; //the 20 is middle of circle
 						for (int j = 0; j < BN.OutputNodes[i].Curves.Count; j++)
 							SetCurveStartPoint(BN.OutputNodes[i].Curves[j], start);
 						//Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); end.Y += 40 + (10); //the 10 is middle of circle
@@ -689,9 +691,8 @@ namespace NodeEditor
 			CurveStart = Mouse.GetPosition(NodeEditor_BackCanvas);
 
 			object obj = null;
+			obj = ((Grid)sender).TemplatedParent;
 			if (sender is Grid)
-				obj = ((Grid)sender).TemplatedParent;
-			else if (sender is Grid)
 				obj = ((Grid)((Grid)sender).Parent).TemplatedParent; //the input nodes are added to style templated ON RUNTIME
 
 			if (obj is DialogueNodeBlock)
@@ -1020,6 +1021,72 @@ namespace NodeEditor
 			SelectedNode.ConnectedNodes.RemoveAt(ival);
 
 		}
+
+		//Add a testing Variable to the UI and list 
+		private void AddTestingVar_BTN_Click(object sender, RoutedEventArgs e)
+		{
+			TestingVar_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(20) });
+
+			//textblock
+			TextBox TBlock = new TextBox()
+			{
+				Background = Brushes.Transparent,
+				Foreground = Brushes.White,
+				Text = "Var " + TestingVar_Grid.RowDefinitions.Count
+			};
+			Grid.SetColumn(TBlock, 0); Grid.SetRow(TBlock, TestingVar_Grid.RowDefinitions.Count - 1);
+			TestingVar_Grid.Children.Add(TBlock);
+
+			//textbox
+			TextBox tb = new TextBox()
+			{
+				Text = "0"
+			};
+			Grid.SetColumn(tb, 1); Grid.SetRow(tb, TestingVar_Grid.RowDefinitions.Count - 1);
+			TestingVar_Grid.Children.Add(tb);
+
+			//combobox
+			ComboBox cb = new ComboBox() { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
+			cb.Items.Add("Bool"); cb.Items.Add("Int");
+			cb.SelectedIndex = 1;
+			Grid.SetColumn(cb, 2); Grid.SetRow(cb, TestingVar_Grid.RowDefinitions.Count - 1);
+			TestingVar_Grid.Children.Add(cb);
+
+			//List
+			TestingVars_list.Add(new TestingVars() { VarName = ("Var " + (TestingVar_Grid.RowDefinitions.Count - 1)), VarData = 0 });
+		}
+
+		private void NodeEditor_BackCanvas_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			//Window w = new AddBlockMenu();
+			//w.Show();
+
+			ContextMenu cm = (ContextMenu)this.Resources["AddBlock_CM"];
+			MenuItem mi_get = (MenuItem)cm.Items.GetItemAt(6);
+			mi_get.Items.Clear();
+			MenuItem mi_set = (MenuItem)cm.Items.GetItemAt(7);
+			mi_set.Items.Clear();
+
+			foreach (TestingVars item in TestingVars_list)
+			{
+				mi_get.Items.Add(new MenuItem() { Header =  item.VarName });
+				mi_set.Items.Add(new MenuItem() { Header =  item.VarName });
+			}
+
+			cm.MaxHeight = 400;
+			cm.IsOpen = true;
+			
+
+		}
+
+		private void AddDialogueBlock_BTN_Click(object sender, RoutedEventArgs e)
+		{
+			DialogueNodeBlock bn = new DialogueNodeBlock("");
+			NodeEditor_Canvas.Children.Add(bn);
+			Point p = new Point(0, 10); Point p1 = new Point(150, 20 + 20);
+			bn.EntryNode = (new ConnectionNode("EnterNode", p, ECOnnectionType.Enter));
+			bn.OutputNodes.Add(new ConnectionNode("OutputNode1", p1, ECOnnectionType.Exit));
+		}
 	}
 
 	/// <summary>
@@ -1037,6 +1104,18 @@ namespace NodeEditor
 	/// </summary>
 	public class ExitBlockNode
 	{
+
+	}
+
+	public class TestingVars
+	{
+		public string VarName { get; set; }
+		public object VarData { get; set; }
+
+		public TestingVars()
+		{
+
+		}
 
 	}
 

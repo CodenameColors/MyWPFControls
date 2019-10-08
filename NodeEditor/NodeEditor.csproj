@@ -48,6 +48,10 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Forms\AddBlockMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="NodeEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -59,6 +63,9 @@
     <Compile Include="Components\ConnectionNode.cs" />
     <Compile Include="Components\ConditionalNodeBlock.cs" />
     <Compile Include="Components\BaseLogicNodeBlock.cs" />
+    <Compile Include="Forms\AddBlockMenu.xaml.cs">
+      <DependentUpon>AddBlockMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="NodeEditor.xaml.cs">
       <DependentUpon>NodeEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -87,5 +94,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

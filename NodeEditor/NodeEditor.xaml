@@ -9,6 +9,39 @@
              d:DesignHeight="450" d:DesignWidth="800">
 	<UserControl.Resources>
 
+		<ContextMenu x:Key="AddBlock_CM">
+			<MenuItem Header="Conditionals">
+				<MenuItem Header="Less Than"/>
+				<MenuItem Header="Less Equal"/>
+				<MenuItem Header="Greater Than"/>
+				<MenuItem Header="Greater Equal"/>
+				<MenuItem Header="Equals"/>
+				<MenuItem Header="Not Equals"/>
+			</MenuItem>
+			<MenuItem Header="Logic" >
+				<MenuItem Header="AND"/>
+				<MenuItem Header="OR"/>
+				<MenuItem Header="NOT"/>
+			</MenuItem>
+			<MenuItem Header="Math">
+				<MenuItem Header="Add"/>
+				<MenuItem Header="Subtract"/>
+				<MenuItem Header="Divide"/>
+				<MenuItem Header="Multiply"/>
+				<MenuItem Header="Mod"/>
+			</MenuItem>
+			<Separator/>
+			<MenuItem Header="Dialogue" Click="AddDialogueBlock_BTN_Click"/>
+			<Separator/>
+			<MenuItem Header="Get Constant" Name="GetConstant_MI">
+				
+			</MenuItem>
+			<MenuItem Header="Set Constant" Name="SetConstant_MI">
+				
+			</MenuItem>
+
+		</ContextMenu>
+		
 		<ContextMenu x:Key="DeleteBaseNode_CM">
 			<MenuItem x:Name="DeleteBN_MI" IsChecked="False" Header="Delete Node" PreviewMouseLeftButtonDown="DeleteBaseNode_Click">
 			</MenuItem>
@@ -399,6 +432,7 @@
 		<Grid Grid.Column="0">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="20"/>
+				<RowDefinition Height="20"/>
 				<RowDefinition Height="*"/>
 			</Grid.RowDefinitions>
 			<TextBlock Text="Testing Vars:" Foreground="White" VerticalAlignment="Top"/>
@@ -406,28 +440,30 @@
 			<!--<Line X1="0" X2="100" Y1="15" Y2="15" Fill="White" Stroke="White"/>-->
 
 			<TextBlock Grid.Row="0" Text="Add Variable" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,2,29,2"/>
-			<Button Content="+" Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="1" Width="20" Margin="0,0,5,0" HorizontalAlignment="Right" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
+			<Button x:Name="AddTestingVar_BTN" Content="+" Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="1" Width="20" Margin="0,0,5,0" HorizontalAlignment="Right" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="AddTestingVar_BTN_Click" />
 
-			<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-				<Grid>
+			<TextBlock Grid.Row="1" Text="Choice Var" Foreground="White" HorizontalAlignment="Left"/>
+			<TextBox Grid.Row="1" Height="20" Width="88" Text="GameBinding" HorizontalAlignment="Left" VerticalAlignment="Top" IsEnabled="False" Margin="62,0,0,0"/>
+			<ComboBox Grid.Row="1" Height="20" Width="50" HorizontalAlignment="Right" VerticalAlignment="Top" >
+				<ComboBoxItem>
+					<TextBlock Text="Bool"/>
+				</ComboBoxItem>
+				<ComboBoxItem>
+					<TextBlock Text="Int"/>
+				</ComboBoxItem>
+			</ComboBox>
+
+			<ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+				<Grid x:Name="TestingVar_Grid">
+
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="*"/>
 						<ColumnDefinition Width="*"/>
 						<ColumnDefinition Width="50"/>
 					</Grid.ColumnDefinitions>
 					<Grid.RowDefinitions>
-						<RowDefinition Height="20"/>
 					</Grid.RowDefinitions>
-					<TextBlock Text="Choice Var" Foreground="White"/>
-					<TextBox Grid.Column="1" Height="20" VerticalAlignment="Top"/>
-					<ComboBox Grid.Row="0" Grid.Column="2" Height="20" HorizontalAlignment="Stretch" VerticalAlignment="Top" >
-						<ComboBoxItem>
-							<TextBlock Text="Bool"/>
-						</ComboBoxItem>
-						<ComboBoxItem>
-							<TextBlock Text="Int"/>
-						</ComboBoxItem>
-					</ComboBox>
+
 				</Grid>
 			</ScrollViewer>
 
@@ -481,7 +517,7 @@
 
 			<!--MouseWheel="LevelEditor_Canvas_MouseWheel" SizeChanged="LevelEditor_BackCanvas_SizeChanged"-->
 			<Canvas Grid.Row="1" x:Name="NodeEditor_BackCanvas" IsHitTestVisible="True" Grid.Column="1" 
-										ClipToBounds="True" MouseMove="LevelEditor_BackCanvas_MouseMove" Visibility="Visible">
+										ClipToBounds="True" MouseMove="LevelEditor_BackCanvas_MouseMove" Visibility="Visible" PreviewMouseRightButtonDown="NodeEditor_BackCanvas_PreviewMouseRightButtonDown">
 				<!--<Canvas.RenderTransform>
 					<ScaleTransform ScaleX=".5" ScaleY=".5" />
 				</Canvas.RenderTransform>-->
