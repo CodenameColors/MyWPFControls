@@ -31,7 +31,7 @@
 				<MenuItem Header="Mod"/>
 			</MenuItem>
 			<Separator/>
-			<MenuItem Header="Dialogue" Click="AddDialogueBlock_BTN_Click"/>
+			<MenuItem Header="Dialogue" Name="Dialogue_MI" Click="AddDialogueBlock_BTN_Click"/>
 			<Separator/>
 			<MenuItem Header="Get Constant" Name="GetConstant_MI">
 				
@@ -63,7 +63,7 @@
 									<RowDefinition Height="20"/>
 									<RowDefinition Height="40"/>
 								</Grid.RowDefinitions>
-								<TextBlock Grid.Row="0" Foreground="White" Text="Constant" Background="#FF252525"/>
+								<TextBlock Grid.Row="0" Foreground="White" Text="Get Constant" Background="#FF252525"/>
 
 
 								<!--Drag thumb-->

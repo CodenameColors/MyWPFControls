@@ -162,7 +162,10 @@ namespace NodeEditor
 		ConnectionNode SelectedNode = null;
 		int SelectedNodeRow = 0;
 
-		public List<TestingVars> TestingVars_list = new List<TestingVars>();
+		public ObservableCollection<RuntimeVars> TestingVars_list = new ObservableCollection<RuntimeVars>();
+		public ObservableCollection<String> SceneCharacters_list = new ObservableCollection<string>();
+
+		private Dictionary<String, List<BaseNodeBlock>> VarDisplayBlocks_dict = new Dictionary<String, List<BaseNodeBlock>>();
 
 		public NodeEditor()
     {
@@ -692,7 +695,7 @@ namespace NodeEditor
 
 			object obj = null;
 			obj = ((Grid)sender).TemplatedParent;
-			if (sender is Grid)
+			if (sender is null)
 				obj = ((Grid)((Grid)sender).Parent).TemplatedParent; //the input nodes are added to style templated ON RUNTIME
 
 			if (obj is DialogueNodeBlock)
@@ -1027,33 +1030,106 @@ namespace NodeEditor
 		{
 			TestingVar_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(20) });
 
-			//textblock
+			//textbox for naming the runtime variables
 			TextBox TBlock = new TextBox()
 			{
 				Background = Brushes.Transparent,
 				Foreground = Brushes.White,
 				Text = "Var " + TestingVar_Grid.RowDefinitions.Count
 			};
+			TBlock.TextChanged += RuntimeVar_Name_Changed;
 			Grid.SetColumn(TBlock, 0); Grid.SetRow(TBlock, TestingVar_Grid.RowDefinitions.Count - 1);
 			TestingVar_Grid.Children.Add(TBlock);
 
-			//textbox
+			//textbox for updating the data of the runtime variables
 			TextBox tb = new TextBox()
 			{
 				Text = "0"
 			};
+			tb.TextChanged += RuntimeVar_Data_Changed;
 			Grid.SetColumn(tb, 1); Grid.SetRow(tb, TestingVar_Grid.RowDefinitions.Count - 1);
 			TestingVar_Grid.Children.Add(tb);
 
 			//combobox
 			ComboBox cb = new ComboBox() { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
+			cb.SelectionChanged += RuntimeVar_Type_Changed;
 			cb.Items.Add("Bool"); cb.Items.Add("Int");
 			cb.SelectedIndex = 1;
 			Grid.SetColumn(cb, 2); Grid.SetRow(cb, TestingVar_Grid.RowDefinitions.Count - 1);
 			TestingVar_Grid.Children.Add(cb);
 
 			//List
-			TestingVars_list.Add(new TestingVars() { VarName = ("Var " + (TestingVar_Grid.RowDefinitions.Count - 1)), VarData = 0 });
+			TestingVars_list.Add(new RuntimeVars() { VarName = ("Var_" + (TestingVar_Grid.RowDefinitions.Count - 1)), VarData = 0 });
+			VarDisplayBlocks_dict.Add(TestingVars_list.Last().VarName, new List<BaseNodeBlock>());
+
+		}
+
+		private void RuntimeVar_Type_Changed(object sender, SelectionChangedEventArgs e)
+		{
+			if (!(TestingVars_list.Count > 0)) return;
+			int dtype = 0;
+			//get the grid row position
+			int currow = Grid.GetRow((ComboBox)sender);
+			if (((ComboBox)sender).SelectedIndex == 0)
+			{
+				TestingVars_list[currow] = new RuntimeVars() { VarName = TestingVars_list[currow].VarName, Type = typeof(bool), VarData = false };
+				dtype = 4;
+			}
+			else if (((ComboBox)sender).SelectedIndex == 1)
+			{
+				TestingVars_list[currow] = new RuntimeVars() { VarName = TestingVars_list[currow].VarName, Type = typeof(int), VarData = true };
+				dtype = 3;
+			}
+			//if (!VarDisplayBlocks_dict.ContainsKey(TestingVars_list[currow])) { Console.WriteLine("DNE"); return; }
+			foreach (BaseNodeBlock bnb in VarDisplayBlocks_dict[TestingVars_list[currow].VarName])
+			{
+				if(bnb is GetConstantNodeBlock)
+				{
+					(bnb as GetConstantNodeBlock).DType = (ECOnnectionType)dtype;
+				}
+			}
+		}
+
+		private void RuntimeVar_Data_Changed(object sender, TextChangedEventArgs e)
+		{
+			if (!(TestingVars_list.Count > 0)) return;
+			//get the grid row position
+			int currow = Grid.GetRow((TextBox)sender);
+
+			if(TestingVars_list[currow].Type == typeof(bool))
+			{
+				if (((TextBox)sender).Text.ToLower() != "t" && ((TextBox)sender).Text.ToLower() != "f") { ((TextBox)sender).Text = ""; return; }
+				if (((TextBox)sender).Text.ToLower() == "t")
+					TestingVars_list[currow].VarData = true;
+				else TestingVars_list[currow].VarData = false;
+			}
+			else if (TestingVars_list[currow].Type == typeof(int))
+			{
+				if (((TextBox)sender).Text.All(x => char.IsDigit(x)) && ((TextBox)sender).Text != "") { }
+				else { ((TextBox)sender).Text = ""; return; }
+				TestingVars_list[currow].VarData = Int32.Parse(((TextBox)sender).Text);
+			}
+		}
+
+		private void RuntimeVar_Name_Changed(object sender, TextChangedEventArgs e)
+		{
+			if (!(TestingVars_list.Count > 0)) return;
+			//get the grid row position
+			int currow = Grid.GetRow((TextBox)sender);
+
+			//Var Names are specific
+			if (((TextBox)sender).Text.All(x => char.IsLetterOrDigit(x) || x == '_'))
+			{
+				//just letters and digits.
+			}
+			else
+			{
+				//e.Handled = true;
+				((TextBox)sender).Text = ((TextBox)sender).Text.Substring(0, ((TextBox)sender).Text.Length - 1);
+				((TextBox)sender).SelectionStart = ((TextBox)sender).Text.Length;
+				((TextBox)sender).SelectionLength = 0;
+			}
+			TestingVars_list[currow].VarName = ((TextBox)sender).Text;
 		}
 
 		private void NodeEditor_BackCanvas_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -1066,22 +1142,50 @@ namespace NodeEditor
 			mi_get.Items.Clear();
 			MenuItem mi_set = (MenuItem)cm.Items.GetItemAt(7);
 			mi_set.Items.Clear();
+			MenuItem mi_dia = (MenuItem)cm.Items.GetItemAt(4);
+			mi_dia.Items.Clear();
 
-			foreach (TestingVars item in TestingVars_list)
+
+			foreach (RuntimeVars item in TestingVars_list)
 			{
-				mi_get.Items.Add(new MenuItem() { Header =  item.VarName });
-				mi_set.Items.Add(new MenuItem() { Header =  item.VarName });
+				MenuItem mi_getvar = new MenuItem() { Header = item.VarName };
+				mi_getvar.Click += RuntimeVar_Get_Click;
+				mi_get.Items.Add(mi_getvar);
+
+				MenuItem mi_setvar = new MenuItem() { Header = item.VarName };
+				mi_setvar.Click += RuntimeVar_Set_Click;
+				mi_set.Items.Add(mi_setvar);
+			}
+			foreach (String Name in SceneCharacters_list)
+			{
+				mi_dia.Items.Add(new MenuItem() { Header = Name });
 			}
 
 			cm.MaxHeight = 400;
 			cm.IsOpen = true;
-			
 
+		}
+
+		private void RuntimeVar_Set_Click(object sender, RoutedEventArgs e)
+		{
+			throw new NotImplementedException();
+		}
+
+		private void RuntimeVar_Get_Click(object sender, RoutedEventArgs e)
+		{
+			RuntimeVars selectedRV = RuntimeVars.GetRuntimeVar(TestingVars_list.ToList(), ((MenuItem)sender).Header.ToString());
+			GetConstantNodeBlock bn = null;
+			if (selectedRV.Type == typeof(bool))
+				bn = new GetConstantNodeBlock(ECOnnectionType.Bool, ref selectedRV);
+			else if (selectedRV.Type == typeof(int))
+				bn = new GetConstantNodeBlock(ECOnnectionType.Int, ref selectedRV);
+			NodeEditor_Canvas.Children.Add(bn);
+			VarDisplayBlocks_dict[selectedRV.VarName].Add(bn);
 		}
 
 		private void AddDialogueBlock_BTN_Click(object sender, RoutedEventArgs e)
 		{
-			DialogueNodeBlock bn = new DialogueNodeBlock("");
+			DialogueNodeBlock bn = new DialogueNodeBlock(""); //TODO: Change this from "" -> MenuItem.Header
 			NodeEditor_Canvas.Children.Add(bn);
 			Point p = new Point(0, 10); Point p1 = new Point(150, 20 + 20);
 			bn.EntryNode = (new ConnectionNode("EnterNode", p, ECOnnectionType.Enter));
@@ -1093,30 +1197,63 @@ namespace NodeEditor
 	/// This is the starting pointer for a given graph
 	/// CONTAINS ONE OUTPUT (EXIT NODE)
 	/// </summary>
-	public class StartBlockNode
+	public class StartBlockNode : BaseNodeBlock
 	{
-
+		public StartBlockNode()
+		{
+			this.ExitNode = new ConnectionNode("ExitNode", new Point(0,0), ECOnnectionType.Exit);
+		}
 	}
 
 	/// <summary>
 	/// THis is the Stopping pointer for a given graph
 	/// CONTAINS ONE INPUT (ENTRY NODE)
 	/// </summary>
-	public class ExitBlockNode
+	public class ExitBlockNode : BaseNodeBlock
 	{
-
+		public ExitBlockNode()
+		{
+			this.EntryNode = new ConnectionNode("EntryNode", new Point(0, 0), ECOnnectionType.Enter);
+		}
 	}
 
-	public class TestingVars
+	public class RuntimeVars
 	{
 		public string VarName { get; set; }
 		public object VarData { get; set; }
+		public Type Type { get; set; }
 
-		public TestingVars()
+		public RuntimeVars()
 		{
+			Type = typeof(int);
+		}
 
+		public static RuntimeVars GetRuntimeVar(List<RuntimeVars> list, String Name)
+		{
+			foreach (RuntimeVars item in list)
+			{
+				if (item.VarName == Name) return item;
+			}
+			return null;
+		}
+
+		public bool Equals(RuntimeVars rv)
+		{
+			return rv.Type.Equals(Type) && rv.VarData.Equals(VarData) && rv.VarName.Equals(VarName);
+		}
+
+		public override bool Equals(object obj)
+		{
+			return this.Equals(obj as RuntimeVars);
+		}
+
+		public override int GetHashCode()
+		{
+			return 1;//VarName.GetHashCode() ^ VarData.GetHashCode() ^ Type.GetHashCode();
 		}
 
 	}
+
+
 
 }

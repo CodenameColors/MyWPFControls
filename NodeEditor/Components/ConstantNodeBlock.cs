@@ -31,7 +31,15 @@ namespace NodeEditor.Components
 			}
 		}
 
-		public  object data = new object();
+		private RuntimeVars data = new RuntimeVars();
+		public RuntimeVars InternalData
+		{
+			get { return data; }
+			set
+			{
+				data = value;
+			}
+		}
 
 		public GetConstantNodeBlock(ECOnnectionType type)
 		{
@@ -39,6 +47,16 @@ namespace NodeEditor.Components
 			Header = String.Format("Get Constant [{0}]", type.ToString());
 			OutputNodes = new List<ConnectionNode>(); //There is only ONE output
 			OutputNodes.Add(new ConnectionNode() { Name = "Output1", NodeType = type });
+		}
+
+		public GetConstantNodeBlock(ECOnnectionType type, ref RuntimeVars varptr)
+		{
+			dtype = type;
+			Header = String.Format("Get Constant [{0}]", type.ToString());
+			OutputNodes = new List<ConnectionNode>(); //There is only ONE output
+			OutputNodes.Add(new ConnectionNode() { Name = "Output1", NodeType = type });
+
+			this.InternalData = varptr;
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
