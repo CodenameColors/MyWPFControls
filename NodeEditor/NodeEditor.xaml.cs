@@ -21,11 +21,11 @@ using System.Windows.Shapes;
 
 namespace NodeEditor
 {
-  /// <summary>
-  /// Interaction logic for UserControl1.xaml
-  /// </summary>
-  public partial class NodeEditor : UserControl
-  {
+	/// <summary>
+	/// Interaction logic for UserControl1.xaml
+	/// </summary>
+	public partial class NodeEditor : UserControl
+	{
 
 		#region ItemSource
 		public IEnumerable ItemsSource
@@ -75,7 +75,7 @@ namespace NodeEditor
 					GetConstantNodeBlock bn = (GetConstantNodeBlock)e.NewItems[0];
 					NodeEditor_Canvas.Children.Add(bn);
 				}
-				else if(e.NewItems[0] is SetConstantNodeBlock)
+				else if (e.NewItems[0] is SetConstantNodeBlock)
 				{
 					SetConstantNodeBlock bn = (SetConstantNodeBlock)e.NewItems[0];
 					NodeEditor_Canvas.Children.Add(bn);
@@ -147,7 +147,7 @@ namespace NodeEditor
 
 		static NodeBlockDragAdorner _dragAdorner;
 
-		
+
 		Point MPos = new Point();
 		Point GridOffset = new Point();
 		private ImageBrush imgtilebrush;
@@ -168,9 +168,12 @@ namespace NodeEditor
 		private Dictionary<String, List<BaseNodeBlock>> VarDisplayBlocks_dict = new Dictionary<String, List<BaseNodeBlock>>();
 
 		public NodeEditor()
-    {
-        InitializeComponent();
-    }
+		{
+			InitializeComponent();
+			TestingVars_list.CollectionChanged += TestingVars_list_CollectionChanged;
+
+		}
+
 
 		#region Panning
 
@@ -422,7 +425,7 @@ namespace NodeEditor
 					for (int i = 0; i < BN.OutputNodes.Count; i++)
 					{
 						Point start = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN)); start.Y += 20 + (40 *
-							(BN.InputNodes.Count - 1 < 0 ? 0 : (BN.InputNodes.Count ))) + (40 * i) + 20; //the 20 is middle of circle
+							(BN.InputNodes.Count - 1 < 0 ? 0 : (BN.InputNodes.Count))) + (40 * i) + 20; //the 20 is middle of circle
 						for (int j = 0; j < BN.OutputNodes[i].Curves.Count; j++)
 							SetCurveStartPoint(BN.OutputNodes[i].Curves[j], start);
 						//Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); end.Y += 40 + (10); //the 10 is middle of circle
@@ -675,11 +678,11 @@ namespace NodeEditor
 
 		}
 
-		
+
 
 		private void AddDialogueRow_BTN_Click(object sender, RoutedEventArgs e)
 		{
-			
+
 		}
 
 		/// <summary>
@@ -700,9 +703,9 @@ namespace NodeEditor
 
 			if (obj is DialogueNodeBlock)
 				StartDrawingDialogueNodeCurve(sender);
-			else if(obj is GetConstantNodeBlock)
+			else if (obj is GetConstantNodeBlock)
 				StartDrawingConstantNode(sender);
-			else if(obj is SetConstantNodeBlock)
+			else if (obj is SetConstantNodeBlock)
 				StartDrawingConstantNode(sender);
 		}
 
@@ -713,7 +716,7 @@ namespace NodeEditor
 
 
 
-		
+
 		private void MoveThumb_Left_PreviewDragEnter(object sender, DragEventArgs e)
 		{
 			Console.WriteLine("Mouse Dragged into Input");
@@ -730,9 +733,14 @@ namespace NodeEditor
 			}
 			//add the dialouge textblock
 			OutputGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(40) });
-			TextBlock tb = new TextBlock() { Text = "Memes" , Margin = new Thickness(5),
-				HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment=VerticalAlignment.Top};
-			Grid.SetRow(tb, OutputGrid.RowDefinitions.Count-1); Grid.SetColumn(tb, 1);
+			TextBlock tb = new TextBlock()
+			{
+				Text = "Memes",
+				Margin = new Thickness(5),
+				HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Top
+			};
+			Grid.SetRow(tb, OutputGrid.RowDefinitions.Count - 1); Grid.SetColumn(tb, 1);
 			OutputGrid.Children.Add(tb);
 
 			//add the output node Display wise
@@ -761,7 +769,7 @@ namespace NodeEditor
 
 			//add the output node data wise
 			DialogueNodeBlock BN = (DialogueNodeBlock)((Button)sender).TemplatedParent;
-			Point p = new Point(Canvas.GetLeft(BN)+ 150, Canvas.GetTop(BN) + 20 + (20 * OutputGrid.RowDefinitions.Count));
+			Point p = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN) + 20 + (20 * OutputGrid.RowDefinitions.Count));
 			BN.OutputNodes.Add(new ConnectionNode("OutputNode" + OutputGrid.RowDefinitions.Count, p, ECOnnectionType.Exit));
 
 
@@ -809,7 +817,7 @@ namespace NodeEditor
 			inputGrid.Children.Add(gg);
 
 			//Add the combo box to tell/change what data type is allow on this node
-			ComboBox cb = new ComboBox() { IsEnabled = false, HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center};
+			ComboBox cb = new ComboBox() { IsEnabled = false, HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
 			cb.Items.Add("Bool"); cb.Items.Add("Int");
 			cb.SelectedIndex = 1;
 			Grid.SetRow(cb, inputGrid.RowDefinitions.Count - 1); Grid.SetColumn(cb, 2);
@@ -891,7 +899,7 @@ namespace NodeEditor
 
 			//first find the circle
 			Grid nodegrid = ((Grid)((ComboBox)sender).Parent);
-			for (int i =0; i < nodegrid.Children.Count; i++)
+			for (int i = 0; i < nodegrid.Children.Count; i++)
 			{
 				if ((nodegrid.Children[i] is Grid) && Grid.GetRow(nodegrid.Children[i] as Grid) == Grid.GetRow(sender as ComboBox))
 				{
@@ -904,7 +912,7 @@ namespace NodeEditor
 						ell.Fill = Brushes.Red;
 						(nodegrid.TemplatedParent as DialogueNodeBlock).InputNodes[(Grid.GetRow(sender as ComboBox))].NodeType = ECOnnectionType.Bool;
 					}
-					else if((sender as ComboBox).SelectedIndex == 1)
+					else if ((sender as ComboBox).SelectedIndex == 1)
 					{
 						ell.Fill = Brushes.BlueViolet;
 						(nodegrid.TemplatedParent as DialogueNodeBlock).InputNodes[(Grid.GetRow(sender as ComboBox))].NodeType = ECOnnectionType.Int;
@@ -988,13 +996,13 @@ namespace NodeEditor
 
 			ContextMenu cm = this.FindResource("DeleteConnections_CM") as ContextMenu;
 
-			for (int i = cm.Items.Count-1; i >= 2; i--)
+			for (int i = cm.Items.Count - 1; i >= 2; i--)
 				cm.Items.RemoveAt(i);
 
-			
-			for(int i = 0; i < SelectedNode.ConnectedNodes.Count; i++)
+
+			for (int i = 0; i < SelectedNode.ConnectedNodes.Count; i++)
 			{
-				MenuItem mi = new MenuItem() { Header = String.Format("{0}:{1}", TempStr, i+1)};
+				MenuItem mi = new MenuItem() { Header = String.Format("{0}:{1}", TempStr, i + 1) };
 				mi.PreviewMouseLeftButtonDown += DeleteConnections_Click;
 				cm.Items.Add(mi);
 			}
@@ -1017,10 +1025,10 @@ namespace NodeEditor
 			SelectedNode.ConnectedNodes[ival].Curves.Remove(SelectedNode.Curves[ival]);
 			SelectedNode.Curves.RemoveAt(ival);
 
-			if(SelectedNode.ConnectedNodes[ival].ConnectedNodes.IndexOf(SelectedNode) >= 0)
+			if (SelectedNode.ConnectedNodes[ival].ConnectedNodes.IndexOf(SelectedNode) >= 0)
 				SelectedNode.ConnectedNodes[ival].ConnectedNodes.Remove(SelectedNode);
 
-			
+
 			SelectedNode.ConnectedNodes.RemoveAt(ival);
 
 		}
@@ -1083,7 +1091,7 @@ namespace NodeEditor
 			//if (!VarDisplayBlocks_dict.ContainsKey(TestingVars_list[currow])) { Console.WriteLine("DNE"); return; }
 			foreach (BaseNodeBlock bnb in VarDisplayBlocks_dict[TestingVars_list[currow].VarName])
 			{
-				if(bnb is GetConstantNodeBlock)
+				if (bnb is GetConstantNodeBlock)
 				{
 					(bnb as GetConstantNodeBlock).DType = (ECOnnectionType)dtype;
 				}
@@ -1096,7 +1104,7 @@ namespace NodeEditor
 			//get the grid row position
 			int currow = Grid.GetRow((TextBox)sender);
 
-			if(TestingVars_list[currow].Type == typeof(bool))
+			if (TestingVars_list[currow].Type == typeof(bool))
 			{
 				if (((TextBox)sender).Text.ToLower() != "t" && ((TextBox)sender).Text.ToLower() != "f") { ((TextBox)sender).Text = ""; return; }
 				if (((TextBox)sender).Text.ToLower() == "t")
@@ -1129,7 +1137,8 @@ namespace NodeEditor
 				((TextBox)sender).SelectionStart = ((TextBox)sender).Text.Length;
 				((TextBox)sender).SelectionLength = 0;
 			}
-			TestingVars_list[currow].VarName = ((TextBox)sender).Text;
+			//set it new so we have a property change event go off
+			TestingVars_list[currow] = new RuntimeVars() { VarName = ((TextBox)sender).Text, Type = TestingVars_list[currow].Type, VarData = TestingVars_list[currow].VarData }; //;
 		}
 
 		private void NodeEditor_BackCanvas_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -1191,69 +1200,87 @@ namespace NodeEditor
 			bn.EntryNode = (new ConnectionNode("EnterNode", p, ECOnnectionType.Enter));
 			bn.OutputNodes.Add(new ConnectionNode("OutputNode1", p1, ECOnnectionType.Exit));
 		}
-	}
 
-	/// <summary>
-	/// This is the starting pointer for a given graph
-	/// CONTAINS ONE OUTPUT (EXIT NODE)
-	/// </summary>
-	public class StartBlockNode : BaseNodeBlock
-	{
-		public StartBlockNode()
+		private void TestingVars_list_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			this.ExitNode = new ConnectionNode("ExitNode", new Point(0,0), ECOnnectionType.Exit);
-		}
-	}
-
-	/// <summary>
-	/// THis is the Stopping pointer for a given graph
-	/// CONTAINS ONE INPUT (ENTRY NODE)
-	/// </summary>
-	public class ExitBlockNode : BaseNodeBlock
-	{
-		public ExitBlockNode()
-		{
-			this.EntryNode = new ConnectionNode("EntryNode", new Point(0, 0), ECOnnectionType.Enter);
-		}
-	}
-
-	public class RuntimeVars
-	{
-		public string VarName { get; set; }
-		public object VarData { get; set; }
-		public Type Type { get; set; }
-
-		public RuntimeVars()
-		{
-			Type = typeof(int);
-		}
-
-		public static RuntimeVars GetRuntimeVar(List<RuntimeVars> list, String Name)
-		{
-			foreach (RuntimeVars item in list)
+			if (e.OldItems == null) return;
+			if ((e.OldItems[0] as RuntimeVars).VarName == (e.NewItems[0] as RuntimeVars).VarName) return;
+			if (e.Action == NotifyCollectionChangedAction.Replace)
 			{
-				if (item.VarName == Name) return item;
+				List<BaseNodeBlock> temp = VarDisplayBlocks_dict[(e.OldItems[0] as RuntimeVars).VarName];
+				//update list
+				foreach (BaseNodeBlock item in temp)
+				{
+					if(item is GetConstantNodeBlock)
+					(item as GetConstantNodeBlock).InternalData.VarName = (e.NewItems[0] as RuntimeVars).VarName;
+				}
+
+				VarDisplayBlocks_dict.Remove((e.OldItems[0] as RuntimeVars).VarName); //remove old
+				VarDisplayBlocks_dict.Add((e.NewItems[0] as RuntimeVars).VarName, temp); //add new
 			}
-			return null;
+
+
 		}
 
-		public bool Equals(RuntimeVars rv)
+		/// <summary>
+		/// This is the starting pointer for a given graph
+		/// CONTAINS ONE OUTPUT (EXIT NODE)
+		/// </summary>
+		public class StartBlockNode : BaseNodeBlock
 		{
-			return rv.Type.Equals(Type) && rv.VarData.Equals(VarData) && rv.VarName.Equals(VarName);
+			public StartBlockNode()
+			{
+				this.ExitNode = new ConnectionNode("ExitNode", new Point(0, 0), ECOnnectionType.Exit);
+			}
 		}
 
-		public override bool Equals(object obj)
+		/// <summary>
+		/// THis is the Stopping pointer for a given graph
+		/// CONTAINS ONE INPUT (ENTRY NODE)
+		/// </summary>
+		public class ExitBlockNode : BaseNodeBlock
 		{
-			return this.Equals(obj as RuntimeVars);
+			public ExitBlockNode()
+			{
+				this.EntryNode = new ConnectionNode("EntryNode", new Point(0, 0), ECOnnectionType.Enter);
+			}
 		}
 
-		public override int GetHashCode()
+		public class RuntimeVars
 		{
-			return 1;//VarName.GetHashCode() ^ VarData.GetHashCode() ^ Type.GetHashCode();
-		}
+			public string VarName { get; set; }
+			public object VarData { get; set; }
+			public Type Type { get; set; }
 
+			public RuntimeVars()
+			{
+				Type = typeof(int);
+			}
+
+			public static RuntimeVars GetRuntimeVar(List<RuntimeVars> list, String Name)
+			{
+				foreach (RuntimeVars item in list)
+				{
+					if (item.VarName == Name) return item;
+				}
+				return null;
+			}
+
+			public bool Equals(RuntimeVars rv)
+			{
+				return rv.Type.Equals(Type) && rv.VarData.Equals(VarData) && rv.VarName.Equals(VarName);
+			}
+
+			public override bool Equals(object obj)
+			{
+				return this.Equals(obj as RuntimeVars);
+			}
+
+			public override int GetHashCode()
+			{
+				return 1;//VarName.GetHashCode() ^ VarData.GetHashCode() ^ Type.GetHashCode();
+			}
+
+		}
 	}
-
-
-
 }

@@ -31,8 +31,8 @@ namespace NodeEditor.Components
 			}
 		}
 
-		private RuntimeVars data = new RuntimeVars();
-		public RuntimeVars InternalData
+		private NodeEditor.RuntimeVars data = new NodeEditor.RuntimeVars();
+		public NodeEditor.RuntimeVars InternalData
 		{
 			get { return data; }
 			set
@@ -49,7 +49,7 @@ namespace NodeEditor.Components
 			OutputNodes.Add(new ConnectionNode() { Name = "Output1", NodeType = type });
 		}
 
-		public GetConstantNodeBlock(ECOnnectionType type, ref RuntimeVars varptr)
+		public GetConstantNodeBlock(ECOnnectionType type, ref NodeEditor.RuntimeVars varptr)
 		{
 			dtype = type;
 			Header = String.Format("Get Constant [{0}]", type.ToString());
