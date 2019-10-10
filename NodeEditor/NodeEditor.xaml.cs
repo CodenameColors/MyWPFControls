@@ -67,8 +67,8 @@ namespace NodeEditor
 					DialogueNodeBlock bn = (DialogueNodeBlock)e.NewItems[0];
 					NodeEditor_Canvas.Children.Add(bn);
 					Point p = new Point(0, 10); Point p1 = new Point(150, 20 + 20);
-					bn.EntryNode = (new ConnectionNode("EnterNode", p, ECOnnectionType.Enter));
-					bn.OutputNodes.Add(new ConnectionNode("OutputNode1", p1, ECOnnectionType.Exit));
+					bn.EntryNode = (new ConnectionNode(bn, "EnterNode", p, ECOnnectionType.Enter));
+					bn.OutputNodes.Add(new ConnectionNode(bn, "OutputNode1", p1, ECOnnectionType.Exit));
 				}
 				else if (e.NewItems[0] is GetConstantNodeBlock)
 				{
@@ -770,7 +770,7 @@ namespace NodeEditor
 			//add the output node data wise
 			DialogueNodeBlock BN = (DialogueNodeBlock)((Button)sender).TemplatedParent;
 			Point p = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN) + 20 + (20 * OutputGrid.RowDefinitions.Count));
-			BN.OutputNodes.Add(new ConnectionNode("OutputNode" + OutputGrid.RowDefinitions.Count, p, ECOnnectionType.Exit));
+			BN.OutputNodes.Add(new ConnectionNode(BN, "OutputNode" + OutputGrid.RowDefinitions.Count, p, ECOnnectionType.Exit));
 
 
 			//add an input node IF row definition count is 2. This is the dialogue choice val. ONLY CAN HAVE ONE
@@ -825,7 +825,7 @@ namespace NodeEditor
 
 			//add the Input node data wise
 			Point pp = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN) + 20 + (20 * inputGrid.RowDefinitions.Count));
-			BN.InputNodes.Add(new ConnectionNode("InputNode" + inputGrid.RowDefinitions.Count, pp, ECOnnectionType.Int));
+			BN.InputNodes.Add(new ConnectionNode(BN, "InputNode" + inputGrid.RowDefinitions.Count, pp, ECOnnectionType.Int));
 		}
 
 		private void AddDialogueInput_BTN_Click(object sender, RoutedEventArgs e)
@@ -884,7 +884,7 @@ namespace NodeEditor
 			//add the Input node data wise
 			DialogueNodeBlock BN = (DialogueNodeBlock)((Button)sender).TemplatedParent;
 			Point p = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN) + 20 + (20 * inputGrid.RowDefinitions.Count));
-			BN.InputNodes.Add(new ConnectionNode("InputNode" + inputGrid.RowDefinitions.Count, p, ECOnnectionType.Bool));
+			BN.InputNodes.Add(new ConnectionNode(BN, "InputNode" + inputGrid.RowDefinitions.Count, p, ECOnnectionType.Bool));
 
 		}
 
@@ -1197,8 +1197,8 @@ namespace NodeEditor
 			DialogueNodeBlock bn = new DialogueNodeBlock(""); //TODO: Change this from "" -> MenuItem.Header
 			NodeEditor_Canvas.Children.Add(bn);
 			Point p = new Point(0, 10); Point p1 = new Point(150, 20 + 20);
-			bn.EntryNode = (new ConnectionNode("EnterNode", p, ECOnnectionType.Enter));
-			bn.OutputNodes.Add(new ConnectionNode("OutputNode1", p1, ECOnnectionType.Exit));
+			bn.EntryNode = (new ConnectionNode(bn, "EnterNode", p, ECOnnectionType.Enter));
+			bn.OutputNodes.Add(new ConnectionNode(bn, "OutputNode1", p1, ECOnnectionType.Exit));
 		}
 
 		private void TestingVars_list_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -1230,7 +1230,7 @@ namespace NodeEditor
 		{
 			public StartBlockNode()
 			{
-				this.ExitNode = new ConnectionNode("ExitNode", new Point(0, 0), ECOnnectionType.Exit);
+				this.ExitNode = new ConnectionNode(this, "ExitNode", new Point(0, 0), ECOnnectionType.Exit);
 			}
 		}
 
@@ -1242,7 +1242,7 @@ namespace NodeEditor
 		{
 			public ExitBlockNode()
 			{
-				this.EntryNode = new ConnectionNode("EntryNode", new Point(0, 0), ECOnnectionType.Enter);
+				this.EntryNode = new ConnectionNode(this, "EntryNode", new Point(0, 0), ECOnnectionType.Enter);
 			}
 		}
 

@@ -28,6 +28,7 @@ namespace NodeEditor.Components
 		public Point NodeLocation;
 		public List<Path> Curves = new List<Path>();
 		public ECOnnectionType NodeType;
+		public BaseNodeBlock ParentBlock = new BaseNodeBlock();
 
 		public ConnectionNode()
 		{
