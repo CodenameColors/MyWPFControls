@@ -35,8 +35,9 @@ namespace NodeEditor.Components
 
 		}
 
-		public ConnectionNode(String Name, Point p, ECOnnectionType nodetype)
+		public ConnectionNode(BaseNodeBlock pblock, String Name, Point p, ECOnnectionType nodetype)
 		{
+			this.ParentBlock = pblock;
 			this.Name = Name;
 			this.NodeLocation = p;
 			this.NodeType = nodetype;

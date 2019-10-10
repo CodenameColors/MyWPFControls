@@ -158,6 +158,7 @@ namespace NodeEditor
 		bool isMDown = false;
 		bool isMInNode = false;
 		Point CurveStart = new Point();
+		Point NewBlockLocation = new Point();
 		object SelectedBlockNode = null;
 		ConnectionNode SelectedNode = null;
 		int SelectedNodeRow = 0;
@@ -1094,6 +1095,9 @@ namespace NodeEditor
 				if (bnb is GetConstantNodeBlock)
 				{
 					(bnb as GetConstantNodeBlock).DType = (ECOnnectionType)dtype;
+					(bnb as GetConstantNodeBlock).output.NodeType = (ECOnnectionType)dtype;
+
+					DeleteAllNodeConnection((bnb as GetConstantNodeBlock).output);
 				}
 			}
 		}
@@ -1172,7 +1176,7 @@ namespace NodeEditor
 
 			cm.MaxHeight = 400;
 			cm.IsOpen = true;
-
+			NewBlockLocation = Mouse.GetPosition(NodeEditor_BackCanvas);
 		}
 
 		private void RuntimeVar_Set_Click(object sender, RoutedEventArgs e)
@@ -1188,6 +1192,7 @@ namespace NodeEditor
 				bn = new GetConstantNodeBlock(ECOnnectionType.Bool, ref selectedRV);
 			else if (selectedRV.Type == typeof(int))
 				bn = new GetConstantNodeBlock(ECOnnectionType.Int, ref selectedRV);
+			Canvas.SetLeft(bn, NewBlockLocation.X); Canvas.SetTop(bn, NewBlockLocation.Y);
 			NodeEditor_Canvas.Children.Add(bn);
 			VarDisplayBlocks_dict[selectedRV.VarName].Add(bn);
 		}
@@ -1218,7 +1223,36 @@ namespace NodeEditor
 				VarDisplayBlocks_dict.Remove((e.OldItems[0] as RuntimeVars).VarName); //remove old
 				VarDisplayBlocks_dict.Add((e.NewItems[0] as RuntimeVars).VarName, temp); //add new
 			}
+		}
 
+		private void DeleteAllNodeConnection(ConnectionNode Node)
+		{
+			for (int i = 0; i < Node.ConnectedNodes.Count; i++)
+			{
+				DeleteConnection(Node, Node.ConnectedNodes[i].ParentBlock);
+			}
+		}
+
+		public void DeleteConnection(ConnectionNode Node, BaseNodeBlock CBlock)
+		{
+			//what connection are we looking for?
+			int index = -1;int count = 0;
+			foreach (ConnectionNode item in Node.ConnectedNodes)
+			{
+				if (item.ParentBlock == CBlock)
+					index = count;
+				count++;
+			}
+			if (index >= 0)
+			{
+				Node.ConnectedNodes.RemoveAt(index);
+				NodeEditor_BackCanvas.Children.Remove(Node.Curves[index]);
+				Node.Curves.RemoveAt(index);
+			}
+		}
+
+		private void ConnectNodes(ConnectionNode From, ConnectionNode To)
+		{
 
 		}
 
