@@ -38,6 +38,16 @@ namespace NodeEditor.Components
 			set
 			{
 				data = value;
+				VarHeader = value.VarName;
+			}
+		}
+
+		public String VarHeader
+		{
+			get { return data.VarName; }
+			set
+			{
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("VarHeader"));
 			}
 		}
 
@@ -46,7 +56,7 @@ namespace NodeEditor.Components
 			dtype = type;
 			Header = String.Format("Get Constant [{0}]", type.ToString());
 			OutputNodes = new List<ConnectionNode>(); //There is only ONE output
-			OutputNodes.Add(new ConnectionNode() { Name = "Output1", NodeType = type });
+			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", type));
 		}
 
 		public GetConstantNodeBlock(ECOnnectionType type, ref NodeEditor.RuntimeVars varptr)
@@ -54,7 +64,7 @@ namespace NodeEditor.Components
 			dtype = type;
 			Header = String.Format("Get Constant [{0}]", type.ToString());
 			OutputNodes = new List<ConnectionNode>(); //There is only ONE output
-			OutputNodes.Add(new ConnectionNode() { Name = "Output1", NodeType = type });
+			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", type));
 
 			this.InternalData = varptr;
 		}
@@ -64,7 +74,7 @@ namespace NodeEditor.Components
 
 	public class SetConstantNodeBlock : BaseNodeBlock, INotifyPropertyChanged
 	{
-		ConnectionNode OldValue
+		public ConnectionNode OldValue
 		{
 			get { return InputNodes[0]; }
 			set
@@ -73,7 +83,7 @@ namespace NodeEditor.Components
 			}
 		}
 
-		ConnectionNode NewValue
+		public ConnectionNode NewValue
 		{
 			get { return InputNodes[1]; }
 			set
@@ -83,7 +93,7 @@ namespace NodeEditor.Components
 					NewValConnected = false;
 			}
 		}
-		ConnectionNode OutValue
+		public ConnectionNode OutValue
 		{
 			get { return OutputNodes[0]; }
 			set
@@ -116,29 +126,19 @@ namespace NodeEditor.Components
 			}
 		}
 
-		public SetConstantNodeBlock()
-		{
-			this.EntryNode = new ConnectionNode() { Name = "EntryNode", NodeType = ECOnnectionType.Enter };
-			this.ExitNode = new ConnectionNode() { Name = "ExitNode", NodeType = ECOnnectionType.Exit };
-			this.InputNodes.Add(new ConnectionNode() { Name = "InputNode1", NodeType = ECOnnectionType.Bool });
-			this.InputNodes.Add(new ConnectionNode() { Name = "InputNode2", NodeType = ECOnnectionType.Bool });
-			this.OutputNodes.Add(new ConnectionNode() { Name = "OutputNode1", NodeType = ECOnnectionType.Bool });
-		}
-
-		public SetConstantNodeBlock(ECOnnectionType nodetype)
+		public SetConstantNodeBlock(ECOnnectionType nodetype, ref NodeEditor.RuntimeVars varptr)
 		{
 			this.InputNodes = new List<ConnectionNode>();
 			this.OutputNodes = new List<ConnectionNode>();
-			this.EntryNode = new ConnectionNode() { Name = "EntryNode", NodeType = ECOnnectionType.Enter };
-			this.ExitNode = new ConnectionNode() { Name = "ExitNode", NodeType = ECOnnectionType.Exit };
-			this.InputNodes.Add(new ConnectionNode() { Name = "InputNode1", NodeType = nodetype });
-			this.InputNodes.Add(new ConnectionNode() { Name = "InputNode2", NodeType = nodetype });
-			this.OutputNodes.Add(new ConnectionNode() { Name = "OutputNode1", NodeType = nodetype });
+			this.EntryNode = new ConnectionNode(this, "EntryNode", ECOnnectionType.Enter);
+			this.ExitNode = new ConnectionNode(this, "ExitNode", ECOnnectionType.Exit);
+			this.InputNodes.Add(new ConnectionNode(this, "InputNode1", nodetype));
+			this.InputNodes.Add(new ConnectionNode(this, "InputNode2", nodetype));
+			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", nodetype));
 
 			dtype = nodetype;
 			newvalconnected = false;
 		}
-
 
 		public event PropertyChangedEventHandler PropertyChanged;
 		

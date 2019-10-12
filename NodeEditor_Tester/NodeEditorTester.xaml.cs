@@ -46,7 +46,8 @@ namespace NodeEditor_Tester
 		}
 		private void BaseNode_BTN_Click2(object sender, RoutedEventArgs e)
 		{
-			nodes.Add(new SetConstantNodeBlock(ECOnnectionType.Int));
+
+			//nodes.Add(new SetConstantNodeBlock(ECOnnectionType.Int));
 		}
 
 

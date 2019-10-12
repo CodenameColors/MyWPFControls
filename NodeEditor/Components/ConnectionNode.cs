@@ -28,18 +28,27 @@ namespace NodeEditor.Components
 		public Point NodeLocation;
 		public List<Path> Curves = new List<Path>();
 		public ECOnnectionType NodeType;
-		public BaseNodeBlock ParentBlock = new BaseNodeBlock();
+		public BaseNodeBlock ParentBlock = null;
 
-		public ConnectionNode()
-		{
-
-		}
 
 		public ConnectionNode(BaseNodeBlock pblock, String Name, Point p, ECOnnectionType nodetype)
 		{
 			this.ParentBlock = pblock;
 			this.Name = Name;
 			this.NodeLocation = p;
+			this.NodeType = nodetype;
+		}
+
+		/// <summary>
+		/// Constructing our connection node. this is here when we don't want to set the position.
+		/// </summary>
+		/// <param name="pblock"></param>
+		/// <param name="Name"></param>
+		/// <param name="nodetype"></param>
+		public ConnectionNode(BaseNodeBlock pblock, String Name, ECOnnectionType nodetype)
+		{
+			this.ParentBlock = pblock;
+			this.Name = Name;
 			this.NodeType = nodetype;
 		}
 

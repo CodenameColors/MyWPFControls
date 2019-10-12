@@ -52,12 +52,12 @@ namespace NodeEditor.Components
 		{
 			this.InputNodes = new List<ConnectionNode>();
 			this.OutputNodes = new List<ConnectionNode>();
-			this.EntryNode = new ConnectionNode() { Name = "EntryNode", NodeType = ECOnnectionType.Enter };
-			this.ExitNode = new ConnectionNode() { Name = "ExitNode", NodeType = ECOnnectionType.Exit };
-			this.InputNodes.Add(new ConnectionNode() { Name = "InputNode1", NodeType = nodetype });
-			this.InputNodes.Add(new ConnectionNode() { Name = "InputNode2", NodeType = nodetype });
-			this.OutputNodes.Add(new ConnectionNode() { Name = "OutputNode1", NodeType = nodetype });
-			this.OutputNodes.Add(new ConnectionNode() { Name = "OutputNode2", NodeType = nodetype });
+			this.EntryNode = new ConnectionNode(this, "EntryNode", ECOnnectionType.Enter);
+			this.ExitNode = new ConnectionNode(this, "ExitNode", ECOnnectionType.Exit);
+			this.InputNodes.Add(new ConnectionNode(this, "InputNode1", nodetype));
+			this.InputNodes.Add(new ConnectionNode(this, "InputNode2", nodetype));
+			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", nodetype ));
+			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode2", nodetype ));
 		}
 
 	}

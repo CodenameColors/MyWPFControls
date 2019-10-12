@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NodeEditor.Components
 {
-	public class BaseNodeBlock : System.Windows.Controls.Button
+	public abstract class BaseNodeBlock : System.Windows.Controls.Button
 	{
 		public ConnectionNode EntryNode;
 		public ConnectionNode ExitNode;
