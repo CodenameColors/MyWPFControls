@@ -168,6 +168,9 @@ namespace NodeEditor
 
 		private Dictionary<String, List<BaseNodeBlock>> VarDisplayBlocks_dict = new Dictionary<String, List<BaseNodeBlock>>();
 
+		/// <summary>
+		/// constructor
+		/// </summary>
 		public NodeEditor()
 		{
 			InitializeComponent();
@@ -176,6 +179,14 @@ namespace NodeEditor
 			//List
 			TestingVars_list.Add(new RuntimeVars() { VarName = ("ChoiceVar"), VarData = 0 });
 			VarDisplayBlocks_dict.Add(TestingVars_list.Last().VarName, new List<BaseNodeBlock>());
+
+			StartBlockNode bn = new StartBlockNode();
+			Canvas.SetLeft(bn, 50); Canvas.SetTop(bn, 200);
+			NodeEditor_Canvas.Children.Add(bn);
+
+			ExitBlockNode bnn = new ExitBlockNode();
+			Canvas.SetLeft(bnn, 400); Canvas.SetTop(bnn, 200);
+			NodeEditor_Canvas.Children.Add(bnn);
 
 		}
 
@@ -372,13 +383,33 @@ namespace NodeEditor
 			object obj = ((Thumb)sender).TemplatedParent;
 			if (obj is DialogueNodeBlock)
 				MoveDialogueBlock(sender, e);
+			else if (obj is StartBlockNode)
+			{
+				StartBlockNode BN = ((StartBlockNode)((Thumb)sender).TemplatedParent);
+				Canvas.SetLeft(BN, VisualTreeHelper.GetOffset(BN).X + e.HorizontalChange);
+				Canvas.SetTop(BN, VisualTreeHelper.GetOffset(BN).Y + e.VerticalChange);
+
+				Point Start = new Point(Canvas.GetLeft(BN) + 75, Canvas.GetTop(BN) + 20);
+				for (int j = 0; j < BN.ExitNode.Curves.Count; j++)
+					SetCurveStartPoint(BN.ExitNode.Curves[j], Start);
+			}
+			else if (obj is ExitBlockNode)
+			{
+				ExitBlockNode BN = ((ExitBlockNode)((Thumb)sender).TemplatedParent);
+				Canvas.SetLeft(BN, VisualTreeHelper.GetOffset(BN).X + e.HorizontalChange);
+				Canvas.SetTop(BN, VisualTreeHelper.GetOffset(BN).Y + e.VerticalChange);
+
+				Point Start = new Point(Canvas.GetLeft(BN) + 75, Canvas.GetTop(BN) + 20);
+				for (int j = 0; j < BN.EntryNode.Curves.Count; j++)
+					SetCurveStartPoint(BN.EntryNode.Curves[j], Start);
+			}
 			else if (obj is GetConstantNodeBlock)
 			{
 				GetConstantNodeBlock BN = ((GetConstantNodeBlock)((Thumb)sender).TemplatedParent);
 				Canvas.SetLeft(BN, VisualTreeHelper.GetOffset(BN).X + e.HorizontalChange);
 				Canvas.SetTop(BN, VisualTreeHelper.GetOffset(BN).Y + e.VerticalChange);
 
-				Point Start = new Point(Canvas.GetLeft(BN) + 100, Canvas.GetTop(BN) + 40);
+				Point Start = new Point(Canvas.GetLeft(BN) + 75, Canvas.GetTop(BN) + 20);
 				for (int j = 0; j < BN.output.Curves.Count; j++)
 					SetCurveStartPoint(BN.output.Curves[j], Start);
 			}
@@ -1050,7 +1081,7 @@ namespace NodeEditor
 			{
 				Background = Brushes.Transparent,
 				Foreground = Brushes.White,
-				Text = "Var_" + (TestingVar_Grid.RowDefinitions.Count-1)
+				Text = "Var_" + (TestingVar_Grid.RowDefinitions.Count - 1)
 			};
 			TBlock.TextChanged += RuntimeVar_Name_Changed;
 			Grid.SetColumn(TBlock, 0); Grid.SetRow(TBlock, TestingVar_Grid.RowDefinitions.Count - 1);
@@ -1080,7 +1111,7 @@ namespace NodeEditor
 			if (!(TestingVars_list.Count > 0)) return;
 			int dtype = 0;
 			//get the grid row position
-			int currow = Grid.GetRow((ComboBox)sender) +1; //+1 for choice var
+			int currow = Grid.GetRow((ComboBox)sender) + 1; //+1 for choice var
 			if (((ComboBox)sender).SelectedIndex == 0)
 			{
 				TestingVars_list[currow] = new RuntimeVars() { VarName = TestingVars_list[currow].VarName, Type = typeof(bool), VarData = false };
@@ -1101,7 +1132,7 @@ namespace NodeEditor
 
 					DeleteAllNodeConnection((bnb as GetConstantNodeBlock).output);
 				}
-				else if(bnb is SetConstantNodeBlock)
+				else if (bnb is SetConstantNodeBlock)
 				{
 					(bnb as SetConstantNodeBlock).DType = (ECOnnectionType)dtype;
 					(bnb as SetConstantNodeBlock).OldValue.NodeType = (ECOnnectionType)dtype;
@@ -1119,7 +1150,7 @@ namespace NodeEditor
 		{
 			if (!(TestingVars_list.Count > 0)) return;
 			//get the grid row position
-			int currow = Grid.GetRow((TextBox)sender) +  1; //+1 for the choice var
+			int currow = Grid.GetRow((TextBox)sender) + 1; //+1 for the choice var
 
 			if (TestingVars_list[currow].Type == typeof(bool))
 			{
@@ -1140,7 +1171,7 @@ namespace NodeEditor
 		{
 			if (!(TestingVars_list.Count > 0)) return;
 			//get the grid row position
-			int currow = Grid.GetRow((TextBox)sender)  + 1; //+1 for choice var
+			int currow = Grid.GetRow((TextBox)sender) + 1; //+1 for choice var
 
 			//Var Names are specific
 			if (((TextBox)sender).Text.All(x => char.IsLetterOrDigit(x) || x == '_'))
@@ -1212,7 +1243,7 @@ namespace NodeEditor
 				bnget = new GetConstantNodeBlock(ECOnnectionType.Bool, ref selectedRV);
 			else if (selectedRV.Type == typeof(int))
 				bnget = new GetConstantNodeBlock(ECOnnectionType.Int, ref selectedRV);
-			Canvas.SetLeft(bnget, NewBlockLocation.X-175); Canvas.SetTop(bnget, NewBlockLocation.Y-10);
+			Canvas.SetLeft(bnget, NewBlockLocation.X - 175); Canvas.SetTop(bnget, NewBlockLocation.Y - 10);
 			NodeEditor_Canvas.Children.Add(bnget);
 			VarDisplayBlocks_dict[selectedRV.VarName].Add(bnget);
 			bnget.Loaded += RuntimeVarSetBlock_Loaded;
@@ -1227,7 +1258,7 @@ namespace NodeEditor
 		{
 			GetConstantNodeBlock get = (GetConstantNodeBlock)(NodeEditor_Canvas.Children[NodeEditor_Canvas.Children.Count - 1]);
 			SetConstantNodeBlock set = (SetConstantNodeBlock)(NodeEditor_Canvas.Children[NodeEditor_Canvas.Children.Count - 2]);
-			if(get != null && set != null)
+			if (get != null && set != null)
 			{
 				//data reference connection
 				get.output.ConnectedNodes.Add(set.OldValue);
@@ -1305,7 +1336,7 @@ namespace NodeEditor
 		public void DeleteConnection(ConnectionNode Node, BaseNodeBlock CBlock)
 		{
 			//what connection are we looking for?
-			int index = -1;int count = 0;
+			int index = -1; int count = 0;
 			foreach (ConnectionNode item in Node.ConnectedNodes)
 			{
 				if (item.ParentBlock == CBlock)
@@ -1325,31 +1356,8 @@ namespace NodeEditor
 
 		}
 
-		/// <summary>
-		/// This is the starting pointer for a given graph
-		/// CONTAINS ONE OUTPUT (EXIT NODE)
-		/// </summary>
-		public class StartBlockNode : BaseNodeBlock
-		{
-			public StartBlockNode()
-			{
-				this.ExitNode = new ConnectionNode(this, "ExitNode", new Point(0, 0), ECOnnectionType.Exit);
-			}
-		}
 
-		/// <summary>
-		/// THis is the Stopping pointer for a given graph
-		/// CONTAINS ONE INPUT (ENTRY NODE)
-		/// </summary>
-		public class ExitBlockNode : BaseNodeBlock
-		{
-			public ExitBlockNode()
-			{
-				this.EntryNode = new ConnectionNode(this, "EntryNode", new Point(0, 0), ECOnnectionType.Enter);
-			}
-		}
-
-		public class RuntimeVars
+		public partial class RuntimeVars
 		{
 			public string VarName { get; set; }
 			public object VarData { get; set; }
@@ -1385,5 +1393,93 @@ namespace NodeEditor
 			}
 
 		}
+
+
 	}
+	/// <summary>
+	/// This is the starting pointer for a given graph
+	/// CONTAINS ONE OUTPUT (EXIT NODE)
+	/// </summary>
+	public partial class StartBlockNode : BaseNodeBlock
+		{
+			public StartBlockNode()
+			{
+				this.ExitNode = new ConnectionNode(this, "ExitNode", new Point(0, 0), ECOnnectionType.Exit);
+			}
+
+			public override void EvaulatInternalData()
+			{
+				throw new NotImplementedException();
+			}
+
+			public override void NodeBlockExecution()
+			{
+				throw new NotImplementedException();
+			}
+
+			public override void OnEndEvaulatInternalData()
+			{
+				throw new NotImplementedException();
+			}
+
+			public override void OnEndNodeBlockExecution()
+			{
+				throw new NotImplementedException();
+			}
+
+			public override void OnStartEvaulatInternalData()
+			{
+				throw new NotImplementedException();
+			}
+
+			public override void OnStartNodeBlockExecution()
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+	/// <summary>
+	/// THis is the Stopping pointer for a given graph
+	/// CONTAINS ONE INPUT (ENTRY NODE)
+	/// </summary>
+	public partial class ExitBlockNode : BaseNodeBlock
+	{
+		public ExitBlockNode()
+		{
+			this.EntryNode = new ConnectionNode(this, "EntryNode", new Point(0, 0), ECOnnectionType.Enter);
+		}
+
+		public override void EvaulatInternalData()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void NodeBlockExecution()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void OnEndEvaulatInternalData()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void OnEndNodeBlockExecution()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void OnStartEvaulatInternalData()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void OnStartNodeBlockExecution()
+		{
+			throw new NotImplementedException();
+		}
+	}
+
+
+
 }

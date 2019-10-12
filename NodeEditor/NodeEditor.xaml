@@ -53,6 +53,95 @@
 			<Separator/>
 		</ContextMenu>
 
+
+		<Style TargetType="{x:Type local:ExitBlockNode}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate>
+						<Border CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
+							<Grid Width="75">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="20"/>
+									<RowDefinition Height="20"/>
+								</Grid.RowDefinitions>
+								<TextBlock Grid.Row="0" Foreground="White" Text="End Node" Background="#FF252525"/>
+
+
+								<!--Drag thumb-->
+								<ContentPresenter HorizontalAlignment="Stretch" Grid.ColumnSpan="5" Grid.RowSpan="3"
+                                              VerticalAlignment="Stretch"
+                                              x:Name="PART_MiddleIndicator">
+									<ContentPresenter.Content>
+										<Thumb x:Name="MoveThumb_Middle" Cursor="ScrollAll" Background="Transparent" Opacity="0"
+										 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+										 Margin="0,0,5,0" DragDelta="MoveThumb_Middle_DragDelta" />
+									</ContentPresenter.Content>
+								</ContentPresenter>
+
+								<!--output node-->
+								<TextBlock Grid.Row="1" Text="In" TextWrapping="Wrap" Foreground="White" Margin="15,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+								<ContentPresenter HorizontalAlignment="Left" Grid.Row="1" IsHitTestVisible="True"
+                                              VerticalAlignment="Stretch" ClipToBounds="False"
+                                              x:Name="PART_RightIndicator">
+									<ContentPresenter.Content>
+										<Grid x:Name="OutNode1_Grid" PreviewMouseRightButtonDown="COnnectionNode_RightClick" PreviewMouseLeftButtonDown="MoveThumb_Right_MouseLeftButtonDown">
+											<Ellipse HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Width="20" Margin="-10,0,0,0" Cursor="Hand" Fill="White">
+											</Ellipse>
+										</Grid>
+									</ContentPresenter.Content>
+								</ContentPresenter>
+							</Grid>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+
+		<Style TargetType="{x:Type local:StartBlockNode}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate>
+						<Border CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
+							<Grid Width="75">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="20"/>
+									<RowDefinition Height="20"/>
+								</Grid.RowDefinitions>
+								<TextBlock Grid.Row="0" Foreground="White" Text="Start Node" Background="#FF252525"/>
+
+
+								<!--Drag thumb-->
+								<ContentPresenter HorizontalAlignment="Stretch" Grid.ColumnSpan="5" Grid.RowSpan="3"
+                                              VerticalAlignment="Stretch"
+                                              x:Name="PART_MiddleIndicator">
+									<ContentPresenter.Content>
+										<Thumb x:Name="MoveThumb_Middle" Cursor="ScrollAll" Background="Transparent" Opacity="0"
+										 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+										 Margin="0,0,5,0" DragDelta="MoveThumb_Middle_DragDelta" />
+									</ContentPresenter.Content>
+								</ContentPresenter>
+
+								<!--output node-->
+								<TextBlock Grid.Row="1" Text="Out" TextWrapping="Wrap" Foreground="White" Margin="0,0,15,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+								<ContentPresenter HorizontalAlignment="Right" Grid.Row="1" IsHitTestVisible="True"
+                                              VerticalAlignment="Stretch" ClipToBounds="False"
+                                              x:Name="PART_RightIndicator">
+									<ContentPresenter.Content>
+										<Grid x:Name="OutNode1_Grid" PreviewMouseRightButtonDown="COnnectionNode_RightClick" PreviewMouseLeftButtonDown="MoveThumb_Right_MouseLeftButtonDown">
+											<Ellipse HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20" Margin="0,0,-10,0" Cursor="Hand" Fill="White">
+											</Ellipse>
+										</Grid>
+									</ContentPresenter.Content>
+								</ContentPresenter>
+							</Grid>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		
+		
 		<Style TargetType="{x:Type nec:GetConstantNodeBlock}">
 			<Setter Property="Template">
 				<Setter.Value>

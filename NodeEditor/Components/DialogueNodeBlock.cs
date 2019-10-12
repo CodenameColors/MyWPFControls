@@ -27,6 +27,36 @@ namespace NodeEditor.Components
 			base.OnApplyTemplate();
 		}
 
+		public override void OnStartNodeBlockExecution()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void NodeBlockExecution()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void OnEndNodeBlockExecution()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void OnStartEvaulatInternalData()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void EvaulatInternalData()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void OnEndEvaulatInternalData()
+		{
+			throw new NotImplementedException();
+		}
+
 		public event PropertyChangedEventHandler PropertyChanged;
 	}
 }

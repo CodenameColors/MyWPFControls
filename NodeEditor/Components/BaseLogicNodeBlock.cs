@@ -19,8 +19,6 @@ namespace NodeEditor.Components
 
 	public class BaseLogicNodeBlock : BaseNodeBlock
 	{
-		public EConditionalTypes CondType = EConditionalTypes.Equals;
-
 		public ConnectionNode Cond1
 		{
 			get { return this.InputNodes[0]; }
@@ -60,5 +58,34 @@ namespace NodeEditor.Components
 			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode2", nodetype ));
 		}
 
+		public override void OnStartNodeBlockExecution()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void NodeBlockExecution()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void OnEndNodeBlockExecution()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void OnStartEvaulatInternalData()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void EvaulatInternalData()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void OnEndEvaulatInternalData()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
