@@ -78,13 +78,13 @@
 									</ContentPresenter.Content>
 								</ContentPresenter>
 
-								<!--output node-->
+								<!--Entry node-->
 								<TextBlock Grid.Row="1" Text="In" TextWrapping="Wrap" Foreground="White" Margin="15,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 								<ContentPresenter HorizontalAlignment="Left" Grid.Row="1" IsHitTestVisible="True"
                                               VerticalAlignment="Stretch" ClipToBounds="False"
                                               x:Name="PART_RightIndicator">
 									<ContentPresenter.Content>
-										<Grid x:Name="OutNode1_Grid" PreviewMouseRightButtonDown="COnnectionNode_RightClick" PreviewMouseLeftButtonDown="MoveThumb_Right_MouseLeftButtonDown">
+										<Grid x:Name="EntryNode1_Grid" PreviewMouseRightButtonDown="COnnectionNode_RightClick" PreviewMouseMove="MoveThumb_Left_PreviewMouseMove" >
 											<Ellipse HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Width="20" Margin="-10,0,0,0" Cursor="Hand" Fill="White">
 											</Ellipse>
 										</Grid>
@@ -109,8 +109,6 @@
 									<RowDefinition Height="20"/>
 								</Grid.RowDefinitions>
 								<TextBlock Grid.Row="0" Foreground="White" Text="Start Node" Background="#FF252525"/>
-
-
 								<!--Drag thumb-->
 								<ContentPresenter HorizontalAlignment="Stretch" Grid.ColumnSpan="5" Grid.RowSpan="3"
                                               VerticalAlignment="Stretch"
@@ -122,13 +120,13 @@
 									</ContentPresenter.Content>
 								</ContentPresenter>
 
-								<!--output node-->
+								<!--Exit node-->
 								<TextBlock Grid.Row="1" Text="Out" TextWrapping="Wrap" Foreground="White" Margin="0,0,15,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
 								<ContentPresenter HorizontalAlignment="Right" Grid.Row="1" IsHitTestVisible="True"
                                               VerticalAlignment="Stretch" ClipToBounds="False"
                                               x:Name="PART_RightIndicator">
 									<ContentPresenter.Content>
-										<Grid x:Name="OutNode1_Grid" PreviewMouseRightButtonDown="COnnectionNode_RightClick" PreviewMouseLeftButtonDown="MoveThumb_Right_MouseLeftButtonDown">
+										<Grid x:Name="Exit_Grid" PreviewMouseRightButtonDown="COnnectionNode_RightClick" PreviewMouseLeftButtonDown="MoveThumb_Right_MouseLeftButtonDown">
 											<Ellipse HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20" Margin="0,0,-10,0" Cursor="Hand" Fill="White">
 											</Ellipse>
 										</Grid>
