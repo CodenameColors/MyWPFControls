@@ -57,6 +57,11 @@ namespace NodeEditor.Components
 			throw new NotImplementedException();
 		}
 
+		public override void DeleteConnection(EConditionalTypes contype, int row)
+		{
+			throw new NotImplementedException();
+		}
+
 		public event PropertyChangedEventHandler PropertyChanged;
 	}
 }

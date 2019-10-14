@@ -100,6 +100,11 @@ namespace NodeEditor.Components
 		{
 			throw new NotImplementedException();
 		}
+
+		public override void DeleteConnection(EConditionalTypes contype, int row)
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 	public class SetConstantNodeBlock : BaseNodeBlock, INotifyPropertyChanged
@@ -120,7 +125,7 @@ namespace NodeEditor.Components
 			{
 				InputNodes[1] = value;
 				if (InputNodes[1].ConnectedNodes.Count > 0) //its now connected so set display
-					NewValConnected = false;
+					NewValConnected = true;
 			}
 		}
 		public ConnectionNode OutValue
@@ -156,7 +161,7 @@ namespace NodeEditor.Components
 			}
 		}
 
-		public SetConstantNodeBlock(ECOnnectionType nodetype, ref NodeEditor.RuntimeVars varptr)
+		public SetConstantNodeBlock(ECOnnectionType nodetype)
 		{
 			this.InputNodes = new List<ConnectionNode>();
 			this.OutputNodes = new List<ConnectionNode>();
@@ -198,6 +203,11 @@ namespace NodeEditor.Components
 		}
 
 		public override void OnEndEvaulatInternalData()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void DeleteConnection(EConditionalTypes contype, int row)
 		{
 			throw new NotImplementedException();
 		}

@@ -99,6 +99,10 @@
       <Project>{af21c1dd-9fb8-4d5b-b32e-85cbf86b741d}</Project>
       <Name>NodeEditor</Name>
     </ProjectReference>
+    <ProjectReference Include="..\OutputLog\OutputLog.csproj">
+      <Project>{a76b8058-f9fc-4308-a49b-66409bc0d437}</Project>
+      <Name>OutputLog</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

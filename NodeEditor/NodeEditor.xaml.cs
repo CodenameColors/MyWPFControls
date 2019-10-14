@@ -1,5 +1,4 @@
 ﻿using NodeEditor.Components;
-using NodeEditor.Forms;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -430,6 +429,24 @@ namespace NodeEditor
 				for (int j = 0; j < BN.EntryNode.Curves.Count; j++)
 					SetCurveEndPoint(BN.EntryNode.Curves[j], Start);
 			}
+			else if (obj is ConditionalNodeBlock)
+			{
+				ConditionalNodeBlock BN = ((ConditionalNodeBlock)((Thumb)sender).TemplatedParent);
+				Canvas.SetLeft(BN, VisualTreeHelper.GetOffset(BN).X + e.HorizontalChange);
+				Canvas.SetTop(BN, VisualTreeHelper.GetOffset(BN).Y + e.VerticalChange);
+			}
+			else if(obj is BaseArithmeticBlockNode)
+			{
+				BaseArithmeticBlockNode BN = ((BaseArithmeticBlockNode)((Thumb)sender).TemplatedParent);
+				Canvas.SetLeft(BN, VisualTreeHelper.GetOffset(BN).X + e.HorizontalChange);
+				Canvas.SetTop(BN, VisualTreeHelper.GetOffset(BN).Y + e.VerticalChange);
+			}
+			else if(obj is BaseLogicNodeBlock)
+			{
+				BaseLogicNodeBlock BN = ((BaseLogicNodeBlock)((Thumb)sender).TemplatedParent);
+				Canvas.SetLeft(BN, VisualTreeHelper.GetOffset(BN).X + e.HorizontalChange);
+				Canvas.SetTop(BN, VisualTreeHelper.GetOffset(BN).Y + e.VerticalChange);
+			}
 		}
 
 		private void MoveDialogueBlock(object sender, DragDeltaEventArgs e)
@@ -747,6 +764,9 @@ namespace NodeEditor
 			{
 
 			}
+
+			if (BN.InputNodes[1].ConnectedNodes.Count > 0 && BN is SetConstantNodeBlock)
+				(BN as SetConstantNodeBlock).NewValConnected = true;
 
 		}
 		#endregion
@@ -1123,6 +1143,12 @@ namespace NodeEditor
 			if (SelectedNode.ConnectedNodes[ival].ConnectedNodes.IndexOf(SelectedNode) >= 0)
 				SelectedNode.ConnectedNodes[ival].ConnectedNodes.Remove(SelectedNode);
 
+			//TODO: Implement the polymorphism 
+			//this is here for the removal of the CONSTANT controls on the blocks display wise
+			if (SelectedBlockNode is SetConstantNodeBlock && (SelectedBlockNode as SetConstantNodeBlock).NewValue.ConnectedNodes.Count == 0)
+				(SelectedBlockNode as SetConstantNodeBlock).NewValConnected = false;
+			if(SelectedNode.ConnectedNodes[ival].ParentBlock is SetConstantNodeBlock && (SelectedNode.ConnectedNodes[ival].ParentBlock as SetConstantNodeBlock).NewValue.ConnectedNodes.Count == 0)
+				(SelectedNode.ConnectedNodes[ival].ParentBlock as SetConstantNodeBlock).NewValConnected = false;
 
 			SelectedNode.ConnectedNodes.RemoveAt(ival);
 
@@ -1289,9 +1315,9 @@ namespace NodeEditor
 			RuntimeVars selectedRV = RuntimeVars.GetRuntimeVar(TestingVars_list.ToList(), ((MenuItem)sender).Header.ToString());
 			SetConstantNodeBlock bn = null;
 			if (selectedRV.Type == typeof(bool))
-				bn = new SetConstantNodeBlock(ECOnnectionType.Bool, ref selectedRV);
+				bn = new SetConstantNodeBlock(ECOnnectionType.Bool);
 			else if (selectedRV.Type == typeof(int))
-				bn = new SetConstantNodeBlock(ECOnnectionType.Int, ref selectedRV);
+				bn = new SetConstantNodeBlock(ECOnnectionType.Int);
 			Canvas.SetLeft(bn, NewBlockLocation.X); Canvas.SetTop(bn, NewBlockLocation.Y);
 			VarDisplayBlocks_dict[selectedRV.VarName].Add(bn);
 			NodeEditor_Canvas.Children.Add(bn);
@@ -1453,7 +1479,31 @@ namespace NodeEditor
 
 		}
 
+		private void ConditonalsLT_MI_Click(object sender, RoutedEventArgs e)
+		{
+			if ((sender as MenuItem).Header.ToString() == "Bool")
+			{
+				ConditionalNodeBlock bn = new ConditionalNodeBlock(ECOnnectionType.Bool);
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+			else if ((sender as MenuItem).Header.ToString() == "Int")
+			{
+				ConditionalNodeBlock bn = new ConditionalNodeBlock(ECOnnectionType.Int);
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+		}
 
+		private void MathAdd_MI_Click(object sender, RoutedEventArgs e)
+		{
+			BaseArithmeticBlockNode bn = new BaseArithmeticBlockNode();
+			NodeEditor_Canvas.Children.Add(bn);
+		}
+
+		private void LogicAND_MI_Click(object sender, RoutedEventArgs e)
+		{
+			BaseLogicNodeBlock bn = new BaseLogicNodeBlock();
+			NodeEditor_Canvas.Children.Add(bn);
+		}
 	}
 	/// <summary>
 	/// This is the starting pointer for a given graph
@@ -1466,7 +1516,12 @@ namespace NodeEditor
 				this.ExitNode = new ConnectionNode(this, "ExitNode", new Point(0, 0), ECOnnectionType.Exit);
 			}
 
-			public override void EvaulatInternalData()
+		public override void DeleteConnection(EConditionalTypes contype, int row)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void EvaulatInternalData()
 			{
 				throw new NotImplementedException();
 			}
@@ -1506,6 +1561,11 @@ namespace NodeEditor
 		public ExitBlockNode()
 		{
 			this.EntryNode = new ConnectionNode(this, "EntryNode", new Point(0, 0), ECOnnectionType.Enter);
+		}
+
+		public override void DeleteConnection(EConditionalTypes contype, int row)
+		{
+			throw new NotImplementedException();
 		}
 
 		public override void EvaulatInternalData()

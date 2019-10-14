@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,45 +18,69 @@ namespace NodeEditor.Components
 		LessEquals,
 	};
 
-	public class BaseLogicNodeBlock : BaseNodeBlock
+	public class BaseLogicNodeBlock : BaseNodeBlock , INotifyPropertyChanged
 	{
-		public ConnectionNode Cond1
+		public ConnectionNode Operand1
 		{
 			get { return this.InputNodes[0]; }
 			set { this.InputNodes[0] = value; }
 		}
 
-		public ConnectionNode Cond2
+		public ConnectionNode Operand2
 		{
 			get { return this.InputNodes[1]; }
 			set { this.InputNodes[1] = value; }
 		}
 
-		public ConnectionNode TrueOutput
+		public ConnectionNode Output
 		{
 			get { return OutputNodes[0]; }
 			set { OutputNodes[0] = value; }
 		}
-		public ConnectionNode FalseOutput
+
+
+		private ECOnnectionType dtype;
+		public ECOnnectionType DType
 		{
-			get { return OutputNodes[1]; }
-			set { OutputNodes[1] = value; }
+			get { return dtype; }
+			set
+			{
+				dtype = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DType"));
+
+			}
 		}
+
+		private bool newvalconnected;
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		public bool NewValConnected
+		{
+			get { return newvalconnected; }
+			set
+			{
+				newvalconnected = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NewValConnected"));
+
+			}
+		}
+
 
 		/// <summary>
 		/// Constructor. it will always have this setup.
 		/// </summary>
 		/// <param name="nodetype"></param>
-		public BaseLogicNodeBlock(ECOnnectionType nodetype)
+		public BaseLogicNodeBlock()
 		{
 			this.InputNodes = new List<ConnectionNode>();
 			this.OutputNodes = new List<ConnectionNode>();
-			this.EntryNode = new ConnectionNode(this, "EntryNode", ECOnnectionType.Enter);
-			this.ExitNode = new ConnectionNode(this, "ExitNode", ECOnnectionType.Exit);
-			this.InputNodes.Add(new ConnectionNode(this, "InputNode1", nodetype));
-			this.InputNodes.Add(new ConnectionNode(this, "InputNode2", nodetype));
-			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", nodetype ));
-			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode2", nodetype ));
+			this.InputNodes.Add(new ConnectionNode(this, "InputNode1", ECOnnectionType.Bool));
+			this.InputNodes.Add(new ConnectionNode(this, "InputNode2", ECOnnectionType.Bool));
+			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", ECOnnectionType.Bool));
+
+			dtype = ECOnnectionType.Bool;
+			newvalconnected = false;
 		}
 
 		public override void OnStartNodeBlockExecution()
@@ -84,6 +109,11 @@ namespace NodeEditor.Components
 		}
 
 		public override void OnEndEvaulatInternalData()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void DeleteConnection(EConditionalTypes contype, int row)
 		{
 			throw new NotImplementedException();
 		}

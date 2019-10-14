@@ -38,5 +38,8 @@ namespace NodeEditor.Components
 		public abstract void OnEndEvaulatInternalData();
 
 
+		//every block node that is inherited will be able to delete connections. 
+		public abstract void DeleteConnection(EConditionalTypes contype, int row);
+
 	}
 }
