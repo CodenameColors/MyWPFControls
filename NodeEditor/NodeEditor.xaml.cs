@@ -401,7 +401,18 @@ namespace NodeEditor
 			SelectedNode = ((BaseLogicNodeBlock)SelectedBlockNode).Output;
 		}
 
+		#region Conditional
+		private void StartDrawingConditionalBlock(object sender)
+		{
+			SelectedBlockNode = (BaseNodeBlock)((Grid)sender).TemplatedParent;
+			SelectedNodeRow = (((Grid)sender).Name.Contains("False") ? 1 : 0);
+			SelectedNode = ((ConditionalNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow];
+		}
 		#endregion
+
+		#endregion
+
+
 
 		#region MoveBlockNodes
 		private void MoveThumb_Middle_DragDelta(object sender, DragDeltaEventArgs e)
@@ -445,9 +456,7 @@ namespace NodeEditor
 			}
 			else if (obj is ConditionalNodeBlock)
 			{
-				ConditionalNodeBlock BN = ((ConditionalNodeBlock)((Thumb)sender).TemplatedParent);
-				Canvas.SetLeft(BN, VisualTreeHelper.GetOffset(BN).X + e.HorizontalChange);
-				Canvas.SetTop(BN, VisualTreeHelper.GetOffset(BN).Y + e.VerticalChange);
+				MoveConditionalBlock(sender, e);
 			}
 			else if(obj is BaseArithmeticBlock)
 			{
@@ -647,6 +656,55 @@ namespace NodeEditor
 			}
 		}
 
+		private void MoveConditionalBlock(object sender, DragDeltaEventArgs e)
+		{
+			ConditionalNodeBlock BN = ((ConditionalNodeBlock)((Thumb)sender).TemplatedParent);
+			Canvas.SetLeft(BN, VisualTreeHelper.GetOffset(BN).X + e.HorizontalChange);
+			Canvas.SetTop(BN, VisualTreeHelper.GetOffset(BN).Y + e.VerticalChange);
+
+			if (NodeEditor_BackCanvas.Children.Count > 1)
+			{
+				for (int i = 0; i < BN.InputNodes.Count; i++)
+				{
+					Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); //end.Y +=(10); //the 10 is middle of circle
+					for (int j = 0; j < BN.InputNodes[i].Curves.Count; j++)
+					{
+						if (BN.InputNodes[i].Name.Contains("Enter"))
+						{
+							Point end1 = end; end1.Y += 10;
+							SetCurveEndPoint(BN.InputNodes[i].Curves[j], end1);
+						}
+						else
+						{
+							Point end1 = end; end1.Y += 20 + (30 * (i)) + 15;
+							SetCurveEndPoint(BN.InputNodes[i].Curves[j], end1);
+						}
+					}
+				}
+
+				//move all curves to the entry node
+				for (int j = 0; j < BN.EntryNode.Curves.Count; j++)
+				{
+					Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); //end.Y +=(10); //the 10 is middle of circle
+					Point end1 = end; end1.Y += 10;
+					SetCurveEndPoint(BN.EntryNode.Curves[j], end1);
+				}
+
+				if (BN.OutputNodes.Count > 0) //move the "left most" node
+				{
+					for (int i = 0; i < BN.OutputNodes.Count; i++)
+					{
+						Point start = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN)); start.Y += 20 + (30 * (i + 1)) + 15;
+						for (int j = 0; j < BN.OutputNodes[i].Curves.Count; j++)
+							SetCurveStartPoint(BN.OutputNodes[i].Curves[j], start);
+						//Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); end.Y += 40 + (10); //the 10 is middle of circle
+						//SetCurveEndPoint((Path)NodeEditor_BackCanvas.Children[1], end);
+					}
+				}
+			}
+		}
+
+
 		#endregion
 
 		#region Connecting
@@ -688,7 +746,10 @@ namespace NodeEditor
 				{
 					EndDrawingCurveLogicBlock(sender);
 				}
-
+				else if(obj is ConditionalNodeBlock)
+				{
+					EndDrawingCurveConditionalBlock(sender);
+				}
 			}
 		}
 
@@ -857,6 +918,35 @@ namespace NodeEditor
 				BN.EntryNode.ConnectedNodes.Add(SelectedNode); BN.EntryNode.Curves.Add(p);
 				((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].ConnectedNodes.Add(BN.EntryNode);
 				((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].Curves.Add(p);
+			}
+			else if (SelectedBlockNode is SetConstantNodeBlock)
+			{
+				//types match check
+				if (SelectedNode.NodeType != ECOnnectionType.Exit)
+				{
+					if (((SetConstantNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].NodeType != BN.InputNodes[inrow].NodeType)
+					{
+						if (((SetConstantNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].NodeType == ECOnnectionType.Exit && BN.InputNodes[inrow].NodeType == ECOnnectionType.Enter) { } //this is just an ignore.
+						else if (((SetConstantNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].NodeType != BN.InputNodes[inrow].NodeType) return;
+					}
+					//Draw the curve
+					NodeEditor_BackCanvas.Children.Add(p);
+					isMDown = false;
+
+					BN.InputNodes[inrow].ConnectedNodes.Add(SelectedNode); BN.InputNodes[inrow].Curves.Add(p);
+					((SetConstantNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].ConnectedNodes.Add(BN.InputNodes[inrow]);
+					((SetConstantNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].Curves.Add(p);
+				}
+				else
+				{
+					//Draw the curve
+					NodeEditor_BackCanvas.Children.Add(p);
+					isMDown = false;
+
+					BN.EntryNode.ConnectedNodes.Add(SelectedNode); BN.EntryNode.Curves.Add(p);
+					((SetConstantNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].ConnectedNodes.Add(BN.EntryNode);
+					((SetConstantNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].Curves.Add(p);
+				}
 			}
 			else if (SelectedBlockNode is GetConstantNodeBlock)
 			{
@@ -1031,6 +1121,142 @@ namespace NodeEditor
 		}
 		#endregion
 
+		#region Conditionals
+		private void EndDrawingCurveConditionalBlock(object sender)
+		{
+			Console.WriteLine("entered the set node inputs");
+			if (SelectedBlockNode == null || SelectedNode == null) return;
+			BaseNodeBlock BN = null; int inrow = 0;
+
+			BN = (BaseNodeBlock)((Grid)sender).TemplatedParent;
+			inrow = Grid.GetRow(((Grid)sender)); //the one offset is for the enter node.
+			if (BN is null)
+			{
+				BN = (BaseNodeBlock)((Grid)((Grid)sender).Parent).TemplatedParent;
+				inrow = Grid.GetRow(((Grid)sender)); //the one offset is for the enter node.
+			}
+			if (BN == null) return;
+			Point end = Mouse.GetPosition(NodeEditor_BackCanvas);
+			Path p = CreateBezierCurve(CurveStart, end);
+			//what is the previous selected node
+			if (SelectedBlockNode is DialogueNodeBlock)
+			{
+				//types match check
+				if (SelectedNode.NodeType != ECOnnectionType.Exit)
+				{
+					if (((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].NodeType != BN.InputNodes[inrow].NodeType)
+					{
+						if (((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].NodeType == ECOnnectionType.Exit && BN.InputNodes[inrow].NodeType == ECOnnectionType.Enter) { } //this is just an ignore.
+						else if (((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].NodeType != BN.InputNodes[inrow].NodeType) return;
+					}
+					//Draw the curve
+					NodeEditor_BackCanvas.Children.Add(p);
+					isMDown = false;
+
+					BN.InputNodes[inrow].ConnectedNodes.Add(SelectedNode); BN.InputNodes[inrow].Curves.Add(p);
+					((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].ConnectedNodes.Add(BN.InputNodes[inrow]);
+					((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].Curves.Add(p);
+				}
+				else
+				{
+					//Draw the curve
+					NodeEditor_BackCanvas.Children.Add(p);
+					isMDown = false;
+
+					BN.EntryNode.ConnectedNodes.Add(SelectedNode); BN.EntryNode.Curves.Add(p);
+					((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].ConnectedNodes.Add(BN.EntryNode);
+					((DialogueNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].Curves.Add(p);
+				}
+			}
+			else if (SelectedBlockNode is GetConstantNodeBlock)
+			{
+				//CAN ONLY BE A DATA TYPE
+				if (SelectedNode.NodeType != BN.InputNodes[inrow].NodeType) return; //it doesn't match
+																																						//Draw the curve
+				NodeEditor_BackCanvas.Children.Add(p);
+				isMDown = false;
+
+				BN.InputNodes[inrow].ConnectedNodes.Add(SelectedNode); BN.InputNodes[inrow].Curves.Add(p);
+				((GetConstantNodeBlock)SelectedBlockNode).output.ConnectedNodes.Add(BN.InputNodes[inrow]);
+				((GetConstantNodeBlock)SelectedBlockNode).output.Curves.Add(p);
+
+			}
+			else if (SelectedBlockNode is SetConstantNodeBlock)
+			{
+				if(SelectedNode.NodeType == ECOnnectionType.Exit)
+				{
+					NodeEditor_BackCanvas.Children.Add(p);
+					isMDown = false;
+
+					BN.EntryNode.ConnectedNodes.Add(SelectedNode); BN.EntryNode.Curves.Add(p);
+					((SetConstantNodeBlock)SelectedBlockNode).ExitNode.ConnectedNodes.Add(BN.EntryNode);
+					((SetConstantNodeBlock)SelectedBlockNode).ExitNode.Curves.Add(p);
+				}
+				else
+				{
+					if (SelectedNode.NodeType != BN.InputNodes[inrow].NodeType) return; //it doesn't match
+					NodeEditor_BackCanvas.Children.Add(p);
+					isMDown = false;
+
+					BN.InputNodes[inrow].ConnectedNodes.Add(SelectedNode); BN.InputNodes[inrow].Curves.Add(p);
+					((SetConstantNodeBlock)SelectedBlockNode).OutValue.ConnectedNodes.Add(BN.InputNodes[inrow]);
+					((SetConstantNodeBlock)SelectedBlockNode).OutValue.Curves.Add(p);
+				}
+			}
+			else if (SelectedBlockNode is StartBlockNode)
+			{
+				if (SelectedNode.NodeType == ECOnnectionType.Exit && ((Grid)sender).Name.Contains("Entry"))
+				{
+					NodeEditor_BackCanvas.Children.Add(p);
+					isMDown = false;
+
+					BN.EntryNode.ConnectedNodes.Add(SelectedNode); BN.EntryNode.Curves.Add(p);
+					((StartBlockNode)SelectedBlockNode).ExitNode.ConnectedNodes.Add(BN.EntryNode);
+					((StartBlockNode)SelectedBlockNode).ExitNode.Curves.Add(p);
+				}
+			}
+			else if (SelectedBlockNode is BaseArithmeticBlock)
+			{
+				//CAN ONLY BE A DATA TYPE
+				if (SelectedNode.NodeType != BN.InputNodes[inrow].NodeType) return; //it doesn't match
+
+				NodeEditor_BackCanvas.Children.Add(p);
+				isMDown = false;
+
+				BN.InputNodes[inrow].ConnectedNodes.Add(SelectedNode); BN.InputNodes[inrow].Curves.Add(p);
+				((BaseArithmeticBlock)SelectedBlockNode).OutValue.ConnectedNodes.Add(BN.InputNodes[inrow]);
+				((BaseArithmeticBlock)SelectedBlockNode).OutValue.Curves.Add(p);
+			}
+			else if (SelectedBlockNode is BaseLogicNodeBlock) //We can also chain together the same node type. Again only outputval.
+			{
+				//the data types MUST match!
+				if (SelectedNode.NodeType == ECOnnectionType.Bool)
+				{
+					NodeEditor_BackCanvas.Children.Add(p);
+					isMDown = false;
+
+					SelectedNode.ConnectedNodes.Add(BN.InputNodes[inrow]); SelectedNode.Curves.Add(p);
+					BN.InputNodes[inrow].ConnectedNodes.Add(SelectedNode); BN.InputNodes[inrow].Curves.Add(p);
+				}
+			}
+			else if(SelectedBlockNode is ConditionalNodeBlock)
+			{
+				//the data types MUST match!
+				if (SelectedNode.NodeType == ECOnnectionType.Exit)
+				{
+					NodeEditor_BackCanvas.Children.Add(p);
+					isMDown = false;
+
+					SelectedNode.ConnectedNodes.Add(BN.EntryNode); SelectedNode.Curves.Add(p);
+					BN.EntryNode.ConnectedNodes.Add(SelectedNode); BN.EntryNode.Curves.Add(p);
+				}
+			}
+			if (BN.InputNodes[1].ConnectedNodes.Count > 0 && BN is SetConstantNodeBlock)
+				(BN as SetConstantNodeBlock).NewValConnected = true;
+
+		}
+		#endregion
+
 		#endregion
 
 		private void LevelEditor_BackCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -1069,7 +1295,7 @@ namespace NodeEditor
 
 			object obj = null;
 			obj = ((Grid)sender).TemplatedParent;
-			if (sender is null)
+			if (obj is null)
 				obj = ((Grid)((Grid)sender).Parent).TemplatedParent; //the input nodes are added to style templated ON RUNTIME
 
 			if (obj is DialogueNodeBlock)
@@ -1080,6 +1306,8 @@ namespace NodeEditor
 				StartDrawingConstantNode(sender);
 			else if (obj is StartBlockNode)
 				StartDrawingStartBlock(sender);
+			else if (obj is ConditionalNodeBlock)
+				StartDrawingConditionalBlock(sender);
 			else if (obj is BaseArithmeticBlock)
 				StartDrawingArithmeticBlock(sender);
 			else if (obj is BaseLogicNodeBlock)

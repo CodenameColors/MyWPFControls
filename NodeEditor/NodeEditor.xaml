@@ -989,11 +989,28 @@
 										<ColumnDefinition Width="10"/>
 									</Grid.ColumnDefinitions>
 
-									<TextBox Grid.Row="1" Grid.Column="1" Width="40" Height="20" Margin="35,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
-
+									<TextBox Grid.Row="1" Grid.Column="1" Width="40" Height="20" Margin="50,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
+										<TextBox.Style>
+											<Style TargetType="TextBox">
+												<Style.Triggers>
+													<DataTrigger Binding="{Binding Path=NewValConnected, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="False">
+														<Setter Property="Visibility" Value="Visible"></Setter>
+													</DataTrigger>
+													<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="4">
+														<Setter Property="Visibility" Value="Hidden"></Setter>
+													</DataTrigger>
+													<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="3">
+														<Setter Property="Visibility" Value="Visible"></Setter>
+													</DataTrigger>
+													<DataTrigger Binding="{Binding Path=NewValConnected, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+														<Setter Property="Visibility" Value="Hidden"></Setter>
+													</DataTrigger>
+												</Style.Triggers>
+											</Style>
+										</TextBox.Style>
 									</TextBox>
 
-									<ComboBox Grid.Row="1" Grid.Column="1" Width="40" Height="20" Margin="35,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
+									<ComboBox Grid.Row="1" Grid.Column="1" Width="40" Height="20" Margin="50,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
 										<ComboBoxItem>
 											<TextBlock Text="T"/>
 										</ComboBoxItem>
@@ -1022,7 +1039,7 @@
 
 
 									<!--old value input thumb-->
-									<TextBlock Grid.Row="0" Grid.Column="1" Text="Old" Foreground="White" Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False"/>
+									<TextBlock Grid.Row="0" Grid.Column="1" Text="Cond 1" Foreground="White" Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False"/>
 									<ContentPresenter HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="0" IsHitTestVisible="True"
                                               VerticalAlignment="Stretch" ClipToBounds="False"
                                               x:Name="PART_LeftIndicator">
@@ -1050,7 +1067,7 @@
 									</ContentPresenter>
 
 									<!--New value input thumb-->
-									<TextBlock Grid.Row="1" Grid.Column="1" Text="New" Foreground="White" Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False"/>
+									<TextBlock Grid.Row="1" Grid.Column="1" Text="Cond 2" Foreground="White" Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False"/>
 									<ContentPresenter HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="0" IsHitTestVisible="True"
                                               VerticalAlignment="Stretch" ClipToBounds="False"
                                               >
