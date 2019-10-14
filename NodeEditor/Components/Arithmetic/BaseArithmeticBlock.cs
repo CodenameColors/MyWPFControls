@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NodeEditor.Components
 {
-	public class BaseArithmeticBlockNode : BaseNodeBlock, INotifyPropertyChanged
+	public class BaseArithmeticBlock : BaseNodeBlock, INotifyPropertyChanged
 	{
 		public ConnectionNode Operand1
 		{
@@ -66,7 +66,7 @@ namespace NodeEditor.Components
 		/// <summary>
 		/// Base constructor for XAML PTR
 		/// </summary>
-		public BaseArithmeticBlockNode()
+		public BaseArithmeticBlock()
 		{
 			this.InputNodes = new List<ConnectionNode>();
 			this.OutputNodes = new List<ConnectionNode>();

@@ -27,11 +27,11 @@
 				<MenuItem Header="NOT"/>
 			</MenuItem>
 			<MenuItem Header="Math">
-				<MenuItem Header="Add" Click="MathAdd_MI_Click"/>
-				<MenuItem Header="Subtract"/>
-				<MenuItem Header="Divide"/>
-				<MenuItem Header="Multiply"/>
-				<MenuItem Header="Mod"/>
+				<MenuItem Header="Add" Click="Math_MI_Click"/>
+				<MenuItem Header="Subtract" Click="Math_MI_Click"/>
+				<MenuItem Header="Divide" Click="Math_MI_Click"/>
+				<MenuItem Header="Multiply" Click="Math_MI_Click"/>
+				<MenuItem Header="Mod" Click="Math_MI_Click"/>
 			</MenuItem>
 			<Separator/>
 			<MenuItem Header="Dialogue" Name="Dialogue_MI" Click="AddDialogueBlock_BTN_Click"/>
@@ -60,8 +60,8 @@
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
-						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
-							<Grid Width="150" MinHeight="60">
+						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2" >
+							<Grid Width="150" MinHeight="60" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
 									<RowDefinition Height="*"/>
@@ -234,13 +234,190 @@
 			</Setter>
 		</Style>
 
-
-		<Style TargetType="{x:Type nec:BaseArithmeticBlockNode}">
+		<Style TargetType="{x:Type nec:SubtractBlock}">
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
 						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
-							<Grid Width="150" MinHeight="60">
+							<Grid Width="150" MinHeight="60" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="20"/>
+									<RowDefinition Height="*"/>
+								</Grid.RowDefinitions>
+
+
+								<!--label-->
+								<TextBlock Grid.Row="0" Grid.Column="1" Foreground="White" Text="Integer SUBTRACT" Background="#FF252525"/>
+
+								<!--Drag thumb-->
+								<ContentPresenter HorizontalAlignment="Stretch" Grid.ColumnSpan="5" Grid.RowSpan="3"
+                                              VerticalAlignment="Stretch"
+                                              x:Name="PART_MiddleIndicator">
+									<ContentPresenter.Content>
+										<Thumb x:Name="MoveThumb_Middle" Cursor="ScrollAll" Background="Transparent" Opacity="0"
+										 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+										 Margin="0,0,5,0" DragDelta="MoveThumb_Middle_DragDelta" />
+									</ContentPresenter.Content>
+								</ContentPresenter>
+
+								<Grid Grid.Row="1">
+									<Grid.RowDefinitions>
+										<RowDefinition Height="30"/>
+										<RowDefinition Height="30"/>
+									</Grid.RowDefinitions>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="0"/>
+										<ColumnDefinition Width="*"/>
+										<ColumnDefinition Width="10"/>
+									</Grid.ColumnDefinitions>
+
+									<TextBox Grid.Row="1" Grid.Column="1" Width="40" Height="20" Margin="35,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
+										<TextBox.Style>
+											<Style TargetType="TextBox">
+												<Style.Triggers>
+													<DataTrigger Binding="{Binding Path=NewValConnected, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="False">
+														<Setter Property="Visibility" Value="Visible"></Setter>
+													</DataTrigger>
+													<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="4">
+														<Setter Property="Visibility" Value="Hidden"></Setter>
+													</DataTrigger>
+													<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="3">
+														<Setter Property="Visibility" Value="Visible"></Setter>
+													</DataTrigger>
+													<DataTrigger Binding="{Binding Path=NewValConnected, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+														<Setter Property="Visibility" Value="Hidden"></Setter>
+													</DataTrigger>
+												</Style.Triggers>
+											</Style>
+										</TextBox.Style>
+									</TextBox>
+
+									<ComboBox Grid.Row="1" Grid.Column="1" Width="40" Height="20" Margin="35,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
+										<ComboBoxItem>
+											<TextBlock Text="T"/>
+										</ComboBoxItem>
+										<ComboBoxItem>
+											<TextBlock Text="F"/>
+										</ComboBoxItem>
+										<ComboBox.Style>
+											<Style TargetType="ComboBox">
+												<Style.Triggers>
+													<DataTrigger Binding="{Binding Path=NewValConnected, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="False">
+														<Setter Property="Visibility" Value="Visible"></Setter>
+													</DataTrigger>
+													<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="3">
+														<Setter Property="Visibility" Value="Hidden"></Setter>
+													</DataTrigger>
+													<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="4">
+														<Setter Property="Visibility" Value="Visible"></Setter>
+													</DataTrigger>
+													<DataTrigger Binding="{Binding Path=NewValConnected, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+														<Setter Property="Visibility" Value="Hidden"></Setter>
+													</DataTrigger>
+												</Style.Triggers>
+											</Style>
+										</ComboBox.Style>
+									</ComboBox>
+
+
+									<!--old value input thumb-->
+									<TextBlock Grid.Row="0" Grid.Column="1" Text="In 1" Foreground="White" Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False"/>
+									<ContentPresenter HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="0" IsHitTestVisible="True"
+                                              VerticalAlignment="Stretch" ClipToBounds="False"
+                                              x:Name="PART_LeftIndicator">
+										<ContentPresenter.Content>
+											<Grid Grid.Row="0" PreviewMouseMove="MoveThumb_Left_PreviewMouseMove"  PreviewMouseRightButtonDown="COnnectionNode_RightClick">
+												<Ellipse HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Width="20" Margin="-10,-10,-10,-10" Cursor="Hand">
+													<Ellipse.Clip>
+														<RectangleGeometry Rect="10,0,10,20"/>
+													</Ellipse.Clip>
+													<Ellipse.Style>
+														<Style TargetType="Ellipse">
+															<Style.Triggers>
+																<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="3">
+																	<Setter Property="Fill" Value="BlueViolet"></Setter>
+																</DataTrigger>
+																<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="4">
+																	<Setter Property="Fill" Value="PaleVioletRed"></Setter>
+																</DataTrigger>
+															</Style.Triggers>
+														</Style>
+													</Ellipse.Style>
+												</Ellipse>
+											</Grid>
+										</ContentPresenter.Content>
+									</ContentPresenter>
+
+									<!--New value input thumb-->
+									<TextBlock Grid.Row="1" Grid.Column="1" Text="In 2" Foreground="White" Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False"/>
+									<ContentPresenter HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="0" IsHitTestVisible="True"
+                                              VerticalAlignment="Stretch" ClipToBounds="False"
+                                              >
+										<ContentPresenter.Content>
+											<Grid Grid.Row="1" PreviewMouseMove="MoveThumb_Left_PreviewMouseMove" PreviewMouseRightButtonDown="COnnectionNode_RightClick">
+												<Ellipse HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Width="20" Margin="-10,-10,-10,-10" Cursor="Hand">
+													<Ellipse.Clip>
+														<RectangleGeometry Rect="10,0,10,20"/>
+													</Ellipse.Clip>
+													<Ellipse.Style>
+														<Style TargetType="Ellipse">
+															<Style.Triggers>
+																<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="3">
+																	<Setter Property="Fill" Value="BlueViolet"></Setter>
+																</DataTrigger>
+																<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="4">
+																	<Setter Property="Fill" Value="PaleVioletRed"></Setter>
+																</DataTrigger>
+															</Style.Triggers>
+														</Style>
+													</Ellipse.Style>
+												</Ellipse>
+											</Grid>
+										</ContentPresenter.Content>
+									</ContentPresenter>
+
+									<!--Data output node-->
+									<TextBlock Grid.Row="0" Grid.Column="1" Text="Out" Foreground="White" Margin="25,5,0,0" HorizontalAlignment="Right" VerticalAlignment="Top" IsHitTestVisible="False"/>
+									<ContentPresenter HorizontalAlignment="Right" Grid.Row="0" Grid.Column="2" IsHitTestVisible="True"
+                                              VerticalAlignment="Stretch" ClipToBounds="False"
+                                              x:Name="PART_RightDataIndicator">
+										<ContentPresenter.Content>
+											<Grid x:Name="OutNode1_Grid" PreviewMouseRightButtonDown="COnnectionNode_RightClick" PreviewMouseLeftButtonDown="MoveThumb_Right_MouseLeftButtonDown">
+												<Ellipse HorizontalAlignment="Right" VerticalAlignment="Center" Height="20" Width="20" Margin="0,0,-10,0" Cursor="Hand">
+													<Ellipse.Clip>
+														<RectangleGeometry Rect="0,0,10,20"/>
+													</Ellipse.Clip>
+													<Ellipse.Style>
+														<Style TargetType="Ellipse">
+															<Style.Triggers>
+																<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="3">
+																	<Setter Property="Fill" Value="BlueViolet"></Setter>
+																</DataTrigger>
+																<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="4">
+																	<Setter Property="Fill" Value="PaleVioletRed"></Setter>
+																</DataTrigger>
+															</Style.Triggers>
+														</Style>
+													</Ellipse.Style>
+												</Ellipse>
+											</Grid>
+										</ContentPresenter.Content>
+									</ContentPresenter>
+
+								</Grid>
+							</Grid>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<Style TargetType="{x:Type nec:AddBlock}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate>
+						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
+							<Grid Width="150" MinHeight="60" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
 									<RowDefinition Height="*"/>
@@ -419,7 +596,7 @@
 				<Setter.Value>
 					<ControlTemplate>
 						<Border CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
-							<Grid Width="75">
+							<Grid Width="75" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
 									<RowDefinition Height="20"/>
@@ -463,7 +640,7 @@
 				<Setter.Value>
 					<ControlTemplate>
 						<Border CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
-							<Grid Width="75">
+							<Grid Width="75" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
 									<RowDefinition Height="20"/>
@@ -505,7 +682,7 @@
 				<Setter.Value>
 					<ControlTemplate>
 						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
-							<Grid Width="100">
+							<Grid Width="100" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
 									<RowDefinition Height="40"/>
@@ -561,7 +738,7 @@
 				<Setter.Value>
 					<ControlTemplate>
 						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
-							<Grid Width="150" MinHeight="60">
+							<Grid Width="150" MinHeight="60" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
 									<RowDefinition Height="*"/>
@@ -768,7 +945,7 @@
 				<Setter.Value>
 					<ControlTemplate>
 						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
-							<Grid Width="150" MinHeight="60">
+							<Grid Width="150" MinHeight="60" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
 									<RowDefinition Height="*"/>
@@ -944,7 +1121,7 @@
 				<Setter.Value>
 					<ControlTemplate TargetType="{x:Type nec:DialogueNodeBlock}">
 						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
-							<Grid MinHeight="100" MinWidth="150" ShowGridLines="True" Background="#FF494949" ClipToBounds="False" MouseRightButtonDown="BaseNodeRight_BTN_Click" >
+							<Grid MinHeight="100" MinWidth="150" Background="#FF494949" ClipToBounds="False" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click" >
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
 									<RowDefinition Height="Auto"/>
@@ -1161,7 +1338,7 @@
 
 			<!--MouseWheel="LevelEditor_Canvas_MouseWheel" SizeChanged="LevelEditor_BackCanvas_SizeChanged"-->
 			<Canvas Grid.Row="1" x:Name="NodeEditor_BackCanvas" IsHitTestVisible="True" Grid.Column="1" 
-										ClipToBounds="True" MouseMove="LevelEditor_BackCanvas_MouseMove" Visibility="Visible" PreviewMouseRightButtonDown="NodeEditor_BackCanvas_PreviewMouseRightButtonDown">
+										ClipToBounds="True" MouseMove="LevelEditor_BackCanvas_MouseMove" Visibility="Visible" MouseRightButtonDown="NodeEditor_BackCanvas_PreviewMouseRightButtonDown">
 				<!--<Canvas.RenderTransform>
 					<ScaleTransform ScaleX=".5" ScaleY=".5" />
 				</Canvas.RenderTransform>-->
