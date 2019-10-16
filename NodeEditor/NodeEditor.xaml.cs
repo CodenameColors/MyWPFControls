@@ -412,8 +412,6 @@ namespace NodeEditor
 
 		#endregion
 
-
-
 		#region MoveBlockNodes
 		private void MoveThumb_Middle_DragDelta(object sender, DragDeltaEventArgs e)
 		{
@@ -694,7 +692,7 @@ namespace NodeEditor
 				{
 					for (int i = 0; i < BN.OutputNodes.Count; i++)
 					{
-						Point start = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN)); start.Y += 20 + (30 * (i + 1)) + 15;
+						Point start = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN)); start.Y += 20 + (30 * (i)) + 15;
 						for (int j = 0; j < BN.OutputNodes[i].Curves.Count; j++)
 							SetCurveStartPoint(BN.OutputNodes[i].Curves[j], start);
 						//Point end = new Point(Canvas.GetLeft(BN), Canvas.GetTop(BN)); end.Y += 40 + (10); //the 10 is middle of circle
@@ -869,6 +867,18 @@ namespace NodeEditor
 				((BaseLogicNodeBlock)SelectedBlockNode).Output.ConnectedNodes.Add(BN.InputNodes[inrow]);
 				((BaseLogicNodeBlock)SelectedBlockNode).Output.Curves.Add(p);
 			}
+			else if (SelectedBlockNode is ConditionalNodeBlock)
+			{
+				if (SelectedNode.NodeType == ECOnnectionType.Exit && ((Grid)sender).Name.Contains("Entry"))//WE KNOW IT MUST AN BE AN EXIT
+				{
+					NodeEditor_BackCanvas.Children.Add(p);
+					isMDown = false;
+
+					BN.EntryNode.ConnectedNodes.Add(SelectedNode); BN.EntryNode.Curves.Add(p);
+					((ConditionalNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].ConnectedNodes.Add(BN.EntryNode);
+					((ConditionalNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].Curves.Add(p);
+				}
+			}
 		}
 		#endregion
 
@@ -995,6 +1005,18 @@ namespace NodeEditor
 
 					SelectedNode.ConnectedNodes.Add(BN.InputNodes[inrow]); SelectedNode.Curves.Add(p);
 					BN.InputNodes[inrow].ConnectedNodes.Add(SelectedNode); BN.InputNodes[inrow].Curves.Add(p);
+				}
+			}
+			else if (SelectedBlockNode is ConditionalNodeBlock)
+			{
+				if (SelectedNode.NodeType == ECOnnectionType.Exit && ((Grid)sender).Name.Contains("Entry"))//WE KNOW IT MUST AN BE AN EXIT
+				{
+					NodeEditor_BackCanvas.Children.Add(p);
+					isMDown = false;
+
+					BN.EntryNode.ConnectedNodes.Add(SelectedNode); BN.EntryNode.Curves.Add(p);
+					((ConditionalNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].ConnectedNodes.Add(BN.EntryNode);
+					((ConditionalNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].Curves.Add(p);
 				}
 			}
 			if (BN.InputNodes[1].ConnectedNodes.Count > 0 && BN is SetConstantNodeBlock)
@@ -1239,16 +1261,16 @@ namespace NodeEditor
 					BN.InputNodes[inrow].ConnectedNodes.Add(SelectedNode); BN.InputNodes[inrow].Curves.Add(p);
 				}
 			}
-			else if(SelectedBlockNode is ConditionalNodeBlock)
+			else if (SelectedBlockNode is ConditionalNodeBlock)
 			{
-				//the data types MUST match!
-				if (SelectedNode.NodeType == ECOnnectionType.Exit)
+				if (SelectedNode.NodeType == ECOnnectionType.Exit && ((Grid)sender).Name.Contains("Entry"))//WE KNOW IT MUST AN BE AN EXIT
 				{
 					NodeEditor_BackCanvas.Children.Add(p);
 					isMDown = false;
 
-					SelectedNode.ConnectedNodes.Add(BN.EntryNode); SelectedNode.Curves.Add(p);
 					BN.EntryNode.ConnectedNodes.Add(SelectedNode); BN.EntryNode.Curves.Add(p);
+					((ConditionalNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].ConnectedNodes.Add(BN.EntryNode);
+					((ConditionalNodeBlock)SelectedBlockNode).OutputNodes[SelectedNodeRow].Curves.Add(p);
 				}
 			}
 			if (BN.InputNodes[1].ConnectedNodes.Count > 0 && BN is SetConstantNodeBlock)
@@ -1623,6 +1645,7 @@ namespace NodeEditor
 		{
 			Console.WriteLine("Clicked Deletion of Node");
 			int ival = ((ContextMenu)(sender as MenuItem).Parent).Items.IndexOf(sender); ival -= 2;
+			if (ival < 0) return;
 			NodeEditor_BackCanvas.Children.Remove(SelectedNode.Curves[ival]);
 			SelectedNode.ConnectedNodes[ival].Curves.Remove(SelectedNode.Curves[ival]);
 			SelectedNode.Curves.RemoveAt(ival);
@@ -2012,8 +2035,23 @@ namespace NodeEditor
 
 		private void LogicAND_MI_Click(object sender, RoutedEventArgs e)
 		{
-			BaseLogicNodeBlock bn = new BaseLogicNodeBlock();
-			NodeEditor_Canvas.Children.Add(bn);
+			MenuItem mi = sender as MenuItem;
+			if (mi.Header.ToString().Contains("AND"))
+			{
+				BaseLogicNodeBlock bn = new ANDBlock();
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+			else if (mi.Header.ToString().Contains("OR"))
+			{
+				BaseLogicNodeBlock bn = new ORBlock();
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+			else if (mi.Header.ToString().Contains("NOT"))
+			{
+				BaseLogicNodeBlock bn = new NOTBlock();
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+
 		}
 	}
 	/// <summary>

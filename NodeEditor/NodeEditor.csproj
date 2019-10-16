@@ -63,7 +63,10 @@
     <Compile Include="Components\DialogueNodeBlock.cs" />
     <Compile Include="Components\ConnectionNode.cs" />
     <Compile Include="Components\ConditionalNodeBlock.cs" />
+    <Compile Include="Components\Logic\ANDBlock.cs" />
     <Compile Include="Components\Logic\BaseLogicNodeBlock.cs" />
+    <Compile Include="Components\Logic\NOTBlock.cs" />
+    <Compile Include="Components\Logic\ORBlock.cs" />
     <Compile Include="NodeEditor.xaml.cs">
       <DependentUpon>NodeEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
