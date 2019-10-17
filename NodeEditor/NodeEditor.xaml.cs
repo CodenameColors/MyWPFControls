@@ -167,6 +167,9 @@ namespace NodeEditor
 
 		private Dictionary<String, List<BaseNodeBlock>> VarDisplayBlocks_dict = new Dictionary<String, List<BaseNodeBlock>>();
 
+		public BaseNodeBlock StartExecutionBlock { get; set; }
+		public BaseNodeBlock CurrentExecutionBlock { get; set; }
+
 		/// <summary>
 		/// constructor
 		/// </summary>
@@ -182,6 +185,10 @@ namespace NodeEditor
 			StartBlockNode bn = new StartBlockNode();
 			Canvas.SetLeft(bn, 50); Canvas.SetTop(bn, 200);
 			NodeEditor_Canvas.Children.Add(bn);
+
+			//Set Starting PTRs
+			StartExecutionBlock = bn;
+			CurrentExecutionBlock = StartExecutionBlock;
 
 			ExitBlockNode bnn = new ExitBlockNode();
 			Canvas.SetLeft(bnn, 400); Canvas.SetTop(bnn, 200);
