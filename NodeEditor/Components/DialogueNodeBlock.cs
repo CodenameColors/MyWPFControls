@@ -27,17 +27,17 @@ namespace NodeEditor.Components
 			base.OnApplyTemplate();
 		}
 
-		public override void OnStartNodeBlockExecution()
+		public override void OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
+		{
+			currentNB.bIsActive = true;
+		}
+
+		public override void NodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override void NodeBlockExecution()
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void OnEndNodeBlockExecution()
+		public override void OnEndNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			throw new NotImplementedException();
 		}

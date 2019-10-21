@@ -1545,7 +1545,19 @@
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
-						<Border CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
+						<Border CornerRadius="5" Background="#FF494949" BorderThickness="2">
+							<Border.Style>
+								<Style TargetType="Border">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="False">
+											<Setter Property="BorderBrush" Value="#FF494949"></Setter>
+										</DataTrigger>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="True">
+											<Setter Property="BorderBrush" Value="White"></Setter>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Border.Style>
 							<Grid Width="75" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
@@ -2241,20 +2253,37 @@
 				</Grid.ColumnDefinitions>
 
 				<Menu DockPanel.Dock="Top" Grid.Column="0" Background="Transparent" Foreground="White" VerticalAlignment="Top"  Height="18">
-					<MenuItem Header="UI" Foreground="White">
+					<MenuItem Header="" Foreground="White">
 					</MenuItem>
 				</Menu>
 				<Menu DockPanel.Dock="Top" Grid.Column="1" Background="Transparent" Foreground="White" VerticalAlignment="Center" Height="18" >
-					<MenuItem Header="Draw"/>
+					<MenuItem x:Name="StartBlockExecution_MI" Header="Reset" Click="StartBlockExecution_MI_Click"/>
 				</Menu>
 				<Menu DockPanel.Dock="Top" Grid.Column="2" Background="Transparent" Foreground="White" VerticalAlignment="Center" Height="18" >
-					<MenuItem Header="Selection" />
+					<MenuItem  Header="|" IsEnabled="False"/>
 				</Menu>
 				<Menu DockPanel.Dock="Top" Grid.Column="3" Background="Transparent" Foreground="White" VerticalAlignment="Center" Height="18" >
-					<MenuItem Header="Deselect" />
+					<MenuItem x:Name="RunOnStart_MI" Header="Enter" Click="RunOnStart_MI_Click" />
 				</Menu>
 				<Menu DockPanel.Dock="Top" Grid.Column="4" Background="Transparent" Foreground="White" VerticalAlignment="Center" Height="18" >
-					<MenuItem Header="Move" />
+					<MenuItem x:Name="ExecuteBlock_MI" Header="Execute" Click="ExecuteBlock_MI_Click" />
+				</Menu>
+				<Menu DockPanel.Dock="Top" Grid.Column="5" Background="Transparent" Foreground="White" VerticalAlignment="Center" Height="18" >
+					<MenuItem x:Name="RunOnExit_MI" Header="Exit" Click="RunOnExit_MI_Click" />
+				</Menu>
+				
+				<Menu DockPanel.Dock="Top" Grid.Column="6" Background="Transparent" Foreground="White" VerticalAlignment="Center" Height="18" >
+					<MenuItem  Header="|" IsEnabled="False"/>
+				</Menu>
+
+				<Menu DockPanel.Dock="Top" Grid.Column="7" Background="Transparent" Foreground="White" VerticalAlignment="Center" Height="18" >
+					<MenuItem  Header="Start" Click="EvalOnStart_MI_Click"/>
+				</Menu>
+				<Menu DockPanel.Dock="Top" Grid.Column="8" Background="Transparent" Foreground="White" VerticalAlignment="Center" Height="18" >
+					<MenuItem  Header="Evaluate" Click="EvalBlock_MI_Click"/>
+				</Menu>
+				<Menu DockPanel.Dock="Top" Grid.Column="9" Background="Transparent" Foreground="White" VerticalAlignment="Center" Height="18" >
+					<MenuItem  Header="Exit" Click="EvalOnExit_MI_Click"/>
 				</Menu>
 
 			</Grid>

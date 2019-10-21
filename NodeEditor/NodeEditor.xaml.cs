@@ -168,7 +168,7 @@ namespace NodeEditor
 		private Dictionary<String, List<BaseNodeBlock>> VarDisplayBlocks_dict = new Dictionary<String, List<BaseNodeBlock>>();
 
 		public BaseNodeBlock StartExecutionBlock { get; set; }
-		public BaseNodeBlock CurrentExecutionBlock { get; set; }
+		public BaseNodeBlock CurrentExecutionBlock;
 
 		/// <summary>
 		/// constructor
@@ -2060,6 +2060,25 @@ namespace NodeEditor
 			}
 
 		}
+
+		private void StartBlockExecution_MI_Click(object sender, RoutedEventArgs e)
+		{
+			CurrentExecutionBlock = StartExecutionBlock;
+			CurrentExecutionBlock.bIsActive = true;	
+		}
+
+		private void RunOnStart_MI_Click(object sender, RoutedEventArgs e)
+		{
+			CurrentExecutionBlock.OnStartNodeBlockExecution(ref CurrentExecutionBlock);
+		}
+		private void ExecuteBlock_MI_Click(object sender, RoutedEventArgs e)
+		{
+			CurrentExecutionBlock.NodeBlockExecution(ref CurrentExecutionBlock);
+		}
+		private void RunOnExit_MI_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
 	}
 	/// <summary>
 	/// This is the starting pointer for a given graph
@@ -2077,36 +2096,47 @@ namespace NodeEditor
 			throw new NotImplementedException();
 		}
 
+		public override void OnStartEvaulatInternalData()
+		{
+			throw new NotImplementedException();
+		}
 		public override void EvaulatInternalData()
-			{
-				throw new NotImplementedException();
-			}
+		{
+			throw new NotImplementedException();
+		}
+		public override void OnEndEvaulatInternalData()
+		{
+			throw new NotImplementedException();
+		}
 
-			public override void NodeBlockExecution()
-			{
-				throw new NotImplementedException();
-			}
+		public override void OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
+		{
+		//there are no inputs that need to be checked so just move on.
+		this.NodeBlockExecution(ref currentNB);
+		this.bIsActive = true;
+		}
+		public override void NodeBlockExecution(ref BaseNodeBlock currentNB)
+		{
+			//there are inputs nore states to evaulate. So move on
+			this.OnEndNodeBlockExecution(ref currentNB);
+		}
 
-			public override void OnEndEvaulatInternalData()
+		public override void OnEndNodeBlockExecution(ref BaseNodeBlock currentNB)
+		{
+			if (this.ExitNode.ConnectedNodes.Count == 0) return;
+			if (this.ExitNode.ConnectedNodes[0].ParentBlock != null)
 			{
-				throw new NotImplementedException();
+				currentNB = this.ExitNode.ConnectedNodes[0].ParentBlock;
+				this.bIsActive = false;
+				currentNB.OnStartNodeBlockExecution(ref currentNB);
 			}
-
-			public override void OnEndNodeBlockExecution()
+			else
 			{
-				throw new NotImplementedException();
-			}
-
-			public override void OnStartEvaulatInternalData()
-			{
-				throw new NotImplementedException();
-			}
-
-			public override void OnStartNodeBlockExecution()
-			{
-				throw new NotImplementedException();
+				bIsActive = false;
+				return;
 			}
 		}
+	}
 
 	/// <summary>
 	/// THis is the Stopping pointer for a given graph
@@ -2129,7 +2159,7 @@ namespace NodeEditor
 			throw new NotImplementedException();
 		}
 
-		public override void NodeBlockExecution()
+		public override void NodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			throw new NotImplementedException();
 		}
@@ -2139,7 +2169,7 @@ namespace NodeEditor
 			throw new NotImplementedException();
 		}
 
-		public override void OnEndNodeBlockExecution()
+		public override void OnEndNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			throw new NotImplementedException();
 		}
@@ -2149,7 +2179,7 @@ namespace NodeEditor
 			throw new NotImplementedException();
 		}
 
-		public override void OnStartNodeBlockExecution()
+		public override void OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			throw new NotImplementedException();
 		}

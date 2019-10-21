@@ -83,7 +83,7 @@ namespace NodeEditor.Components
 			throw new NotImplementedException();
 		}
 
-		public override void NodeBlockExecution()
+		public override void NodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			throw new NotImplementedException();
 		}
@@ -93,7 +93,7 @@ namespace NodeEditor.Components
 			throw new NotImplementedException();
 		}
 
-		public override void OnEndNodeBlockExecution()
+		public override void OnEndNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			throw new NotImplementedException();
 		}
@@ -103,7 +103,7 @@ namespace NodeEditor.Components
 			throw new NotImplementedException();
 		}
 
-		public override void OnStartNodeBlockExecution()
+		public override void OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			throw new NotImplementedException();
 		}
