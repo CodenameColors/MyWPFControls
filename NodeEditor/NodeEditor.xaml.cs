@@ -2064,7 +2064,7 @@ namespace NodeEditor
 		private void StartBlockExecution_MI_Click(object sender, RoutedEventArgs e)
 		{
 			CurrentExecutionBlock = StartExecutionBlock;
-			CurrentExecutionBlock.bIsActive = true;	
+			CurrentExecutionBlock.BIsEActive = true;	
 		}
 
 		private void RunOnStart_MI_Click(object sender, RoutedEventArgs e)
@@ -2112,11 +2112,11 @@ namespace NodeEditor
 			throw new NotImplementedException();
 		}
 
-		public override bool OnStartEvaluateInternalData(ConnectionNode desiredNode, out BaseNodeBlock connectedBlock)
+		public override bool OnStartEvaluateInternalData()
 		{
 			throw new NotImplementedException();
 		}
-		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock, out object retVal)
+		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock)
 		{
 			throw new NotImplementedException();
 		}
@@ -2125,13 +2125,13 @@ namespace NodeEditor
 			throw new NotImplementedException();
 		}
 
-		public override void OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
+		public override bool OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 		//there are no inputs that need to be checked so just move on.
 		this.NodeBlockExecution(ref currentNB);
-		this.bIsActive = true;
+		this.BIsEActive = true;
 		}
-		public override void NodeBlockExecution(ref BaseNodeBlock currentNB)
+		public override bool NodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			//there are inputs nore states to evaulate. So move on
 			//this.OnEndNodeBlockExecution(ref currentNB);
@@ -2143,12 +2143,12 @@ namespace NodeEditor
 			if (this.ExitNode.ConnectedNodes[0].ParentBlock != null)
 			{
 				currentNB = this.ExitNode.ConnectedNodes[0].ParentBlock;
-				this.bIsActive = false;
+				this.BIsEActive = false;
 				//currentNB.OnStartNodeBlockExecution(ref currentNB);
 			}
 			else
 			{
-				bIsActive = false;
+				BIsEActive = false;
 				return;
 			}
 		}
@@ -2170,12 +2170,12 @@ namespace NodeEditor
 			throw new NotImplementedException();
 		}
 
-		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock, out object retVal)
+		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override void NodeBlockExecution(ref BaseNodeBlock currentNB)
+		public override bool NodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			throw new NotImplementedException();
 		}
@@ -2190,12 +2190,12 @@ namespace NodeEditor
 			throw new NotImplementedException();
 		}
 
-		public override bool OnStartEvaluateInternalData(ConnectionNode desiredNode, out BaseNodeBlock connectedBlock)
+		public override bool OnStartEvaluateInternalData()
 		{
 			throw new NotImplementedException();
 		}
 
-		public override void OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
+		public override bool OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			throw new NotImplementedException();
 		}

@@ -10,9 +10,9 @@ namespace NodeEditor.Components
 {
 	public enum EActiveStatus
 	{
-		Active,
-		Disabled,
-		Error
+		Active = 0,
+		Disabled = 1,
+		Error = 2
 	}
 
 	public abstract class BaseNodeBlock : System.Windows.Controls.Button, INotifyPropertyChanged
@@ -23,7 +23,7 @@ namespace NodeEditor.Components
 		private EActiveStatus activeStatus = EActiveStatus.Disabled;
 		public EActiveStatus ActiveStatus
 		{
-			get { return activeStatus; }
+			get => activeStatus;
 			set
 			{
 				activeStatus = value;
@@ -47,11 +47,11 @@ namespace NodeEditor.Components
 
 		//Every node block has three startes. 
 		//Start execution = The start of the execution here is where node references should be checked for. A null will kill/Stop execution flow
-		public abstract void OnStartNodeBlockExecution(ref BaseNodeBlock currentNB);
+		public abstract bool OnStartNodeBlockExecution(ref BaseNodeBlock currentNB);
 
 		//Excute = This state here assumes there is no null ptrs along the data ptrs.
 		//				 The state will proprogate down the data ptrs to solve the "equation" and find data value that is assigned to X Node
-		public abstract void NodeBlockExecution(ref BaseNodeBlock currentNB);
+		public abstract bool NodeBlockExecution(ref BaseNodeBlock currentNB);
 
 		//End Execution = Execution state has completed and returned a VALID value. So set this value to output node. 
 		//								Then set execution pointer to the next block (the exit node ptr)
@@ -61,12 +61,12 @@ namespace NodeEditor.Components
 		//Blocks that need to evaluate expression NEED to run this method.
 		//this method is here to check the inputs connected blocks. 
 		//If NOT GetConstantBlock then it must set the current node reference to the previous connected node
-		public abstract bool OnStartEvaluateInternalData(ConnectionNode desiredNode, out BaseNodeBlock connectedBlock);
+		public abstract bool OnStartEvaluateInternalData();
 
 		//Blocks that need to evaluate expression NEED to run this method.
 		//this method is run when only when the input nodes are connected to a GetConstantBlock
 		//OR the block contains an answer value.
-		public abstract bool EvaluateInternalData(BaseNodeBlock connectedBlock, out object retVal);
+		public abstract bool EvaluateInternalData(BaseNodeBlock connectedBlock);
 
 		//Blocks that need to evaluate expression NEED to run this method.
 		//the method will take the answer and output it to the connected nodes of the output node.

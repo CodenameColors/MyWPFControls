@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 namespace NodeEditor.Resources
 {
 
-	class NodeEditorException : Exception
+	public class NodeEditorException : Exception
 	{
-		public NodeEditorException(String Message) : base(String Message)
+		public NodeEditorException(String Message) : base(Message)
 		{
 
 		}
@@ -22,7 +22,7 @@ namespace NodeEditor.Resources
 	/// <summary>
 	/// This is here to be thrown when an Input node doesn't have a valid connection.
 	/// </summary>
-	class InputNodeConnectionException : NodeEditorException
+	public class InputNodeConnectionException : NodeEditorException
 	{
 
 	  public InputNodeConnectionException(int nodenum, string blocktype)
@@ -33,10 +33,10 @@ namespace NodeEditor.Resources
 
 	}
 
-  /// <summary>
-  /// This is here to be thrown when an Output node doesn't have a valid connection.
-  /// </summary>
-	class OutputNodeConnectionException : NodeEditorException
+	/// <summary>
+	/// This is here to be thrown when an Output node doesn't have a valid connection.
+	/// </summary>
+	public class OutputNodeConnectionException : NodeEditorException
 	{
 		public OutputNodeConnectionException(int nodenum, string blocktype)
 			: base($"Output Node: {nodenum} on {blocktype} is missing a connection!")
@@ -44,11 +44,11 @@ namespace NodeEditor.Resources
 
 		}
 	}
-	
+
 	/// <summary>
 	/// This is here to be thrown when an Entry node doesn't have a valid connection.
 	/// </summary>
-	class EntryNodeConnectionException : NodeEditorException
+	public class EntryNodeConnectionException : NodeEditorException
 	{
 		public EntryNodeConnectionException(string blocktype)
 			: base($"Entry Node on {blocktype} is missing a connection!")
@@ -60,7 +60,7 @@ namespace NodeEditor.Resources
 	/// <summary>
 	/// This is here to be thrown when an exit node doesn't have a valid connection.
 	/// </summary>
-	class ExitNodeConnectionException : NodeEditorException
+	public class ExitNodeConnectionException : NodeEditorException
 	{
 		public ExitNodeConnectionException(string blocktype)
 			: base($"Exit Node on {blocktype} is missing a connection!")
@@ -73,7 +73,7 @@ namespace NodeEditor.Resources
 	/// This is here to be thrown when a -1 or > dialogue.outputs.length is inputted
 	/// into the choice var (1st input)
 	/// </summary>
-	class DialogueChoiceInvalidException : NodeEditorException
+	public class DialogueChoiceInvalidException : NodeEditorException
 	{
 		public DialogueChoiceInvalidException(int choicevar, List<object> connecList)
 			: base($"Dialogue Block ChoiceVar is an Invalid value. Found{choicevar} : " +

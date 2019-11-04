@@ -71,12 +71,12 @@ namespace NodeEditor.Components
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		public override void OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
+		public override bool OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override void NodeBlockExecution(ref BaseNodeBlock currentNB)
+		public override bool NodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			throw new NotImplementedException();
 		}
@@ -86,12 +86,12 @@ namespace NodeEditor.Components
 			throw new NotImplementedException();
 		}
 
-		public override bool OnStartEvaluateInternalData(ConnectionNode desiredNode, out BaseNodeBlock connectedBlock)
+		public override bool OnStartEvaluateInternalData()
 		{
 			throw new NotImplementedException();
 		}
 
-		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock, out object retVal)
+		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock)
 		{
 			throw new NotImplementedException();
 		}
@@ -177,12 +177,12 @@ namespace NodeEditor.Components
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		public override void OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
+		public override bool OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override void NodeBlockExecution(ref BaseNodeBlock currentNB)
+		public override bool NodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			throw new NotImplementedException();
 		}
@@ -192,12 +192,12 @@ namespace NodeEditor.Components
 			throw new NotImplementedException();
 		}
 
-		public override bool OnStartEvaluateInternalData(ConnectionNode desiredNode, out BaseNodeBlock connectedBlock)
+		public override bool OnStartEvaluateInternalData()
 		{
 			throw new NotImplementedException();
 		}
 
-		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock, out object retVal)
+		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock)
 		{
 			throw new NotImplementedException();
 		}

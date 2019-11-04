@@ -2202,10 +2202,10 @@
 							<Border.Style>
 								<Style TargetType="Border">
 									<Style.Triggers>
-										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="False">
+										<DataTrigger Binding="{Binding Path=BIsEActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="False">
 											<Setter Property="BorderBrush" Value="#FF494949"></Setter>
 										</DataTrigger>
-										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="True">
+										<DataTrigger Binding="{Binding Path=BIsEActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="True">
 											<Setter Property="BorderBrush" Value="White"></Setter>
 										</DataTrigger>
 									</Style.Triggers>
