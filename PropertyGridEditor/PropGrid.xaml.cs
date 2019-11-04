@@ -435,15 +435,15 @@ namespace PropertyGridEditor
 				num++; //inc until key is found.
 
 			//remove from display
-			InnerPropGrid.Children.Remove(GetChildren(InnerPropGrid, num, 0));
-			InnerPropGrid.Children.Remove(GetChildren(InnerPropGrid, num, 1));
+			InnerPropGrid.Children.Remove(GetChildUI(num, 0));
+			InnerPropGrid.Children.Remove(GetChildUI(num, 1));
 
 
 			//move all the other rows UP
 			for (int numr = num + 1; numr < InnerPropGrid.RowDefinitions.Count; numr++)
 			{
-				Grid.SetRow(GetChildren(InnerPropGrid, numr, 0), numr - 1);
-				Grid.SetRow(GetChildren(InnerPropGrid, numr, 1), numr - 1);
+				Grid.SetRow(GetChildUI(numr, 0), numr - 1);
+				Grid.SetRow(GetChildUI(numr, 1), numr - 1);
 			}
 			InnerPropGrid.RowDefinitions.RemoveAt(num);
 			PropDictionary.Remove(PropName); //remove from dictionary
@@ -678,9 +678,9 @@ namespace PropertyGridEditor
 		#endregion
 
 
-		private static UIElement GetChildren(Grid grid, int row, int column)
+		public UIElement GetChildUI(int row, int column)
 		{
-			foreach (UIElement child in grid.Children)
+			foreach (UIElement child in InnerPropGrid.Children)
 			{
 				if (child is GridSplitter ||  child is Border) continue;
 				if (Grid.GetRow(child) == row
