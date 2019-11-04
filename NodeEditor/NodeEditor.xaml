@@ -75,7 +75,19 @@
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
-						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2" >
+						<Border  CornerRadius="5" Background="#FF494949" BorderThickness="2" >
+							<Border.Style>
+								<Style TargetType="Border">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="False">
+											<Setter Property="BorderBrush" Value="#FF494949"></Setter>
+										</DataTrigger>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="True">
+											<Setter Property="BorderBrush" Value="White"></Setter>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Border.Style>
 							<Grid Width="150" MinHeight="60" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
@@ -253,7 +265,19 @@
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
-						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2" >
+						<Border  CornerRadius="5" Background="#FF494949" BorderThickness="2" >
+							<Border.Style>
+								<Style TargetType="Border">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="False">
+											<Setter Property="BorderBrush" Value="#FF494949"></Setter>
+										</DataTrigger>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="True">
+											<Setter Property="BorderBrush" Value="White"></Setter>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Border.Style>
 							<Grid Width="150" MinHeight="60" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
@@ -431,7 +455,19 @@
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
-						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2" >
+						<Border  CornerRadius="5" Background="#FF494949" BorderThickness="2" >
+							<Border.Style>
+								<Style TargetType="Border">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="False">
+											<Setter Property="BorderBrush" Value="#FF494949"></Setter>
+										</DataTrigger>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="True">
+											<Setter Property="BorderBrush" Value="White"></Setter>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Border.Style>
 							<Grid Width="150" MinHeight="60" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
@@ -610,7 +646,19 @@
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
-						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
+						<Border  CornerRadius="5" Background="#FF494949" BorderThickness="2">
+							<Border.Style>
+								<Style TargetType="Border">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="False">
+											<Setter Property="BorderBrush" Value="#FF494949"></Setter>
+										</DataTrigger>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="True">
+											<Setter Property="BorderBrush" Value="White"></Setter>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Border.Style>
 							<Grid Width="150" MinHeight="60" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
@@ -788,7 +836,19 @@
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
-						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
+						<Border  CornerRadius="5" Background="#FF494949" BorderThickness="2">
+							<Border.Style>
+								<Style TargetType="Border">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="False">
+											<Setter Property="BorderBrush" Value="#FF494949"></Setter>
+										</DataTrigger>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="True">
+											<Setter Property="BorderBrush" Value="White"></Setter>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Border.Style>
 							<Grid Width="150" MinHeight="60" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
@@ -966,7 +1026,19 @@
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
-						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
+						<Border  CornerRadius="5" Background="#FF494949" BorderThickness="2">
+							<Border.Style>
+								<Style TargetType="Border">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="False">
+											<Setter Property="BorderBrush" Value="#FF494949"></Setter>
+										</DataTrigger>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="True">
+											<Setter Property="BorderBrush" Value="White"></Setter>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Border.Style>
 							<Grid Width="150" MinHeight="60" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
@@ -1144,7 +1216,19 @@
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
-						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
+						<Border  CornerRadius="5" Background="#FF494949" BorderThickness="2">
+							<Border.Style>
+								<Style TargetType="Border">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="False">
+											<Setter Property="BorderBrush" Value="#FF494949"></Setter>
+										</DataTrigger>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="True">
+											<Setter Property="BorderBrush" Value="White"></Setter>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Border.Style>
 							<Grid Width="150" MinHeight="60" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
@@ -1322,7 +1406,19 @@
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
-						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
+						<Border  CornerRadius="5" Background="#FF494949" BorderThickness="2">
+							<Border.Style>
+								<Style TargetType="Border">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="False">
+											<Setter Property="BorderBrush" Value="#FF494949"></Setter>
+										</DataTrigger>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="True">
+											<Setter Property="BorderBrush" Value="White"></Setter>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Border.Style>
 							<Grid Width="150" MinHeight="60" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
@@ -1495,13 +1591,25 @@
 				</Setter.Value>
 			</Setter>
 		</Style>
-		
+
 		
 		<Style TargetType="{x:Type local:ExitBlockNode}">
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
-						<Border CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
+						<Border CornerRadius="5" Background="#FF494949" BorderThickness="2">
+							<Border.Style>
+								<Style TargetType="Border">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="False">
+											<Setter Property="BorderBrush" Value="#FF494949"></Setter>
+										</DataTrigger>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="True">
+											<Setter Property="BorderBrush" Value="White"></Setter>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Border.Style>
 							<Grid Width="75" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
@@ -1539,7 +1647,6 @@
 				</Setter.Value>
 			</Setter>
 		</Style>
-
 
 		<Style TargetType="{x:Type local:StartBlockNode}">
 			<Setter Property="Template">
@@ -1599,7 +1706,19 @@
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
-						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
+						<Border  CornerRadius="5" Background="#FF494949" BorderThickness="2">
+							<Border.Style>
+								<Style TargetType="Border">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="False">
+											<Setter Property="BorderBrush" Value="#FF494949"></Setter>
+										</DataTrigger>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="True">
+											<Setter Property="BorderBrush" Value="White"></Setter>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Border.Style>
 							<Grid Width="100" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
@@ -1655,7 +1774,19 @@
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
-						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
+						<Border  CornerRadius="5" Background="#FF494949" BorderThickness="2">
+							<Border.Style>
+								<Style TargetType="Border">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="False">
+											<Setter Property="BorderBrush" Value="#FF494949"></Setter>
+										</DataTrigger>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="True">
+											<Setter Property="BorderBrush" Value="White"></Setter>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Border.Style>
 							<Grid Width="150" MinHeight="60" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
@@ -1862,7 +1993,19 @@
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
-						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
+						<Border  CornerRadius="5" Background="#FF494949" BorderThickness="2">
+							<Border.Style>
+								<Style TargetType="Border">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="False">
+											<Setter Property="BorderBrush" Value="#FF494949"></Setter>
+										</DataTrigger>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="True">
+											<Setter Property="BorderBrush" Value="White"></Setter>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Border.Style>
 							<Grid Width="150" MinHeight="60" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
@@ -2055,7 +2198,19 @@
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate TargetType="{x:Type nec:DialogueNodeBlock}">
-						<Border  CornerRadius="5" BorderBrush="#FF494949" Background="#FF494949" BorderThickness="2">
+						<Border  CornerRadius="5" Background="#FF494949" BorderThickness="2">
+							<Border.Style>
+								<Style TargetType="Border">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="False">
+											<Setter Property="BorderBrush" Value="#FF494949"></Setter>
+										</DataTrigger>
+										<DataTrigger Binding="{Binding Path=bIsActive, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="True">
+											<Setter Property="BorderBrush" Value="White"></Setter>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Border.Style>
 							<Grid MinHeight="100" MinWidth="150" Background="#FF494949" ClipToBounds="False" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click" >
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>

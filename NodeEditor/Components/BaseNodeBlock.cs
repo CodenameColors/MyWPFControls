@@ -30,6 +30,8 @@ namespace NodeEditor.Components
 		public List<ConnectionNode> InputNodes;
 		public List<ConnectionNode> OutputNodes;
 
+		public object AnswerToOutput = null;
+
 		public event PropertyChangedEventHandler PropertyChanged;
 
 
@@ -42,18 +44,23 @@ namespace NodeEditor.Components
 		public abstract void NodeBlockExecution(ref BaseNodeBlock currentNB);
 
 		//End Execution = Execution state has completed and returned a VALID value. So set this value to output node. 
-		//								Then set excution pointer to the next block (the exit node ptr)
+		//								Then set execution pointer to the next block (the exit node ptr)
 		public abstract void OnEndNodeBlockExecution(ref BaseNodeBlock currentNB);
 
 
-		//Blocks that need to evalute expression NEED to run this method.
-		public abstract void OnStartEvaulatInternalData();
+		//Blocks that need to evaluate expression NEED to run this method.
+		//this method is here to check the inputs connected blocks. 
+		//If NOT GetConstantBlock then it must set the current node reference to the previous connected node
+		public abstract bool OnStartEvaluateInternalData(ConnectionNode desiredNode, out BaseNodeBlock connectedBlock);
 
-		//Blocks that need to evalute expression NEED to run this method.
-		public abstract void EvaulatInternalData();
+		//Blocks that need to evaluate expression NEED to run this method.
+		//this method is run when only when the input nodes are connected to a GetConstantBlock
+		//OR the block contains an answer value.
+		public abstract bool EvaluateInternalData(BaseNodeBlock connectedBlock, out object retVal);
 
-		//Blocks that need to evalute expression NEED to run this method.
-		public abstract void OnEndEvaulatInternalData();
+		//Blocks that need to evaluate expression NEED to run this method.
+		//the method will take the answer and output it to the connected nodes of the output node.
+		public abstract void OnEndEvaluateInternalData();
 
 
 		//every block node that is inherited will be able to delete connections. 

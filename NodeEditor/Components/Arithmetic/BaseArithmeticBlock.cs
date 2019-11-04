@@ -78,7 +78,7 @@ namespace NodeEditor.Components
 			newvalconnected = false;
 		}
 
-		public override void EvaulatInternalData()
+		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock, out object retVal)
 		{
 			throw new NotImplementedException();
 		}
@@ -88,7 +88,7 @@ namespace NodeEditor.Components
 			throw new NotImplementedException();
 		}
 
-		public override void OnEndEvaulatInternalData()
+		public override void OnEndEvaluateInternalData()
 		{
 			throw new NotImplementedException();
 		}
@@ -98,7 +98,7 @@ namespace NodeEditor.Components
 			throw new NotImplementedException();
 		}
 
-		public override void OnStartEvaulatInternalData()
+		public override bool OnStartEvaluateInternalData(ConnectionNode desiredNode, out BaseNodeBlock connectedBlock)
 		{
 			throw new NotImplementedException();
 		}

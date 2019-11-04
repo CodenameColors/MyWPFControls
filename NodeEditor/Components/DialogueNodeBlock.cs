@@ -34,7 +34,30 @@ namespace NodeEditor.Components
 
 		public override void NodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
-			throw new NotImplementedException();
+			//what state are we in?
+			if(this.InputNodes.Count == 0)
+			{
+				//there are no input nodes, thus we are in a single dialogue option. so no eval needed
+				
+			}
+			else
+			{
+				//there are input nodes so we need to determine what state the block is
+				if(this.InputNodes.Count == 1)
+				{
+					//we do not have an unlocking variable we need to check for.
+					//only check for the FIRST input 
+					if (this.OnStartEvaluateInternalData(this.InputNodes[0], out BaseNodeBlock connectedBlock))
+					{
+						EvaluateInternalData(connectedBlock, out TODO);
+
+					}
+				}
+				else
+				{
+
+				}
+			}
 		}
 
 		public override void OnEndNodeBlockExecution(ref BaseNodeBlock currentNB)
@@ -42,17 +65,46 @@ namespace NodeEditor.Components
 			throw new NotImplementedException();
 		}
 
-		public override void OnStartEvaulatInternalData()
+		//make sure there are connections
+		public override bool OnStartEvaluateInternalData(ConnectionNode desiredNode, out BaseNodeBlock connectedBlock)
 		{
-			throw new NotImplementedException();
+			bool isValid = true; //by default
+			connectedBlock = null;
+			if (desiredNode.ConnectedNodes.Count > 0)
+			{
+				//assume there is only one connection.
+				connectedBlock = desiredNode.ConnectedNodes[0].ParentBlock;
+			}
+			else isValid = false;
+			return isValid;
 		}
 
-		public override void EvaulatInternalData()
+
+		/// <summary>
+		/// we need to determine what state the expression is in
+		/// if connectedBlock is GetConstantBlock then we don't need to do any equations.
+		/// </summary>
+		/// <param name="connectedBlock"></param>
+		/// <param name="retVal"></param>
+		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock, out object retVal)
 		{
-			throw new NotImplementedException();
+			bool ret = true;
+			retVal = null; 
+			if (connectedBlock is GetConstantNodeBlock)
+			{
+				retVal = (connectedBlock as GetConstantNodeBlock).InternalData.VarData;
+			}
+			else if (connectedBlock is SetConstantNodeBlock || connectedBlock is BaseLogicNodeBlock
+			                                                || connectedBlock is BaseArithmeticBlock)
+			{
+				//this state means that we need to evaluate the next connected node.
+				
+			}
+
+			return ret;
 		}
 
-		public override void OnEndEvaulatInternalData()
+		public override void OnEndEvaluateInternalData()
 		{
 			throw new NotImplementedException();
 		}

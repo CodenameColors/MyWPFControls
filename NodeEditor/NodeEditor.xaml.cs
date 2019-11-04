@@ -2077,15 +2077,31 @@ namespace NodeEditor
 		}
 		private void RunOnExit_MI_Click(object sender, RoutedEventArgs e)
 		{
-
+			CurrentExecutionBlock.OnEndNodeBlockExecution(ref CurrentExecutionBlock);
 		}
+
+
+		private void EvalOnStart_MI_Click(object sender, RoutedEventArgs e)
+		{
+			//CurrentExecutionBlock.OnStartEvaluateInternalData(null);
+		}
+		private void EvalBlock_MI_Click(object sender, RoutedEventArgs e)
+		{
+			//CurrentExecutionBlock.EvaluateInternalData(TODO);
+		}
+
+		private void EvalOnExit_MI_Click(object sender, RoutedEventArgs e)
+		{
+			CurrentExecutionBlock.OnEndEvaluateInternalData();
+		}
+
 	}
 	/// <summary>
 	/// This is the starting pointer for a given graph
 	/// CONTAINS ONE OUTPUT (EXIT NODE)
 	/// </summary>
 	public partial class StartBlockNode : BaseNodeBlock
-		{
+	{
 			public StartBlockNode()
 			{
 				this.ExitNode = new ConnectionNode(this, "ExitNode", new Point(0, 0), ECOnnectionType.Exit);
@@ -2096,15 +2112,15 @@ namespace NodeEditor
 			throw new NotImplementedException();
 		}
 
-		public override void OnStartEvaulatInternalData()
+		public override bool OnStartEvaluateInternalData(ConnectionNode desiredNode, out BaseNodeBlock connectedBlock)
 		{
 			throw new NotImplementedException();
 		}
-		public override void EvaulatInternalData()
+		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock, out object retVal)
 		{
 			throw new NotImplementedException();
 		}
-		public override void OnEndEvaulatInternalData()
+		public override void OnEndEvaluateInternalData()
 		{
 			throw new NotImplementedException();
 		}
@@ -2118,7 +2134,7 @@ namespace NodeEditor
 		public override void NodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			//there are inputs nore states to evaulate. So move on
-			this.OnEndNodeBlockExecution(ref currentNB);
+			//this.OnEndNodeBlockExecution(ref currentNB);
 		}
 
 		public override void OnEndNodeBlockExecution(ref BaseNodeBlock currentNB)
@@ -2128,7 +2144,7 @@ namespace NodeEditor
 			{
 				currentNB = this.ExitNode.ConnectedNodes[0].ParentBlock;
 				this.bIsActive = false;
-				currentNB.OnStartNodeBlockExecution(ref currentNB);
+				//currentNB.OnStartNodeBlockExecution(ref currentNB);
 			}
 			else
 			{
@@ -2154,7 +2170,7 @@ namespace NodeEditor
 			throw new NotImplementedException();
 		}
 
-		public override void EvaulatInternalData()
+		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock, out object retVal)
 		{
 			throw new NotImplementedException();
 		}
@@ -2164,7 +2180,7 @@ namespace NodeEditor
 			throw new NotImplementedException();
 		}
 
-		public override void OnEndEvaulatInternalData()
+		public override void OnEndEvaluateInternalData()
 		{
 			throw new NotImplementedException();
 		}
@@ -2174,7 +2190,7 @@ namespace NodeEditor
 			throw new NotImplementedException();
 		}
 
-		public override void OnStartEvaulatInternalData()
+		public override bool OnStartEvaluateInternalData(ConnectionNode desiredNode, out BaseNodeBlock connectedBlock)
 		{
 			throw new NotImplementedException();
 		}
