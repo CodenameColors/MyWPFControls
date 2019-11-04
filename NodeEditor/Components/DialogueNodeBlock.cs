@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using NodeEditor.Resources;
 
 namespace NodeEditor.Components
 {
@@ -27,35 +28,75 @@ namespace NodeEditor.Components
 			base.OnApplyTemplate();
 		}
 
-		public override void OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
+		/// <summary>
+		/// check to make sure all the nodes on this block have valid connection points.
+		/// </summary>
+		/// <param name="currentNB"></param>
+		/// <returns></returns>
+		public override bool OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
-			currentNB.bIsActive = true;
+			bool temp = true;
+			int i = 0;
+			this.ActiveStatus = EActiveStatus.Active;
+			foreach (ConnectionNode cn in InputNodes)
+			{
+				if (!(cn.ConnectedNodes.Count > 0))
+				{
+					temp = false;
+					ErrorStack.Push(new InputNodeConnectionException(i, this.GetType().Name ));
+				}
+				i++;
+			}
+
+			i = 0;
+			foreach (ConnectionNode cn in OutputNodes)
+			{
+				if (!(cn.ConnectedNodes.Count > 0))
+				{
+					temp = false;
+					ErrorStack.Push(new OutputNodeConnectionException(i, this.GetType().Name));
+				}
+				i++;
+			}
+
+			if (!(EntryNode.ConnectedNodes.Count > 0))
+			{
+				temp = false;
+				ErrorStack.Push(new EntryNodeConnectionException(this.GetType().Name));
+			}
+
+
+			if (!temp)
+				this.ActiveStatus = EActiveStatus.Error;
+			return temp;
 		}
 
-		public override void NodeBlockExecution(ref BaseNodeBlock currentNB)
+		public override bool NodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
-			//what state are we in?
-			if(this.InputNodes.Count == 0)
+			bool temp = true;
+			if (this.InputNodes.Count == 0)
 			{
-				//there are no input nodes, thus we are in a single dialogue option. so no eval needed
-				
+				return true;
 			}
 			else
 			{
-				//there are input nodes so we need to determine what state the block is
-				if(this.InputNodes.Count == 1)
+				//we need to evaluate the inputs to determine the calculated output.
+				if (!this.OnStartEvaluateInternalData())
 				{
-					//we do not have an unlocking variable we need to check for.
-					//only check for the FIRST input 
-					if (this.OnStartEvaluateInternalData(this.InputNodes[0], out BaseNodeBlock connectedBlock))
-					{
-						EvaluateInternalData(connectedBlock, out TODO);
-
-					}
+					//error found
 				}
 				else
 				{
+					//no error found we can evaluate
+					foreach (ConnectionNode cn in InputNodes)
+					{
+						temp &= EvaluateInternalData(cn.ParentBlock);
+					}
 
+					if (temp)
+					{
+						OnEndEvaluateInternalData();
+					}
 				}
 			}
 		}
@@ -66,17 +107,24 @@ namespace NodeEditor.Components
 		}
 
 		//make sure there are connections
-		public override bool OnStartEvaluateInternalData(ConnectionNode desiredNode, out BaseNodeBlock connectedBlock)
+		public override bool OnStartEvaluateInternalData()
 		{
-			bool isValid = true; //by default
-			connectedBlock = null;
-			if (desiredNode.ConnectedNodes.Count > 0)
+			bool temp = true;
+			int i = 0;
+			this.ActiveStatus = EActiveStatus.Active;
+			foreach (ConnectionNode cn in InputNodes)
 			{
-				//assume there is only one connection.
-				connectedBlock = desiredNode.ConnectedNodes[0].ParentBlock;
+				if (!(cn.ConnectedNodes.Count > 0))
+				{
+					temp = false;
+					ErrorStack.Push(new InputNodeConnectionException(i, this.GetType().Name));
+				}
+				i++;
 			}
-			else isValid = false;
-			return isValid;
+
+			if (!temp)
+				this.ActiveStatus = EActiveStatus.Error;
+			return temp;
 		}
 
 
@@ -85,23 +133,17 @@ namespace NodeEditor.Components
 		/// if connectedBlock is GetConstantBlock then we don't need to do any equations.
 		/// </summary>
 		/// <param name="connectedBlock"></param>
-		/// <param name="retVal"></param>
-		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock, out object retVal)
+		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock)
 		{
-			bool ret = true;
-			retVal = null; 
-			if (connectedBlock is GetConstantNodeBlock)
+			foreach (ConnectionNode cn in InputNodes)
 			{
-				retVal = (connectedBlock as GetConstantNodeBlock).InternalData.VarData;
+				if (!(cn.ConnectedNodes[0].ParentBlock is GetConstantNodeBlock))
+				{
+					//it's not a constant thus we MUST evaluate this node.
+					cn.ConnectedNodes[0].ParentBlock.OnStartEvaluateInternalData();
+				}
 			}
-			else if (connectedBlock is SetConstantNodeBlock || connectedBlock is BaseLogicNodeBlock
-			                                                || connectedBlock is BaseArithmeticBlock)
-			{
-				//this state means that we need to evaluate the next connected node.
-				
-			}
-
-			return ret;
+			return false;
 		}
 
 		public override void OnEndEvaluateInternalData()

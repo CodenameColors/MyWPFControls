@@ -4,22 +4,30 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NodeEditor.Resources;
 
 namespace NodeEditor.Components
 {
+	public enum EActiveStatus
+	{
+		Active,
+		Disabled,
+		Error
+	}
+
 	public abstract class BaseNodeBlock : System.Windows.Controls.Button, INotifyPropertyChanged
 	{
 		public String Header { get; set; }
 
 		//for displaying active status
-		private bool isactive = false;
-		public bool bIsActive
+		private EActiveStatus activeStatus = EActiveStatus.Disabled;
+		public EActiveStatus ActiveStatus
 		{
-			get { return isactive; }
+			get { return activeStatus; }
 			set
 			{
-				isactive = value;
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("bIsActive"));
+				activeStatus = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BIsEActive"));
 			}
 		}
 
@@ -31,6 +39,8 @@ namespace NodeEditor.Components
 		public List<ConnectionNode> OutputNodes;
 
 		public object AnswerToOutput = null;
+
+		public Stack<NodeEditorException> ErrorStack = new Stack<NodeEditorException>();
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
