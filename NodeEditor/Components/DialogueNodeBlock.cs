@@ -125,7 +125,7 @@ namespace NodeEditor.Components
 			if (!temp)
 				this.ActiveStatus = EActiveStatus.Error;
 			return temp;
-		}
+		} 
 
 
 		/// <summary>
