@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Security.RightsManagement;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -11,16 +12,13 @@ namespace NodeEditor.Components
 {
 	public class DialogueNodeBlock : BaseNodeBlock, INotifyPropertyChanged
 	{
-		public List<object> NodeData { get; set; }
-
-
-
+		public int ChoiceVar = 0;
+		public object UnlockingVar = null;
 		public DialogueNodeBlock(String Header)
 		{
 			this.Header = Header;
 			InputNodes = new List<ConnectionNode>();
 			OutputNodes = new List<ConnectionNode>();
-			NodeData = new List<object>();
 		}
 
 		public override void OnApplyTemplate()
@@ -87,11 +85,7 @@ namespace NodeEditor.Components
 				}
 				else
 				{
-					//no error found we can evaluate
-					foreach (ConnectionNode cn in InputNodes)
-					{
-						temp &= EvaluateInternalData(cn.ParentBlock);
-					}
+					
 
 					if (temp)
 					{
@@ -123,8 +117,28 @@ namespace NodeEditor.Components
 			}
 
 			if (!temp)
+			{
 				this.ActiveStatus = EActiveStatus.Error;
-			return temp;
+				return temp;
+			}
+			else
+			{//no error found we can evaluate
+				foreach (ConnectionNode cn in this.InputNodes)
+				{
+					temp &= EvaluateInternalData(cn.ParentBlock);
+				}
+
+				if (!temp)
+				{
+					this.ActiveStatus = EActiveStatus.Error;
+					return temp;
+				}
+				else
+				{
+					OnEndEvaluateInternalData();
+				}
+			}
+
 		} 
 
 
@@ -135,13 +149,35 @@ namespace NodeEditor.Components
 		/// <param name="connectedBlock"></param>
 		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock)
 		{
+			Stack<object> resultsStack = new Stack<object>();
 			foreach (ConnectionNode cn in InputNodes)
 			{
-				if (!(cn.ConnectedNodes[0].ParentBlock is GetConstantNodeBlock))
+				if (!(cn.ConnectedNodes[0].ParentBlock is GetConstantNodeBlock) && cn.ConnectedNodes[0].ParentBlock.AnswerToOutput == null)
 				{
 					//it's not a constant thus we MUST evaluate this node.
 					cn.ConnectedNodes[0].ParentBlock.OnStartEvaluateInternalData();
 				}
+				else
+				{
+					if (cn.ConnectedNodes[0].ParentBlock is GetConstantNodeBlock)
+					{
+						resultsStack.Push((cn.ConnectedNodes[0].ParentBlock as GetConstantNodeBlock)?.InternalData.VarData);
+					}
+					else if (cn.ConnectedNodes[0].ParentBlock.AnswerToOutput != null)
+					{
+						resultsStack.Push(cn.ConnectedNodes[0].ParentBlock.AnswerToOutput);
+					}
+				}
+			}
+
+			if (resultsStack.Count == 2)
+			{
+				UnlockingVar = resultsStack.Pop();
+				ChoiceVar = (int)resultsStack.Pop();
+			}
+			else if (resultsStack.Count == 1)
+			{
+				ChoiceVar = (int)resultsStack.Pop();
 			}
 			return false;
 		}
