@@ -11,12 +11,12 @@
         Title="MainWindow" Height="693" Width="800">
 	<Grid HorizontalAlignment="Left" VerticalAlignment="Top">
 		<TextBlock Text="Node Editor:" Foreground="White"/>
-		<ne:NodeEditor x:Name="NodeEditor" AllowNodeDeletion="True" Margin="10,27,0,0" HorizontalAlignment="Left" Width="772" Height="347" VerticalAlignment="Top" BorderBrush="#FFBDBDBD" BorderThickness="2"/>
+		<ne:BlockNodeEditor x:Name="NodeEditor" AllowNodeDeletion="True" Margin="10,27,0,0" HorizontalAlignment="Left" Width="772" Height="347" VerticalAlignment="Top" BorderBrush="#FFBDBDBD" BorderThickness="2"/>
 
 
 		<Button x:Name="BaseNode_BTN" Margin="444,379,245,-32" Content="Add Dia" Click="BaseNode_BTN_Click"/>
 		<Button x:Name="BaseNode_BTN1" Margin="556,379,133,-32" Content="Add get Const" Click="BaseNode_BTN_Click1"/>
 		<Button x:Name="BaseNode_BTN2" Margin="668,379,21,-32" Content="Add set Const" Click="BaseNode_BTN_Click2"/>
-		<err:OutputLog Margin="10,411,0,-275"/>
+		<err:OutputLog Name="OutputLog" Margin="10,411,0,-275"/>
 	</Grid>
 </Window>

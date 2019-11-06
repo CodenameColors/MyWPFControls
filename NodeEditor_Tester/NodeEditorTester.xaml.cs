@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +35,15 @@ namespace NodeEditor_Tester
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			NodeEditor.ItemsSource = nodes;
+			NodeEditor.CurrentErrors.CollectionChanged += CurrentErrorsOnCollectionChanged;
+		}
+
+		private void CurrentErrorsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			foreach (Exception ex in e.NewItems)
+			{
+				OutputLog.AddErrorLogItem(-1, ex.Message, "BlockNodeEditor", false);
+			}
 		}
 
 		private void BaseNode_BTN_Click(object sender, RoutedEventArgs e)

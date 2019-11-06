@@ -5,25 +5,22 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
+using NodeEditor.Components.Logic;
+using NodeEditor.Resources;
 
 namespace NodeEditor
 {
 	/// <summary>
 	/// Interaction logic for UserControl1.xaml
 	/// </summary>
-	public partial class NodeEditor : UserControl
+	public partial class BlockNodeEditor : UserControl
 	{
 
 		#region ItemSource
@@ -34,11 +31,11 @@ namespace NodeEditor
 		}
 
 		public static readonly DependencyProperty ItemsSourceProperty =
-				DependencyProperty.Register("ItemsSource", typeof(IEnumerable), typeof(NodeEditor), new PropertyMetadata(new PropertyChangedCallback(OnItemsSourcePropertyChanged)));
+				DependencyProperty.Register("ItemsSource", typeof(IEnumerable), typeof(BlockNodeEditor), new PropertyMetadata(new PropertyChangedCallback(OnItemsSourcePropertyChanged)));
 
 		private static void OnItemsSourcePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
-			var control = sender as NodeEditor;
+			var control = sender as BlockNodeEditor;
 			if (control != null)
 				control.OnItemsSourceChanged((IEnumerable)e.OldValue, (IEnumerable)e.NewValue);
 		}
@@ -100,7 +97,7 @@ namespace NodeEditor
 		}
 
 		public static readonly DependencyProperty AllowNodeDeletionProperty =
-					DependencyProperty.Register("AllowNodeDeletion", typeof(bool), typeof(NodeEditor),
+					DependencyProperty.Register("AllowNodeDeletion", typeof(bool), typeof(BlockNodeEditor),
 						new PropertyMetadata(false, new PropertyChangedCallback(OnAllowNodeDeletionChange)));
 		private static void OnAllowNodeDeletionChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
@@ -167,13 +164,15 @@ namespace NodeEditor
 
 		private Dictionary<String, List<BaseNodeBlock>> VarDisplayBlocks_dict = new Dictionary<String, List<BaseNodeBlock>>();
 
+		public ObservableCollection<NodeEditorException> CurrentErrors = new ObservableCollection<NodeEditorException>();
+
 		public BaseNodeBlock StartExecutionBlock { get; set; }
 		public BaseNodeBlock CurrentExecutionBlock;
 
 		/// <summary>
 		/// constructor
 		/// </summary>
-		public NodeEditor()
+		public BlockNodeEditor()
 		{
 			InitializeComponent();
 			TestingVars_list.CollectionChanged += TestingVars_list_CollectionChanged;
@@ -2063,21 +2062,30 @@ namespace NodeEditor
 
 		private void StartBlockExecution_MI_Click(object sender, RoutedEventArgs e)
 		{
+			CurrentExecutionBlock.ActiveStatus = EActiveStatus.Disabled;
 			CurrentExecutionBlock = StartExecutionBlock;
-			CurrentExecutionBlock.BIsEActive = true;	
+			CurrentExecutionBlock.ActiveStatus = EActiveStatus.Active;	
 		}
 
 		private void RunOnStart_MI_Click(object sender, RoutedEventArgs e)
 		{
-			CurrentExecutionBlock.OnStartNodeBlockExecution(ref CurrentExecutionBlock);
+			if (CurrentExecutionBlock.OnStartNodeBlockExecution(ref CurrentExecutionBlock)) return;
+			while (CurrentExecutionBlock.ErrorStack.Count > 0)
+				CurrentErrors.Add(CurrentExecutionBlock.ErrorStack.Pop());
 		}
 		private void ExecuteBlock_MI_Click(object sender, RoutedEventArgs e)
 		{
-			CurrentExecutionBlock.NodeBlockExecution(ref CurrentExecutionBlock);
+			if(CurrentExecutionBlock.NodeBlockExecution(ref CurrentExecutionBlock)) return;
+			while (CurrentExecutionBlock.ErrorStack.Count > 0)
+				CurrentErrors.Add(CurrentExecutionBlock.ErrorStack.Pop());
 		}
 		private void RunOnExit_MI_Click(object sender, RoutedEventArgs e)
 		{
 			CurrentExecutionBlock.OnEndNodeBlockExecution(ref CurrentExecutionBlock);
+			if (CurrentExecutionBlock is ExitBlockNode)
+			{
+				CurrentErrors.Add(new NodeEditorException("Dialogue Scene Completed!"));
+			}
 		}
 
 
@@ -2102,14 +2110,9 @@ namespace NodeEditor
 	/// </summary>
 	public partial class StartBlockNode : BaseNodeBlock
 	{
-			public StartBlockNode()
-			{
-				this.ExitNode = new ConnectionNode(this, "ExitNode", new Point(0, 0), ECOnnectionType.Exit);
-			}
-
-		public override void DeleteConnection(EConditionalTypes contype, int row)
+		public StartBlockNode()
 		{
-			throw new NotImplementedException();
+			this.ExitNode = new ConnectionNode(this, "ExitNode", new Point(0, 0), ECOnnectionType.Exit);
 		}
 
 		public override bool OnStartEvaluateInternalData()
@@ -2120,37 +2123,43 @@ namespace NodeEditor
 		{
 			throw new NotImplementedException();
 		}
-		public override void OnEndEvaluateInternalData()
+		public override bool OnEndEvaluateInternalData()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void DeleteConnection(EConditionalTypes contype, int row)
 		{
 			throw new NotImplementedException();
 		}
 
 		public override bool OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
-		//there are no inputs that need to be checked so just move on.
+		//check to make sure the exit node is connected.
+		if (this.ExitNode.ConnectedNodes.Count == 0)
+		{
+			this.ActiveStatus = EActiveStatus.Error;
+			return false;
+		}
+
 		this.NodeBlockExecution(ref currentNB);
-		this.BIsEActive = true;
+		this.ActiveStatus = EActiveStatus.Active;
+		return true;
 		}
 		public override bool NodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
-			//there are inputs nore states to evaulate. So move on
-			//this.OnEndNodeBlockExecution(ref currentNB);
+			return true;
 		}
 
 		public override void OnEndNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
-			if (this.ExitNode.ConnectedNodes.Count == 0) return;
 			if (this.ExitNode.ConnectedNodes[0].ParentBlock != null)
 			{
 				currentNB = this.ExitNode.ConnectedNodes[0].ParentBlock;
-				this.BIsEActive = false;
+				this.ActiveStatus = EActiveStatus.Disabled;
 				//currentNB.OnStartNodeBlockExecution(ref currentNB);
 			}
-			else
-			{
-				BIsEActive = false;
-				return;
-			}
+
 		}
 	}
 
@@ -2177,17 +2186,18 @@ namespace NodeEditor
 
 		public override bool NodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
-			throw new NotImplementedException();
+			return true;
 		}
 
-		public override void OnEndEvaluateInternalData()
+		public override bool OnEndEvaluateInternalData()
 		{
-			throw new NotImplementedException();
+			return true;
 		}
 
 		public override void OnEndNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
-			throw new NotImplementedException();
+			this.ActiveStatus = EActiveStatus.Done;
+			return;
 		}
 
 		public override bool OnStartEvaluateInternalData()
@@ -2197,7 +2207,16 @@ namespace NodeEditor
 
 		public override bool OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
-			throw new NotImplementedException();
+			//check to make sure the exit node is connected.
+			if (this.EntryNode.ConnectedNodes.Count == 0)
+			{
+				this.ActiveStatus = EActiveStatus.Error;
+				return false;
+			}
+
+			//this.NodeBlockExecution(ref currentNB);
+			this.ActiveStatus = EActiveStatus.Active;
+			return true;
 		}
 	}
 

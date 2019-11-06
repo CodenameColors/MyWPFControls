@@ -49,7 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Resources\NodeEditorExceptions.cs" />
-    <Page Include="NodeEditor.xaml">
+    <Page Include="BlockNodeEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -68,8 +68,8 @@
     <Compile Include="Components\Logic\BaseLogicNodeBlock.cs" />
     <Compile Include="Components\Logic\NOTBlock.cs" />
     <Compile Include="Components\Logic\ORBlock.cs" />
-    <Compile Include="NodeEditor.xaml.cs">
-      <DependentUpon>NodeEditor.xaml</DependentUpon>
+    <Compile Include="BlockNodeEditor.xaml.cs">
+      <DependentUpon>BlockNodeEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

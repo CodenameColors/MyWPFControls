@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.RightsManagement;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Media.Converters;
+using NodeEditor.Components.Logic;
 using NodeEditor.Resources;
 
 namespace NodeEditor.Components
 {
-	public class DialogueNodeBlock : BaseNodeBlock, INotifyPropertyChanged
+	public class DialogueNodeBlock : BaseNodeBlock
 	{
 		public int ChoiceVar = 0;
 		public object UnlockingVar = null;
@@ -82,22 +85,19 @@ namespace NodeEditor.Components
 				if (!this.OnStartEvaluateInternalData())
 				{
 					//error found
-				}
-				else
-				{
-					
-
-					if (temp)
-					{
-						OnEndEvaluateInternalData();
-					}
+					Console.WriteLine(@"Dialogue Eval failed");
+					this.ActiveStatus = EActiveStatus.Error;
+					return false;
 				}
 			}
+			return temp;
 		}
 
 		public override void OnEndNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
-			throw new NotImplementedException();
+			//TODO: make the unlocking variables work
+			currentNB = this.OutputNodes[ChoiceVar].ConnectedNodes[0].ParentBlock;
+			this.ActiveStatus = EActiveStatus.Disabled;
 		}
 
 		//make sure there are connections
@@ -122,7 +122,8 @@ namespace NodeEditor.Components
 				return temp;
 			}
 			else
-			{//no error found we can evaluate
+			{
+				//no error found we can evaluate
 				foreach (ConnectionNode cn in this.InputNodes)
 				{
 					temp &= EvaluateInternalData(cn.ParentBlock);
@@ -135,10 +136,10 @@ namespace NodeEditor.Components
 				}
 				else
 				{
-					OnEndEvaluateInternalData();
+					temp &= OnEndEvaluateInternalData();
 				}
 			}
-
+			return temp;
 		} 
 
 
@@ -149,42 +150,44 @@ namespace NodeEditor.Components
 		/// <param name="connectedBlock"></param>
 		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock)
 		{
-			Stack<object> resultsStack = new Stack<object>();
+			bool temp = true;
 			foreach (ConnectionNode cn in InputNodes)
 			{
 				if (!(cn.ConnectedNodes[0].ParentBlock is GetConstantNodeBlock) && cn.ConnectedNodes[0].ParentBlock.AnswerToOutput == null)
 				{
 					//it's not a constant thus we MUST evaluate this node.
-					cn.ConnectedNodes[0].ParentBlock.OnStartEvaluateInternalData();
+					temp &= cn.ConnectedNodes[0].ParentBlock.OnStartEvaluateInternalData();
 				}
 				else
 				{
 					if (cn.ConnectedNodes[0].ParentBlock is GetConstantNodeBlock)
 					{
-						resultsStack.Push((cn.ConnectedNodes[0].ParentBlock as GetConstantNodeBlock)?.InternalData.VarData);
+						ResultsStack.Push((cn.ConnectedNodes[0].ParentBlock as GetConstantNodeBlock)?.InternalData.VarData);
 					}
 					else if (cn.ConnectedNodes[0].ParentBlock.AnswerToOutput != null)
 					{
-						resultsStack.Push(cn.ConnectedNodes[0].ParentBlock.AnswerToOutput);
+						ResultsStack.Push(cn.ConnectedNodes[0].ParentBlock.AnswerToOutput);
 					}
 				}
 			}
-
-			if (resultsStack.Count == 2)
-			{
-				UnlockingVar = resultsStack.Pop();
-				ChoiceVar = (int)resultsStack.Pop();
-			}
-			else if (resultsStack.Count == 1)
-			{
-				ChoiceVar = (int)resultsStack.Pop();
-			}
-			return false;
+			return temp;
 		}
 
-		public override void OnEndEvaluateInternalData()
+		public override bool OnEndEvaluateInternalData()
 		{
-			throw new NotImplementedException();
+			if (ResultsStack.Count == 2)
+			{
+				UnlockingVar = ResultsStack.Pop();
+				ChoiceVar = (int)ResultsStack.Pop();
+			}
+			else if (ResultsStack.Count == 1) ChoiceVar = (int) ResultsStack.Pop();
+
+			if (ChoiceVar > this.OutputNodes.Count - 1)
+			{
+				ErrorStack.Push(new DialogueChoiceInvalidException(this.ChoiceVar, this.OutputNodes));
+				return false;
+			}
+			return true;
 		}
 
 		public override void DeleteConnection(EConditionalTypes contype, int row)
@@ -192,6 +195,5 @@ namespace NodeEditor.Components
 			throw new NotImplementedException();
 		}
 
-		public event PropertyChangedEventHandler PropertyChanged;
 	}
 }

@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace NodeEditor.Components
+namespace NodeEditor.Components.Logic
 {
 
 	public enum EConditionalTypes
@@ -88,7 +85,7 @@ namespace NodeEditor.Components
 			throw new NotImplementedException();
 		}
 
-		public override boolean NodeBlockExecution(ref BaseNodeBlock currentNB)
+		public override bool NodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			throw new NotImplementedException();
 		}
@@ -108,7 +105,7 @@ namespace NodeEditor.Components
 			throw new NotImplementedException();
 		}
 
-		public override void OnEndEvaluateInternalData()
+		public override bool OnEndEvaluateInternalData()
 		{
 			throw new NotImplementedException();
 		}

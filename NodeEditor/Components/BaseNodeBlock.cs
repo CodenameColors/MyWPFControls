@@ -4,15 +4,19 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NodeEditor.Components.Logic;
 using NodeEditor.Resources;
 
 namespace NodeEditor.Components
 {
 	public enum EActiveStatus
 	{
-		Active = 0,
-		Disabled = 1,
-		Error = 2
+		Active,
+		Disabled,
+		Error,
+		Done,
+		Eval
+
 	}
 
 	public abstract class BaseNodeBlock : System.Windows.Controls.Button, INotifyPropertyChanged
@@ -27,7 +31,7 @@ namespace NodeEditor.Components
 			set
 			{
 				activeStatus = value;
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BIsEActive"));
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ActiveStatus"));
 			}
 		}
 
@@ -38,6 +42,7 @@ namespace NodeEditor.Components
 		public List<ConnectionNode> InputNodes;
 		public List<ConnectionNode> OutputNodes;
 
+		public Stack<object> ResultsStack = new Stack<object>();
 		public object AnswerToOutput = null;
 
 		public Stack<NodeEditorException> ErrorStack = new Stack<NodeEditorException>();
@@ -45,7 +50,7 @@ namespace NodeEditor.Components
 		public event PropertyChangedEventHandler PropertyChanged;
 
 
-		//Every node block has three startes. 
+		//Every node block has three states. 
 		//Start execution = The start of the execution here is where node references should be checked for. A null will kill/Stop execution flow
 		public abstract bool OnStartNodeBlockExecution(ref BaseNodeBlock currentNB);
 
@@ -70,7 +75,7 @@ namespace NodeEditor.Components
 
 		//Blocks that need to evaluate expression NEED to run this method.
 		//the method will take the answer and output it to the connected nodes of the output node.
-		public abstract void OnEndEvaluateInternalData();
+		public abstract bool OnEndEvaluateInternalData();
 
 
 		//every block node that is inherited will be able to delete connections. 

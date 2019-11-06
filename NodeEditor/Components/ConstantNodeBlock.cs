@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using NodeEditor.Components.Logic;
 
 namespace NodeEditor.Components
 {
@@ -31,8 +32,8 @@ namespace NodeEditor.Components
 			}
 		}
 
-		private NodeEditor.RuntimeVars data = new NodeEditor.RuntimeVars();
-		public NodeEditor.RuntimeVars InternalData
+		private BlockNodeEditor.RuntimeVars data = new BlockNodeEditor.RuntimeVars();
+		public BlockNodeEditor.RuntimeVars InternalData
 		{
 			get { return data; }
 			set
@@ -59,7 +60,7 @@ namespace NodeEditor.Components
 			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", type));
 		}
 
-		public GetConstantNodeBlock(ECOnnectionType type, ref NodeEditor.RuntimeVars varptr)
+		public GetConstantNodeBlock(ECOnnectionType type, ref BlockNodeEditor.RuntimeVars varptr)
 		{
 			dtype = type;
 			Header = String.Format("Get Constant [{0}]", type.ToString());
@@ -96,7 +97,7 @@ namespace NodeEditor.Components
 			throw new NotImplementedException();
 		}
 
-		public override void OnEndEvaluateInternalData()
+		public override bool OnEndEvaluateInternalData()
 		{
 			throw new NotImplementedException();
 		}
@@ -202,7 +203,7 @@ namespace NodeEditor.Components
 			throw new NotImplementedException();
 		}
 
-		public override void OnEndEvaluateInternalData()
+		public override bool OnEndEvaluateInternalData()
 		{
 			throw new NotImplementedException();
 		}

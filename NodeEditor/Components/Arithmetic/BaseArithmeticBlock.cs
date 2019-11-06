@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NodeEditor.Components.Logic;
 
 namespace NodeEditor.Components
 {
@@ -83,12 +84,12 @@ namespace NodeEditor.Components
 			throw new NotImplementedException();
 		}
 
-		public override boolean NodeBlockExecution(ref BaseNodeBlock currentNB)
+		public override bool NodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override void OnEndEvaluateInternalData()
+		public override bool OnEndEvaluateInternalData()
 		{
 			throw new NotImplementedException();
 		}

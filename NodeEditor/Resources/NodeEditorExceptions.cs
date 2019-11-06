@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NodeEditor.Components;
+
 // ReSharper disable IdentifierTypo
 
 // <summary>
@@ -75,9 +77,9 @@ namespace NodeEditor.Resources
 	/// </summary>
 	public class DialogueChoiceInvalidException : NodeEditorException
 	{
-		public DialogueChoiceInvalidException(int choicevar, List<object> connecList)
-			: base($"Dialogue Block ChoiceVar is an Invalid value. Found{choicevar} : " +
-			       $"Expected {connecList.Count-1} or less" )
+		public DialogueChoiceInvalidException(int choicevar, List<ConnectionNode> connecList)
+			: base($"Dialogue Block ChoiceVar is an Invalid value. Found [{choicevar}] : " +
+			       $"Expected 0 - {connecList.Count-1}" )
 		{
 
 		}
