@@ -164,10 +164,12 @@ namespace NodeEditor.Components
 		/// <returns></returns>
 		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock)
 		{
+			Console.WriteLine(String.Format("From {0} -> {1}", this.GetType().Name, connectedBlock.GetType().Name));
 			bool temp = true;
 			if (connectedBlock is GetConstantNodeBlock block)
 			{
 				ResultsStack.Push(block?.InternalData.VarData);
+				Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
 				return true;
 			}
 			else
@@ -175,11 +177,27 @@ namespace NodeEditor.Components
 				if (connectedBlock.AnswerToOutput != null)
 				{
 					ResultsStack.Push(connectedBlock.AnswerToOutput);
+					Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
+					connectedBlock.AnswerToOutput = null;
+				}
+				else if (connectedBlock.NewValue_Constant != null && !(connectedBlock as BaseArithmeticBlock).NewValConnected)
+				{
+					ResultsStack.Push(Int32.Parse(connectedBlock.NewValue_Constant));
+					Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
 					connectedBlock.AnswerToOutput = null;
 				}
 				else
+				{
 					temp &= connectedBlock.OnStartEvaluateInternalData(); //it's not a constant thus we MUST evaluate this node.
+					if (temp)
+					{
+						this.ResultsStack.Push(connectedBlock.AnswerToOutput);
+						Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
+						connectedBlock.AnswerToOutput = null;
+					}
+				}
 			}
+
 			return temp;
 		}
 

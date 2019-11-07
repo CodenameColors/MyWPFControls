@@ -2007,6 +2007,11 @@ namespace NodeEditor
 				ConditionalNodeBlock bn = new ConditionalNodeBlock(ECOnnectionType.Int);
 				NodeEditor_Canvas.Children.Add(bn);
 			}
+			else
+			{
+				ConditionalNodeBlock bn = new ConditionalNodeBlock(ECOnnectionType.Int);
+				NodeEditor_Canvas.Children.Add(bn);
+			}
 		}
 
 		private void Math_MI_Click(object sender, RoutedEventArgs e)
@@ -2081,11 +2086,11 @@ namespace NodeEditor
 		}
 		private void RunOnExit_MI_Click(object sender, RoutedEventArgs e)
 		{
-			CurrentExecutionBlock.OnEndNodeBlockExecution(ref CurrentExecutionBlock);
 			if (CurrentExecutionBlock is ExitBlockNode)
 			{
 				CurrentErrors.Add(new NodeEditorException("Dialogue Scene Completed!"));
 			}
+			CurrentExecutionBlock.OnEndNodeBlockExecution(ref CurrentExecutionBlock);
 		}
 
 

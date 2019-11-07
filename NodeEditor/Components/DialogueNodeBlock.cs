@@ -126,7 +126,7 @@ namespace NodeEditor.Components
 				//no error found we can evaluate
 				foreach (ConnectionNode cn in this.InputNodes)
 				{
-					temp &= EvaluateInternalData(cn.ParentBlock);
+					temp &= EvaluateInternalData(cn.ConnectedNodes[0].ParentBlock);
 				}
 
 				if (!temp)
@@ -150,30 +150,35 @@ namespace NodeEditor.Components
 		/// <param name="connectedBlock"></param>
 		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock)
 		{
+			Console.WriteLine(String.Format("From {0} -> {1}", this.GetType().Name, connectedBlock.GetType().Name));
 			bool temp = true;
-			foreach (ConnectionNode cn in InputNodes)
+			if (connectedBlock is GetConstantNodeBlock block)
 			{
-				if (!(cn.ConnectedNodes[0].ParentBlock is GetConstantNodeBlock) && cn.ConnectedNodes[0].ParentBlock.AnswerToOutput == null)
+				ResultsStack.Push(block?.InternalData.VarData);
+				Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
+				return true;
+			}
+			else
+			{
+				if (connectedBlock.AnswerToOutput != null)
 				{
-					//it's not a constant thus we MUST evaluate this node.
-					temp &= cn.ConnectedNodes[0].ParentBlock.OnStartEvaluateInternalData();
-					if (temp)
-					{
-						ResultsStack.Push(cn.ConnectedNodes[0].ParentBlock.AnswerToOutput);
-						cn.ConnectedNodes[0].ParentBlock.AnswerToOutput = null;
-					}
-					else temp &= false;
+					ResultsStack.Push(connectedBlock.AnswerToOutput);
+					Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
+					connectedBlock.AnswerToOutput = null;
+				}
+				else if (connectedBlock.NewValue_Constant != null && !(connectedBlock as BaseArithmeticBlock).NewValConnected)
+				{
+					ResultsStack.Push(Int32.Parse(connectedBlock.NewValue_Constant));
+					Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
 				}
 				else
 				{
-					if (cn.ConnectedNodes[0].ParentBlock is GetConstantNodeBlock)
+					temp &= connectedBlock.OnStartEvaluateInternalData(); //it's not a constant thus we MUST evaluate this node.
+					if (temp)
 					{
-						ResultsStack.Push((cn.ConnectedNodes[0].ParentBlock as GetConstantNodeBlock)?.InternalData.VarData);
-					}
-					else if (cn.ConnectedNodes[0].ParentBlock.AnswerToOutput != null)
-					{
-						ResultsStack.Push(cn.ConnectedNodes[0].ParentBlock.AnswerToOutput);
-						cn.ConnectedNodes[0].ParentBlock.AnswerToOutput = null;
+						this.ResultsStack.Push(connectedBlock.AnswerToOutput);
+						Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
+						connectedBlock.AnswerToOutput = null;
 					}
 				}
 			}

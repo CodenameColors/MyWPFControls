@@ -12,21 +12,13 @@
 
 		<ContextMenu x:Key="AddBlock_CM">
 			<MenuItem Header="Conditionals">
-				<MenuItem Header="Less Than">
-					<MenuItem Header="Bool" Click="ConditonalsLT_MI_Click"/>
-					<MenuItem Header="Int" Click="ConditonalsLT_MI_Click"/>
+				<MenuItem Header="Less Than" Click="ConditonalsLT_MI_Click"> 
 				</MenuItem>
-				<MenuItem Header="Less Equal">
-					<MenuItem Header="Bool" Click="ConditonalsLT_MI_Click"/>
-					<MenuItem Header="Int" Click="ConditonalsLT_MI_Click"/>
+				<MenuItem Header="Less Equal" Click="ConditonalsLT_MI_Click">
 				</MenuItem>
-				<MenuItem Header="Greater Than">
-					<MenuItem Header="Bool" Click="ConditonalsLT_MI_Click"/>
-					<MenuItem Header="Int" Click="ConditonalsLT_MI_Click"/>
+				<MenuItem Header="Greater Than" Click="ConditonalsLT_MI_Click">
 				</MenuItem>
-				<MenuItem Header="Greater Equal">
-					<MenuItem Header="Bool" Click="ConditonalsLT_MI_Click"/>
-					<MenuItem Header="Int" Click="ConditonalsLT_MI_Click"/>
+				<MenuItem Header="Greater Equal" Click="ConditonalsLT_MI_Click">
 				</MenuItem>
 				<MenuItem Header="Equals">
 					<MenuItem Header="Bool" Click="ConditonalsLT_MI_Click"/>
@@ -466,16 +458,16 @@
 							<Border.Style>
 								<Style TargetType="Border">
 									<Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="1">
-                                            <Setter Property="BorderBrush" Value="#FF494949"></Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="0">
-                                            <Setter Property="BorderBrush" Value="White"></Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="2">
-                                            <Setter Property="BorderBrush" Value="DarkRed"></Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
+                      <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="1">
+                          <Setter Property="BorderBrush" Value="#FF494949"></Setter>
+                      </DataTrigger>
+                      <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="0">
+                          <Setter Property="BorderBrush" Value="White"></Setter>
+                      </DataTrigger>
+                      <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="2">
+                          <Setter Property="BorderBrush" Value="DarkRed"></Setter>
+                      </DataTrigger>
+                  </Style.Triggers>
 								</Style>
 							</Border.Style>
 							<Grid Width="150" MinHeight="60" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
@@ -502,7 +494,6 @@
 								<Grid Grid.Row="1">
 									<Grid.RowDefinitions>
 										<RowDefinition Height="30"/>
-										<RowDefinition Height="30"/>
 									</Grid.RowDefinitions>
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="0"/>
@@ -510,7 +501,7 @@
 										<ColumnDefinition Width="10"/>
 									</Grid.ColumnDefinitions>
 
-									<TextBox Grid.Row="1" Grid.Column="1" Width="40" Height="20" Margin="35,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
+									<TextBox Grid.Row="0" Grid.Column="1" Width="40" Height="20" Margin="35,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
 										<TextBox.Style>
 											<Style TargetType="TextBox">
 												<Style.Triggers>
@@ -531,34 +522,6 @@
 										</TextBox.Style>
 									</TextBox>
 
-									<ComboBox Grid.Row="1" Grid.Column="1" Width="40" Height="20" Margin="35,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
-										<ComboBoxItem>
-											<TextBlock Text="T"/>
-										</ComboBoxItem>
-										<ComboBoxItem>
-											<TextBlock Text="F"/>
-										</ComboBoxItem>
-										<ComboBox.Style>
-											<Style TargetType="ComboBox">
-												<Style.Triggers>
-													<DataTrigger Binding="{Binding Path=NewValConnected, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="False">
-														<Setter Property="Visibility" Value="Visible"></Setter>
-													</DataTrigger>
-													<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="3">
-														<Setter Property="Visibility" Value="Hidden"></Setter>
-													</DataTrigger>
-													<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="4">
-														<Setter Property="Visibility" Value="Visible"></Setter>
-													</DataTrigger>
-													<DataTrigger Binding="{Binding Path=NewValConnected, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="True">
-														<Setter Property="Visibility" Value="Hidden"></Setter>
-													</DataTrigger>
-												</Style.Triggers>
-											</Style>
-										</ComboBox.Style>
-									</ComboBox>
-
-
 									<!--old value input thumb-->
 									<TextBlock Grid.Row="0" Grid.Column="1" Text="In 1" Foreground="White" Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False"/>
 									<ContentPresenter HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="0" IsHitTestVisible="True"
@@ -566,34 +529,6 @@
                                               x:Name="PART_LeftIndicator">
 										<ContentPresenter.Content>
 											<Grid Grid.Row="0" PreviewMouseMove="MoveThumb_Left_PreviewMouseMove"  PreviewMouseRightButtonDown="COnnectionNode_RightClick">
-												<Ellipse HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Width="20" Margin="-10,-10,-10,-10" Cursor="Hand">
-													<Ellipse.Clip>
-														<RectangleGeometry Rect="10,0,10,20"/>
-													</Ellipse.Clip>
-													<Ellipse.Style>
-														<Style TargetType="Ellipse">
-															<Style.Triggers>
-																<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="3">
-																	<Setter Property="Fill" Value="BlueViolet"></Setter>
-																</DataTrigger>
-																<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="4">
-																	<Setter Property="Fill" Value="PaleVioletRed"></Setter>
-																</DataTrigger>
-															</Style.Triggers>
-														</Style>
-													</Ellipse.Style>
-												</Ellipse>
-											</Grid>
-										</ContentPresenter.Content>
-									</ContentPresenter>
-
-									<!--New value input thumb-->
-									<TextBlock Grid.Row="1" Grid.Column="1" Text="In 2" Foreground="White" Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False"/>
-									<ContentPresenter HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="0" IsHitTestVisible="True"
-                                              VerticalAlignment="Stretch" ClipToBounds="False"
-                                              >
-										<ContentPresenter.Content>
-											<Grid Grid.Row="1" PreviewMouseMove="MoveThumb_Left_PreviewMouseMove" PreviewMouseRightButtonDown="COnnectionNode_RightClick">
 												<Ellipse HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Width="20" Margin="-10,-10,-10,-10" Cursor="Hand">
 													<Ellipse.Clip>
 														<RectangleGeometry Rect="10,0,10,20"/>
@@ -660,16 +595,16 @@
 							<Border.Style>
 								<Style TargetType="Border">
 									<Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="1">
-                                            <Setter Property="BorderBrush" Value="#FF494949"></Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="0">
-                                            <Setter Property="BorderBrush" Value="White"></Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="2">
-                                            <Setter Property="BorderBrush" Value="DarkRed"></Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
+		                <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="1">
+		                    <Setter Property="BorderBrush" Value="#FF494949"></Setter>
+		                </DataTrigger>
+		                <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="0">
+		                    <Setter Property="BorderBrush" Value="White"></Setter>
+		                </DataTrigger>
+		                <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="2">
+		                    <Setter Property="BorderBrush" Value="DarkRed"></Setter>
+		                </DataTrigger>
+		            </Style.Triggers>
 								</Style>
 							</Border.Style>
 							<Grid Width="150" MinHeight="60" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click">
@@ -704,7 +639,7 @@
 										<ColumnDefinition Width="10"/>
 									</Grid.ColumnDefinitions>
 
-									<TextBox Grid.Row="1" Grid.Column="1" Width="40" Height="20" Margin="35,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
+									<TextBox Grid.Row="1" Text="{Binding Path=NewValue_Constant, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay }" Grid.Column="1" Width="40" Height="20" Margin="35,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
 										<TextBox.Style>
 											<Style TargetType="TextBox">
 												<Style.Triggers>

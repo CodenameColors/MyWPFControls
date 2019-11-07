@@ -9,5 +9,12 @@ namespace NodeEditor.Components
 {
 	class NOTBlock : BaseLogicNodeBlock
 	{
+		public NOTBlock() 
+		{
+			this.InputNodes = new List<ConnectionNode>();
+			this.OutputNodes = new List<ConnectionNode>();
+			this.InputNodes.Add(new ConnectionNode(this, "InputNode1", ECOnnectionType.Bool));
+			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", ECOnnectionType.Bool));
+		}
 	}
 }

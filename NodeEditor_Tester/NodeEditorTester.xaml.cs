@@ -42,7 +42,16 @@ namespace NodeEditor_Tester
 		{
 			foreach (Exception ex in e.NewItems)
 			{
-				OutputLog.AddErrorLogItem(-1, ex.Message, "BlockNodeEditor", false);
+				if (ex.Message != "Dialogue Scene Completed!")
+				{
+					OutputLog.AddErrorLogItem(-1, ex.Message, "BlockNodeEditor", false);
+					OutputLog.AddLogItem("Dialogue Error Found! Check Error Log for details.");
+				}
+				else
+				{
+					OutputLog.AddLogItem("Dialogue Scene Completed! :D");
+					OutputLog.AddErrorLogItem(0, ex.Message, "BlockNodeEditor", false);
+				}
 			}
 		}
 

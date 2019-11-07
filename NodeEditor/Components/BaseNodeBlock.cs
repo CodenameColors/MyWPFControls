@@ -22,6 +22,7 @@ namespace NodeEditor.Components
 	public abstract class BaseNodeBlock : System.Windows.Controls.Button, INotifyPropertyChanged
 	{
 		public String Header { get; set; }
+		public String NewValue_Constant { get; set; }
 
 		//for displaying active status
 		private EActiveStatus activeStatus = EActiveStatus.Disabled;

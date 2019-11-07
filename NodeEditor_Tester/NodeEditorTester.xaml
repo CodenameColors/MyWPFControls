@@ -9,14 +9,21 @@
         mc:Ignorable="d" Background="Black"
 				Loaded="Window_Loaded"	
         Title="MainWindow" Height="693" Width="800">
-	<Grid HorizontalAlignment="Left" VerticalAlignment="Top">
-		<TextBlock Text="Node Editor:" Foreground="White"/>
-		<ne:BlockNodeEditor x:Name="NodeEditor" AllowNodeDeletion="True" Margin="10,27,0,0" HorizontalAlignment="Left" Width="772" Height="347" VerticalAlignment="Top" BorderBrush="#FFBDBDBD" BorderThickness="2"/>
+	<Grid >
+
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="30"/>
+			<RowDefinition Height="250"/>
+		</Grid.RowDefinitions>
+		
+		<TextBlock Grid.Row="0" Text="Node Editor:" Foreground="White"/>
+		<ne:BlockNodeEditor Grid.Row="0" x:Name="NodeEditor" AllowNodeDeletion="True" Margin="10,27,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="#FFBDBDBD" BorderThickness="2"/>
 
 
-		<Button x:Name="BaseNode_BTN" Margin="444,379,245,-32" Content="Add Dia" Click="BaseNode_BTN_Click"/>
-		<Button x:Name="BaseNode_BTN1" Margin="556,379,133,-32" Content="Add get Const" Click="BaseNode_BTN_Click1"/>
-		<Button x:Name="BaseNode_BTN2" Margin="668,379,21,-32" Content="Add set Const" Click="BaseNode_BTN_Click2"/>
-		<err:OutputLog Name="OutputLog" Margin="10,411,0,-275"/>
+		<Button Grid.Row="1" x:Name="BaseNode_BTN" Margin="444,0,245,-0" Content="Add Dia" Click="BaseNode_BTN_Click" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+		<Button Grid.Row="1" x:Name="BaseNode_BTN1" Margin="556,0,133,-0" Content="Add get Const" Click="BaseNode_BTN_Click1" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+		<Button Grid.Row="1" x:Name="BaseNode_BTN2" Margin="668,0,21,-0" Content="Add set Const" Click="BaseNode_BTN_Click2" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+		<err:OutputLog Grid.Row="2" Name="OutputLog" />
 	</Grid>
 </Window>
