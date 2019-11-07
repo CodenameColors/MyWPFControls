@@ -46,10 +46,7 @@ namespace NodeEditor.Components
 		public String VarHeader
 		{
 			get { return data.VarName; }
-			set
-			{
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("VarHeader"));
-			}
+			set => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("VarHeader"));
 		}
 
 		public GetConstantNodeBlock(ECOnnectionType type)

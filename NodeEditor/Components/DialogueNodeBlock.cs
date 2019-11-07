@@ -157,6 +157,12 @@ namespace NodeEditor.Components
 				{
 					//it's not a constant thus we MUST evaluate this node.
 					temp &= cn.ConnectedNodes[0].ParentBlock.OnStartEvaluateInternalData();
+					if (temp)
+					{
+						ResultsStack.Push(cn.ConnectedNodes[0].ParentBlock.AnswerToOutput);
+						cn.ConnectedNodes[0].ParentBlock.AnswerToOutput = null;
+					}
+					else temp &= false;
 				}
 				else
 				{
@@ -167,6 +173,7 @@ namespace NodeEditor.Components
 					else if (cn.ConnectedNodes[0].ParentBlock.AnswerToOutput != null)
 					{
 						ResultsStack.Push(cn.ConnectedNodes[0].ParentBlock.AnswerToOutput);
+						cn.ConnectedNodes[0].ParentBlock.AnswerToOutput = null;
 					}
 				}
 			}
