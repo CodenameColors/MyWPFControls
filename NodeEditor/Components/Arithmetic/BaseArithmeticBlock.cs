@@ -144,7 +144,7 @@ namespace NodeEditor.Components
 				{
 					if(cn.ConnectedNodes.Count != 0)
 						temp &= EvaluateInternalData(cn.ConnectedNodes[0].ParentBlock);
-					else
+					else //this is here for the constants that one can manually enter.
 					{
 						ResultsStack.Push(Int32.Parse(this.NewValue_Constant));
 						Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
