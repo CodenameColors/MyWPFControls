@@ -166,11 +166,11 @@ namespace NodeEditor.Components
 					Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
 					connectedBlock.AnswerToOutput = null;
 				}
-				else if (connectedBlock.NewValue_Constant != null && !(connectedBlock as BaseArithmeticBlock).NewValConnected)
-				{
-					ResultsStack.Push(Int32.Parse(connectedBlock.NewValue_Constant));
-					Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
-				}
+				//else if (connectedBlock.NewValue_Constant != null && !(connectedBlock as BaseArithmeticBlock).NewValConnected)
+				//{
+				//	ResultsStack.Push(Int32.Parse(connectedBlock.NewValue_Constant));
+				//	Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
+				//}
 				else
 				{
 					temp &= connectedBlock.OnStartEvaluateInternalData(); //it's not a constant thus we MUST evaluate this node.

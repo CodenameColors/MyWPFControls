@@ -124,6 +124,8 @@ namespace NodeEditor.Components
 			{
 				if (!(cn.ConnectedNodes.Count > 0))
 				{
+					if(InputNodes.Count-1 == i && (!newvalconnected && NewValue_Constant != ""))
+						continue;
 					temp = false;
 					ErrorStack.Push(new InputNodeConnectionException(i, this.GetType().Name));
 				}
@@ -140,7 +142,13 @@ namespace NodeEditor.Components
 				//no error found we can evaluate
 				foreach (ConnectionNode cn in this.InputNodes)
 				{
-					temp &= EvaluateInternalData(cn.ConnectedNodes[0].ParentBlock);
+					if(cn.ConnectedNodes.Count != 0)
+						temp &= EvaluateInternalData(cn.ConnectedNodes[0].ParentBlock);
+					else
+					{
+						ResultsStack.Push(Int32.Parse(this.NewValue_Constant));
+						Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
+					}
 				}
 
 				if (!temp)
@@ -177,12 +185,6 @@ namespace NodeEditor.Components
 				if (connectedBlock.AnswerToOutput != null)
 				{
 					ResultsStack.Push(connectedBlock.AnswerToOutput);
-					Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
-					connectedBlock.AnswerToOutput = null;
-				}
-				else if (connectedBlock.NewValue_Constant != null && !(connectedBlock as BaseArithmeticBlock).NewValConnected)
-				{
-					ResultsStack.Push(Int32.Parse(connectedBlock.NewValue_Constant));
 					Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
 					connectedBlock.AnswerToOutput = null;
 				}
