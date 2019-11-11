@@ -5,11 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NodeEditor.Components.Logic;
+using NodeEditor.Resources;
 
 namespace NodeEditor.Components
 {
-	public class ConditionalNodeBlock : BaseNodeBlock, INotifyPropertyChanged
+	public class ConditionalNodeBlock : BaseNodeBlock
 	{
+		/// <summary>
+		/// If true then this if statement will continue down the true path connection. else false
+		/// </summary>
+		public bool bOutputTrue = true;
 		public EConditionalTypes CondType = EConditionalTypes.Equals;
 
 		public ConnectionNode Cond1
@@ -36,21 +41,7 @@ namespace NodeEditor.Components
 			set { OutputNodes[1] = value; }
 		}
 
-		private ECOnnectionType dtype;
-		public ECOnnectionType DType
-		{
-			get { return dtype; }
-			set
-			{
-				dtype = value;
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DType"));
-
-			}
-		}
-
 		private BlockNodeEditor.RuntimeVars data = new BlockNodeEditor.RuntimeVars();
-
-		public event PropertyChangedEventHandler PropertyChanged;
 
 		public ConditionalNodeBlock(ECOnnectionType nodetype)
 		{
@@ -69,35 +60,247 @@ namespace NodeEditor.Components
 			base.OnApplyTemplate();
 		}
 
-		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock)
+		/// <summary>
+		/// check to make sure all the nodes on this block have valid connection points.
+		/// </summary>
+		/// <param name="currentNB"></param>
+		/// <returns></returns>
+		public override bool OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
-			throw new NotImplementedException();
+			bool temp = true;
+			int i = 0;
+			this.ActiveStatus = EActiveStatus.Active;
+			foreach (ConnectionNode cn in InputNodes)
+			{
+				if (!(cn.ConnectedNodes.Count > 0))
+				{
+					if (InputNodes.Count - 1 == i && (!NewValConnected && NewValue_Constant != ""))
+						continue;
+					temp = false;
+					ErrorStack.Push(new InputNodeConnectionException(i, this.GetType().Name));
+				}
+				i++;
+			}
+
+			i = 0;
+			foreach (ConnectionNode cn in OutputNodes)
+			{
+				if (!(cn.ConnectedNodes.Count > 0))
+				{
+					temp = false;
+					ErrorStack.Push(new OutputNodeConnectionException(i, this.GetType().Name));
+				}
+				i++;
+			}
+
+			if (!(EntryNode.ConnectedNodes.Count > 0))
+			{
+				temp = false;
+				ErrorStack.Push(new EntryNodeConnectionException(this.GetType().Name));
+			}
+
+			if (!temp)
+				this.ActiveStatus = EActiveStatus.Error;
+			return temp;
 		}
 
+		/// <summary>
+		/// This method is here to check where or not execution can occur.
+		/// It also checks every eval node before to make sure the "expression" is valid
+		/// </summary>
+		/// <param name="currentNB"></param>
+		/// <returns></returns>
 		public override bool NodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
-			throw new NotImplementedException();
-		}
-
-		public override bool OnEndEvaluateInternalData()
-		{
-			throw new NotImplementedException();
+			bool temp = true;
+			if (this.InputNodes.Count == 0)
+			{
+				return true;
+			}
+			else
+			{
+				//we need to evaluate the inputs to determine the calculated output.
+				if (!this.OnStartEvaluateInternalData())
+				{
+					//error found
+					Console.WriteLine(@"Dialogue Eval failed");
+					this.ActiveStatus = EActiveStatus.Error;
+					return false;
+				}
+			}
+			return temp;
 		}
 
 		public override void OnEndNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
-			throw new NotImplementedException();
+			if (bOutputTrue)
+				currentNB = TrueOutput.ConnectedNodes[0].ParentBlock;
+			else
+				currentNB = FalseOutput.ConnectedNodes[0].ParentBlock;
+			this.ActiveStatus = EActiveStatus.Disabled;
 		}
 
+		/// <summary>
+		/// make sure there are connections
+		/// </summary>
+		/// <returns></returns>
 		public override bool OnStartEvaluateInternalData()
 		{
-			throw new NotImplementedException();
+			bool temp = true;
+			int i = 0;
+			this.ActiveStatus = EActiveStatus.Active;
+			foreach (ConnectionNode cn in InputNodes)
+			{
+				if (!(cn.ConnectedNodes.Count > 0))
+				{
+					if (InputNodes.Count - 1 == i && (!NewValConnected && NewValue_Constant != ""))
+						continue;
+					temp = false;
+					ErrorStack.Push(new InputNodeConnectionException(i, this.GetType().Name));
+				}
+				i++;
+			}
+
+			if (!temp)
+			{
+				this.ActiveStatus = EActiveStatus.Error;
+				return temp;
+			}
+			else
+			{
+				//no error found we can evaluate
+				foreach (ConnectionNode cn in this.InputNodes)
+				{
+					if (cn.ConnectedNodes.Count != 0)
+						temp &= EvaluateInternalData(cn.ConnectedNodes[0].ParentBlock);
+					else //this is here for the constants that one can manually enter.
+					{
+						if(this.NewValue_Constant == "T")
+							ResultsStack.Push(true);
+						else if (this.NewValue_Constant == "F")
+							ResultsStack.Push(false);
+						else
+						{
+							ResultsStack.Push(Int32.Parse(this.NewValue_Constant));
+						}
+						Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
+					}
+					//temp &= EvaluateInternalData(cn.ConnectedNodes[0].ParentBlock);
+				}
+
+				if (!temp)
+				{
+					this.ActiveStatus = EActiveStatus.Error;
+					return temp;
+				}
+				else
+				{
+					temp &= OnEndEvaluateInternalData();
+				}
+			}
+			return temp;
 		}
 
-		public override bool OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
+		/// <summary>
+		/// we need to determine what state the expression is in
+		/// if connectedBlock is GetConstantBlock then we don't need to do any equations.
+		/// </summary>
+		/// <param name="connectedBlock"></param>
+		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock)
 		{
-			throw new NotImplementedException();
+			Console.WriteLine(String.Format("From {0} -> {1}", this.GetType().Name, connectedBlock.GetType().Name));
+			bool temp = true;
+			if (connectedBlock is GetConstantNodeBlock block)
+			{
+				ResultsStack.Push(block?.InternalData.VarData);
+				Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
+				return true;
+			}
+			else
+			{
+				if (connectedBlock.AnswerToOutput != null)
+				{
+					ResultsStack.Push(connectedBlock.AnswerToOutput);
+					Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
+					connectedBlock.AnswerToOutput = null;
+				}
+				//else if (connectedBlock.NewValue_Constant != null && !(connectedBlock as BaseArithmeticBlock).NewValConnected)
+				//{
+				//	ResultsStack.Push(Int32.Parse(connectedBlock.NewValue_Constant));
+				//	Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
+				//}
+				else
+				{
+					temp &= connectedBlock.OnStartEvaluateInternalData(); //it's not a constant thus we MUST evaluate this node.
+					if (temp)
+					{
+						this.ResultsStack.Push(connectedBlock.AnswerToOutput);
+						Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
+						connectedBlock.AnswerToOutput = null;
+					}
+				}
+			}
+			return temp;
 		}
+
+		public override bool OnEndEvaluateInternalData()
+		{
+			object in1, in2 = null;
+			//there should ALWAYS be 2 in the result stack
+			in2 = ResultsStack.Pop();
+			in1 = ResultsStack.Pop();
+
+			if (DType == ECOnnectionType.Bool)
+			{
+				if (CondType == EConditionalTypes.Equals)
+				{
+					bOutputTrue = (bool) in1 == (bool) in2;
+				}
+				else if (CondType == EConditionalTypes.NotEquals)
+				{
+					bOutputTrue = (bool)in1 != (bool)in2;
+				}
+				else
+				{
+					ErrorStack.Push(new NodeEditorException("INVALID Conditional type for conditional block: Expected"));
+					return false;
+				}
+			}
+			else if (DType == ECOnnectionType.Int)
+			{
+				switch (CondType)
+				{
+					case (EConditionalTypes.Equals):
+						bOutputTrue = (int)in1 == (int)in2;
+						break;
+					case (EConditionalTypes.NotEquals):
+						bOutputTrue = (int)in1 != (int)in2;
+						break;
+					case (EConditionalTypes.Greater):
+						bOutputTrue = (int)in1 > (int)in2;
+						break;
+					case (EConditionalTypes.GreaterEquals):
+						bOutputTrue = (int)in1 >= (int)in2;
+						break;
+					case (EConditionalTypes.Less):
+						bOutputTrue = (int)in1 < (int)in2;
+						break;
+					case (EConditionalTypes.LessEquals):
+						bOutputTrue = (int)in1 <= (int)in2;
+						break;
+					default:
+						ErrorStack.Push(new NodeEditorException("INVALID Conditional type for conditional block: Expected"));
+						return false;
+				}
+			}
+			else
+			{
+				ErrorStack.Push(new NodeEditorException("INVALID data type for conditional block: [NOT SET]"));
+				return false;
+			}
+			return true;
+		}
+
 
 		public override void DeleteConnection(EConditionalTypes contype, int row)
 		{

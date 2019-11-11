@@ -1675,7 +1675,7 @@ namespace NodeEditor
 		{
 			TestingVar_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(20) });
 			//List
-			TestingVars_list.Add(new RuntimeVars() { VarName = ("Var_" + (TestingVar_Grid.RowDefinitions.Count - 1)), VarData = 0 });
+			TestingVars_list.Add(new RuntimeVars() { VarName = ("Var_" + (TestingVar_Grid.RowDefinitions.Count - 1)), VarData = 0 , OrginalVarData = 0});
 			VarDisplayBlocks_dict.Add(TestingVars_list.Last().VarName, new List<BaseNodeBlock>());
 			//textbox for naming the runtime variables
 			TextBox TBlock = new TextBox()
@@ -1715,12 +1715,12 @@ namespace NodeEditor
 			int currow = Grid.GetRow((ComboBox)sender) + 1; //+1 for choice var
 			if (((ComboBox)sender).SelectedIndex == 0)
 			{
-				TestingVars_list[currow] = new RuntimeVars() { VarName = TestingVars_list[currow].VarName, Type = typeof(bool), VarData = false };
+				TestingVars_list[currow] = new RuntimeVars() { VarName = TestingVars_list[currow].VarName, Type = typeof(bool), VarData = false, OrginalVarData = false};
 				dtype = 4;
 			}
 			else if (((ComboBox)sender).SelectedIndex == 1)
 			{
-				TestingVars_list[currow] = new RuntimeVars() { VarName = TestingVars_list[currow].VarName, Type = typeof(int), VarData = true };
+				TestingVars_list[currow] = new RuntimeVars() { VarName = TestingVars_list[currow].VarName, Type = typeof(int), VarData = 0, OrginalVarData = 0};
 				dtype = 3;
 			}
 			//if (!VarDisplayBlocks_dict.ContainsKey(TestingVars_list[currow])) { Console.WriteLine("DNE"); return; }
@@ -1756,15 +1756,25 @@ namespace NodeEditor
 			if (TestingVars_list[currow].Type == typeof(bool))
 			{
 				if (((TextBox)sender).Text.ToLower() != "t" && ((TextBox)sender).Text.ToLower() != "f") { ((TextBox)sender).Text = ""; return; }
-				if (((TextBox)sender).Text.ToLower() == "t")
+
+				if (((TextBox) sender).Text.ToLower() == "t")
+				{
 					TestingVars_list[currow].VarData = true;
-				else TestingVars_list[currow].VarData = false;
+					TestingVars_list[currow].OrginalVarData = true;
+				}
+				else
+				{
+					TestingVars_list[currow].VarData = false;
+					TestingVars_list[currow].OrginalVarData = false;
+
+				}
 			}
 			else if (TestingVars_list[currow].Type == typeof(int))
 			{
 				if (((TextBox)sender).Text.All(x => char.IsDigit(x)) && ((TextBox)sender).Text != "") { }
 				else { ((TextBox)sender).Text = ""; return; }
 				TestingVars_list[currow].VarData = Int32.Parse(((TextBox)sender).Text);
+				TestingVars_list[currow].OrginalVarData = Int32.Parse(((TextBox)sender).Text);
 			}
 		}
 
@@ -1787,7 +1797,7 @@ namespace NodeEditor
 				((TextBox)sender).SelectionLength = 0;
 			}
 			//set it new so we have a property change event go off
-			TestingVars_list[currow] = new RuntimeVars() { VarName = ((TextBox)sender).Text, Type = TestingVars_list[currow].Type, VarData = TestingVars_list[currow].VarData }; //;
+			TestingVars_list[currow] = new RuntimeVars() { VarName = ((TextBox)sender).Text, Type = TestingVars_list[currow].Type, VarData = TestingVars_list[currow].VarData, OrginalVarData = TestingVars_list[currow].VarData}; //;
 		}
 
 		private void NodeEditor_BackCanvas_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -1917,7 +1927,8 @@ namespace NodeEditor
 					 {
 						 VarName = (e.NewItems[0] as RuntimeVars).VarName,
 						 Type = (item as GetConstantNodeBlock).InternalData.Type,
-						 VarData = (item as GetConstantNodeBlock).InternalData.VarData
+						 VarData = (item as GetConstantNodeBlock).InternalData.VarData,
+						 OrginalVarData = (item as GetConstantNodeBlock).InternalData.OrginalVarData
 					 };
 				}
 
@@ -1962,6 +1973,7 @@ namespace NodeEditor
 		{
 			public string VarName { get; set; }
 			public object VarData { get; set; }
+			public object OrginalVarData { get; set; }
 			public Type Type { get; set; }
 
 			public RuntimeVars()
@@ -2069,7 +2081,11 @@ namespace NodeEditor
 		{
 			CurrentExecutionBlock.ActiveStatus = EActiveStatus.Disabled;
 			CurrentExecutionBlock = StartExecutionBlock;
-			CurrentExecutionBlock.ActiveStatus = EActiveStatus.Active;	
+			CurrentExecutionBlock.ActiveStatus = EActiveStatus.Active;
+			for (int i = 0; i < TestingVars_list.Count; i++)
+			{
+				TestingVars_list[i].VarData = TestingVars_list[i].OrginalVarData;
+			}
 		}
 
 		private void RunOnStart_MI_Click(object sender, RoutedEventArgs e)

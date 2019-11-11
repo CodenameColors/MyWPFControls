@@ -24,6 +24,7 @@ namespace NodeEditor.Components
 		public String Header { get; set; }
 		public String NewValue_Constant { get; set; }
 
+
 		//for displaying active status
 		private EActiveStatus activeStatus = EActiveStatus.Disabled;
 		public EActiveStatus ActiveStatus
@@ -36,6 +37,28 @@ namespace NodeEditor.Components
 			}
 		}
 
+		private ECOnnectionType dtype;
+		public ECOnnectionType DType
+		{
+			get { return dtype; }
+			set
+			{
+				dtype = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DType"));
+			}
+		}
+
+		private bool newvalconnected;
+		public bool NewValConnected
+		{
+			get { return newvalconnected; }
+			set
+			{
+				newvalconnected = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NewValConnected"));
+
+			}
+		}
 
 		public ConnectionNode EntryNode;
 		public ConnectionNode ExitNode;
@@ -48,7 +71,7 @@ namespace NodeEditor.Components
 
 		public Stack<NodeEditorException> ErrorStack = new Stack<NodeEditorException>();
 
-		public event PropertyChangedEventHandler PropertyChanged;
+		public virtual event PropertyChangedEventHandler PropertyChanged;
 
 
 		//Every node block has three states. 

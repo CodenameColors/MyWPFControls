@@ -100,7 +100,10 @@ namespace NodeEditor.Components
 			this.ActiveStatus = EActiveStatus.Disabled;
 		}
 
-		//make sure there are connections
+		/// <summary>
+		/// make sure there are connections
+		/// </summary>
+		/// <returns></returns>
 		public override bool OnStartEvaluateInternalData()
 		{
 			bool temp = true;
@@ -140,8 +143,7 @@ namespace NodeEditor.Components
 				}
 			}
 			return temp;
-		} 
-
+		}
 
 		/// <summary>
 		/// we need to determine what state the expression is in
@@ -202,6 +204,7 @@ namespace NodeEditor.Components
 			}
 			return true;
 		}
+
 
 		public override void DeleteConnection(EConditionalTypes contype, int row)
 		{

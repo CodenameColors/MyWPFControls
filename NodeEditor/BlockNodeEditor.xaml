@@ -2049,7 +2049,7 @@
 										</TextBox.Style>
 									</TextBox>
 
-									<ComboBox Grid.Row="1" Grid.Column="1" Width="40" Height="20" Margin="50,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
+									<ComboBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=NewValue_Constant, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay }" Width="40" Height="20" Margin="50,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
 										<ComboBoxItem>
 											<TextBlock Text="T"/>
 										</ComboBoxItem>
