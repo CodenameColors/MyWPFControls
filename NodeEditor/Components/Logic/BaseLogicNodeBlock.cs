@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NodeEditor.Resources;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -80,31 +81,134 @@ namespace NodeEditor.Components.Logic
 			newvalconnected = false;
 		}
 
+		/// <summary>
+		/// NA if you ask for this... the algorithm you are writing is wrong
+		/// </summary>
+		/// <param name="currentNB"></param>
+		/// <returns></returns>
 		public override bool OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			throw new NotImplementedException();
 		}
 
+		/// <summary>
+		/// NA if you ask for this... the algorithm you are writing is wrong
+		/// </summary>
+		/// <param name="currentNB"></param>
+		/// <returns></returns>
 		public override bool NodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			throw new NotImplementedException();
 		}
 
+		/// <summary>
+		/// NA if you ask for this... the algorithm you are writing is wrong
+		/// </summary>
+		/// <param name="currentNB"></param>
+		/// <returns></returns>
 		public override void OnEndNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
 			throw new NotImplementedException();
 		}
 
+		/// <summary>
+		/// This method is here to check to make sure that all the inputs on this current block
+		/// are/have a valid connection.
+		/// </summary>
+		/// <returns></returns>
 		public override bool OnStartEvaluateInternalData()
 		{
-			throw new NotImplementedException();
+			bool temp = true;
+			int i = 0;
+			this.ActiveStatus = EActiveStatus.Active;
+			foreach (ConnectionNode cn in InputNodes)
+			{
+				if (!(cn.ConnectedNodes.Count > 0))
+				{
+					if (InputNodes.Count - 1 == i && (!newvalconnected && NewValue_Constant != ""))
+						continue;
+					temp = false;
+					ErrorStack.Push(new InputNodeConnectionException(i, this.GetType().Name));
+				}
+				i++;
+			}
+
+			if (!temp)
+			{
+				this.ActiveStatus = EActiveStatus.Error;
+				return temp;
+			}
+			else
+			{
+				//no error found we can evaluate
+				foreach (ConnectionNode cn in this.InputNodes)
+				{
+					if (cn.ConnectedNodes.Count != 0)
+						temp &= EvaluateInternalData(cn.ConnectedNodes[0].ParentBlock);
+					else //this is here for the constants that one can manually enter.
+					{
+						ResultsStack.Push(Int32.Parse(this.NewValue_Constant));
+						Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
+					}
+				}
+
+				if (!temp)
+				{
+					this.ActiveStatus = EActiveStatus.Error;
+					return temp;
+				}
+				else
+				{
+					temp &= OnEndEvaluateInternalData();
+				}
+			}
+			return temp;
 		}
 
+		/// <summary>
+		/// This method will go through the inputs, and determine if each node needs further evaluation.
+		/// If not then we will fill the result stack and get ready for expression evaluation
+		/// </summary>
+		/// <param name="connectedBlock"></param>
+		/// <returns></returns>
 		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock)
 		{
-			throw new NotImplementedException();
+			Console.WriteLine(String.Format("From {0} -> {1}", this.GetType().Name, connectedBlock.GetType().Name));
+			bool temp = true;
+			if (connectedBlock is GetConstantNodeBlock block)
+			{
+				ResultsStack.Push(block?.InternalData.VarData);
+				Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
+				return true;
+			}
+			else
+			{
+				if (connectedBlock.AnswerToOutput != null)
+				{
+					ResultsStack.Push(connectedBlock.AnswerToOutput);
+					Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
+					connectedBlock.AnswerToOutput = null;
+				}
+				else
+				{
+					temp &= connectedBlock.OnStartEvaluateInternalData(); //it's not a constant thus we MUST evaluate this node.
+					if (temp)
+					{
+						this.ResultsStack.Push(connectedBlock.AnswerToOutput);
+						Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
+						connectedBlock.AnswerToOutput = null;
+					}
+				}
+			}
+
+			return temp;
 		}
 
+		/// <summary>
+		/// This method will take the data that has been received from the inputs and placed in the stack.
+		/// and evaluate them.  IF YOU ARE READING THIS, you need to define this in the sub classes!
+		/// </summary>
+		/// <returns></returns>
 		public override bool OnEndEvaluateInternalData()
 		{
 			throw new NotImplementedException();

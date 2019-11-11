@@ -193,6 +193,7 @@ namespace NodeEditor.Components
 				ChoiceVar = (int)ResultsStack.Pop();
 			}
 			else if (ResultsStack.Count == 1) ChoiceVar = (int) ResultsStack.Pop();
+			else ResultsStack.Clear();
 
 			if (ChoiceVar > this.OutputNodes.Count - 1)
 			{

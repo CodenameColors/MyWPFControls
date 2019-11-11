@@ -16,5 +16,19 @@ namespace NodeEditor.Components
 			this.InputNodes.Add(new ConnectionNode(this, "InputNode1", ECOnnectionType.Bool));
 			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", ECOnnectionType.Bool));
 		}
+
+		public override bool OnEndEvaluateInternalData()
+		{
+			bool result = true;
+			//make sure result stack is not empty!
+			if (ResultsStack.Count == 0) return false;
+			else
+			{
+				result = !(bool) (ResultsStack.Pop());
+			}
+			AnswerToOutput = result;
+			return true;
+		}
+
 	}
 }
