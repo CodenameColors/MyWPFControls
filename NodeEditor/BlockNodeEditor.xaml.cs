@@ -1904,8 +1904,27 @@ namespace NodeEditor
 				((TextBox)sender).SelectionStart = ((TextBox)sender).Text.Length;
 				((TextBox)sender).SelectionLength = 0;
 			}
+
+			List<BaseNodeBlock> tempBaseNodeBlocks = VarDisplayBlocks_dict[TestingVars_list[currow].VarName];
+			int index = Array.IndexOf(VarDisplayBlocks_dict.Keys.ToArray(), TestingVars_list[currow].VarName);
+			VarDisplayBlocks_dict.Remove(TestingVars_list[currow].VarName);
+			VarDisplayBlocks_dict.Add(((TextBox)sender).Text, tempBaseNodeBlocks);
+
+
 			//set it new so we have a property change event go off
 			TestingVars_list[currow] = new RuntimeVars() { VarName = ((TextBox)sender).Text, Type = TestingVars_list[currow].Type, VarData = TestingVars_list[currow].VarData, OrginalVarData = TestingVars_list[currow].VarData}; //;
+			foreach (BaseNodeBlock bnb in VarDisplayBlocks_dict[TestingVars_list[currow].VarName])
+			{
+				if (bnb is GetConstantNodeBlock getConstant)
+				{
+					getConstant.InternalData = TestingVars_list[currow];
+					getConstant.VarHeader = getConstant.InternalData.VarName;
+
+					DeleteAllNodeConnection((bnb as GetConstantNodeBlock).output);
+				}
+			}
+
+
 		}
 
 		private void NodeEditor_BackCanvas_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)

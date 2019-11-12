@@ -11,7 +11,7 @@ using NodeEditor.Resources;
 
 namespace NodeEditor.Components
 {
-	public class GetConstantNodeBlock : BaseNodeBlock
+	public class GetConstantNodeBlock : BaseNodeBlock, INotifyPropertyChanged
 	{
 		public ConnectionNode output
 		{
@@ -36,7 +36,7 @@ namespace NodeEditor.Components
 
 		public String VarHeader
 		{
-			get { return data.VarName; }
+			get => data.VarName;
 			set => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("VarHeader"));
 		}
 
@@ -58,7 +58,7 @@ namespace NodeEditor.Components
 			this.InternalData = varptr;
 		}
 
-		public event PropertyChangedEventHandler PropertyChanged;
+		public override event PropertyChangedEventHandler PropertyChanged;
 
 		public override bool OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
@@ -96,7 +96,7 @@ namespace NodeEditor.Components
 		}
 	}
 
-	public class SetConstantNodeBlock : BaseNodeBlock, INotifyPropertyChanged
+	public class SetConstantNodeBlock : BaseNodeBlock
 	{
 		public ConnectionNode OldValue
 		{
