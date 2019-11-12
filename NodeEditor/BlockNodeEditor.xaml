@@ -2425,7 +2425,7 @@
 			</Grid>
 
 			<!--MouseWheel="LevelEditor_Canvas_MouseWheel" SizeChanged="LevelEditor_BackCanvas_SizeChanged"-->
-			<Canvas Grid.Row="1" x:Name="NodeEditor_BackCanvas" IsHitTestVisible="True" Grid.Column="1" 
+			<Canvas Grid.Row="1" x:Name="NodeEditor_BackCanvas" IsHitTestVisible="True" Grid.Column="1" MouseWheel="LevelEditor_Canvas_MouseWheel"
 										ClipToBounds="True" MouseMove="LevelEditor_BackCanvas_MouseMove" Visibility="Visible" MouseRightButtonDown="NodeEditor_BackCanvas_PreviewMouseRightButtonDown">
 				<!--<Canvas.RenderTransform>
 					<ScaleTransform ScaleX=".5" ScaleY=".5" />

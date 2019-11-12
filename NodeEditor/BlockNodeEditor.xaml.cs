@@ -195,7 +195,6 @@ namespace NodeEditor
 
 		}
 
-
 		#region Panning
 
 		/// <summary>
@@ -288,12 +287,20 @@ namespace NodeEditor
 			//this is here so when we pan the tiles work with the relative cords we are moving to. Its allows the tiles to maintain position data.
 			foreach (UIElement child in NodeEditor_Canvas.Children)
 			{
-
 				double x = Canvas.GetLeft(child);
 				double y = Canvas.GetTop(child);
 				Canvas.SetLeft(child, x + MPos.X);
 				Canvas.SetTop(child, y + MPos.Y);
 			}
+
+			foreach (UIElement childElement in NodeEditor_BackCanvas.Children)
+			{
+				double x = Canvas.GetLeft(childElement);
+				double y = Canvas.GetTop(childElement);
+				Canvas.SetLeft(childElement, x + MPos.X);
+				Canvas.SetTop(childElement, y + MPos.Y);
+			}
+
 			//moves the Grid, and canvas to perform a panning effect/.
 			Canvas_grid.Viewport = new Rect(Canvas_grid.Viewport.X + MPos.X, Canvas_grid.Viewport.Y + MPos.Y,
 				Canvas_grid.Viewport.Width, Canvas_grid.Viewport.Height);
@@ -301,6 +308,53 @@ namespace NodeEditor
 			GridOffset.X -= MPos.X / 10; //keeps in sync
 			GridOffset.Y -= MPos.Y / 10;
 		}
+		#endregion
+
+		#region Zooming
+		public double LEZoomLevel = 1;
+		int LEGridHeight = 40;
+		int LEGridWidth = 40;
+
+		/// <summary>
+		/// handles mouse scroll events
+		/// Zooming is handled here.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void LevelEditor_Canvas_MouseWheel(object sender, MouseWheelEventArgs e)
+		{
+			Console.WriteLine("scroollll");
+
+
+			if (e.Delta > 0) //zoom in!
+			{
+				LEZoomLevel += .2;
+				Canvas_grid.Transform = new ScaleTransform(LEZoomLevel, LEZoomLevel);
+				NodeEditor_Canvas.RenderTransform = new ScaleTransform(LEZoomLevel, LEZoomLevel);
+				Console.WriteLine(String.Format("W:{0},  H{1}", LEGridWidth, LEGridHeight));
+				//TODO: resize selection rectangle
+			}
+			else  //zoom out!
+			{
+				LEZoomLevel -= .2;
+				Canvas_grid.Transform = new ScaleTransform(LEZoomLevel, LEZoomLevel);
+				NodeEditor_Canvas.RenderTransform = new ScaleTransform(LEZoomLevel, LEZoomLevel);
+				Console.WriteLine(String.Format("W:{0},  H{1}", LEGridWidth, LEGridHeight));
+				//TODO: resize selection rectangle
+			}
+
+			if (LEZoomLevel < .2)
+			{
+				LEZoomLevel = .2;
+				Canvas_grid.Transform = new ScaleTransform(LEZoomLevel, LEZoomLevel);
+				NodeEditor_Canvas.RenderTransform = new ScaleTransform(LEZoomLevel, LEZoomLevel);
+				return;
+			} //do not allow this be 0 which in turn / by 0;
+
+			//ZoomFactor_TB.Text = String.Format("({0})%  ({1}x{1})", 100 * LEZoomLevel, LEGridWidth * LEZoomLevel);
+			//ScaleFullMapEditor();
+		}
+
 		#endregion
 
 		#region Drawing
@@ -1303,8 +1357,6 @@ namespace NodeEditor
 
 		}
 
-
-
 		private void AddDialogueRow_BTN_Click(object sender, RoutedEventArgs e)
 		{
 
@@ -1347,9 +1399,6 @@ namespace NodeEditor
 		{
 			Console.WriteLine("Mouse Up on Input");
 		}
-
-
-
 
 		private void MoveThumb_Left_PreviewDragEnter(object sender, DragEventArgs e)
 		{
