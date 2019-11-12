@@ -1833,10 +1833,11 @@ namespace NodeEditor
 			//if (!VarDisplayBlocks_dict.ContainsKey(TestingVars_list[currow])) { Console.WriteLine("DNE"); return; }
 			foreach (BaseNodeBlock bnb in VarDisplayBlocks_dict[TestingVars_list[currow].VarName])
 			{
-				if (bnb is GetConstantNodeBlock)
+				if (bnb is GetConstantNodeBlock getConstant)
 				{
-					(bnb as GetConstantNodeBlock).DType = (ECOnnectionType)dtype;
-					(bnb as GetConstantNodeBlock).output.NodeType = (ECOnnectionType)dtype;
+					getConstant.DType = (ECOnnectionType)dtype;
+					getConstant.output.NodeType = (ECOnnectionType)dtype;
+					getConstant.InternalData = TestingVars_list[currow];
 
 					DeleteAllNodeConnection((bnb as GetConstantNodeBlock).output);
 				}
