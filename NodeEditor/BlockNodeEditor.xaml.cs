@@ -318,11 +318,7 @@ namespace NodeEditor
 					//Canvas.SetLeft(childElement, x + MPos.X);
 					//Canvas.SetTop(childElement, y + MPos.Y);
 				}
-
-
-				
 			}
-
 			//moves the Grid, and canvas to perform a panning effect/.
 			Canvas_grid.Viewport = new Rect(Canvas_grid.Viewport.X + MPos.X, Canvas_grid.Viewport.Y + MPos.Y,
 				Canvas_grid.Viewport.Width, Canvas_grid.Viewport.Height);
@@ -354,7 +350,17 @@ namespace NodeEditor
 				Canvas_grid.Transform = new ScaleTransform(LEZoomLevel, LEZoomLevel);
 				NodeEditor_Canvas.RenderTransform = new ScaleTransform(LEZoomLevel, LEZoomLevel);
 				Console.WriteLine(String.Format("W:{0},  H{1}", LEGridWidth, LEGridHeight));
-				//TODO: resize selection rectangle
+				
+				//scale all the paths
+				for(int i = 0; i < NodeEditor_BackCanvas.Children.Count; i++)
+				{
+					if (NodeEditor_BackCanvas.Children[i] is Path bPath)
+					{
+						bPath.RenderTransform = new ScaleTransform(LEZoomLevel, LEZoomLevel);
+					}
+				}
+
+
 			}
 			else  //zoom out!
 			{
@@ -363,6 +369,14 @@ namespace NodeEditor
 				NodeEditor_Canvas.RenderTransform = new ScaleTransform(LEZoomLevel, LEZoomLevel);
 				Console.WriteLine(String.Format("W:{0},  H{1}", LEGridWidth, LEGridHeight));
 				//TODO: resize selection rectangle
+				//scale all the paths
+				for (int i = 0; i < NodeEditor_BackCanvas.Children.Count; i++)
+				{
+					if (NodeEditor_BackCanvas.Children[i] is Path bPath)
+					{
+						bPath.RenderTransform = new ScaleTransform(LEZoomLevel, LEZoomLevel);
+					}
+				}
 			}
 
 			if (LEZoomLevel < .2)
@@ -370,6 +384,14 @@ namespace NodeEditor
 				LEZoomLevel = .2;
 				Canvas_grid.Transform = new ScaleTransform(LEZoomLevel, LEZoomLevel);
 				NodeEditor_Canvas.RenderTransform = new ScaleTransform(LEZoomLevel, LEZoomLevel);
+				//scale all the paths
+				for (int i = 0; i < NodeEditor_BackCanvas.Children.Count; i++)
+				{
+					if (NodeEditor_BackCanvas.Children[i] is Path bPath)
+					{
+						bPath.RenderTransform = new ScaleTransform(LEZoomLevel, LEZoomLevel);
+					}
+				}
 				return;
 			} //do not allow this be 0 which in turn / by 0;
 
