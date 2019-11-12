@@ -295,10 +295,32 @@ namespace NodeEditor
 
 			foreach (UIElement childElement in NodeEditor_BackCanvas.Children)
 			{
-				double x = Canvas.GetLeft(childElement);
-				double y = Canvas.GetTop(childElement);
-				Canvas.SetLeft(childElement, x + MPos.X);
-				Canvas.SetTop(childElement, y + MPos.Y);
+				if (childElement is Path bPath)
+				{
+					double startx = ((bPath.Data as PathGeometry).Figures[0] as PathFigure).StartPoint.X;
+					double starty = ((bPath.Data as PathGeometry).Figures[0] as PathFigure).StartPoint.Y;
+					((bPath.Data as PathGeometry).Figures[0] as PathFigure).StartPoint = new Point(startx+MPos.X, starty+MPos.Y);
+
+					for (int i = 0; i < ((bPath.Data as PathGeometry).Figures[0] as PathFigure).Segments.Count; i++)
+					{
+						double x = (((bPath.Data as PathGeometry).Figures[0] as PathFigure).Segments[i] as BezierSegment).Point1.X;
+						double y = (((bPath.Data as PathGeometry).Figures[0] as PathFigure).Segments[i] as BezierSegment).Point1.Y;
+						(((bPath.Data as PathGeometry).Figures[0] as PathFigure).Segments[i] as BezierSegment).Point1 = new Point(x+MPos.X, y+MPos.Y);
+
+						x = (((bPath.Data as PathGeometry).Figures[0] as PathFigure).Segments[i] as BezierSegment).Point2.X;
+						y = (((bPath.Data as PathGeometry).Figures[0] as PathFigure).Segments[i] as BezierSegment).Point2.Y;
+						(((bPath.Data as PathGeometry).Figures[0] as PathFigure).Segments[i] as BezierSegment).Point2 = new Point(x + MPos.X, y + MPos.Y);
+
+						x = (((bPath.Data as PathGeometry).Figures[0] as PathFigure).Segments[i] as BezierSegment).Point3.X;
+						y = (((bPath.Data as PathGeometry).Figures[0] as PathFigure).Segments[i] as BezierSegment).Point3.Y;
+						(((bPath.Data as PathGeometry).Figures[0] as PathFigure).Segments[i] as BezierSegment).Point3 = new Point(x + MPos.X, y + MPos.Y);
+					}
+					//Canvas.SetLeft(childElement, x + MPos.X);
+					//Canvas.SetTop(childElement, y + MPos.Y);
+				}
+
+
+				
 			}
 
 			//moves the Grid, and canvas to perform a panning effect/.
