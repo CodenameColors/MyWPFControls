@@ -84,6 +84,16 @@ namespace NodeEditor.Resources
 
 		}
 	}
-
+	public class ChangeVarFlag : NodeEditorException
+	{
+		public BlockNodeEditor.RuntimeVars VarToChange;
+		public BlockNodeEditor.RuntimeVars NewVar;
+		public ChangeVarFlag(BlockNodeEditor.RuntimeVars rtv, BlockNodeEditor.RuntimeVars newvar)
+			: base($"Updated Runtime Var. Var Name[{newvar.VarName}] => Was [{rtv.VarData}] : Now is [{newvar.VarData}]")
+		{
+			VarToChange = rtv;
+			NewVar = newvar;
+		}
+	}
 
 }

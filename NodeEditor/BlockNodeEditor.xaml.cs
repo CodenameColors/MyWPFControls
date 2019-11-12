@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -1790,12 +1791,25 @@ namespace NodeEditor
 			Grid.SetColumn(tb, 1); Grid.SetRow(tb, TestingVar_Grid.RowDefinitions.Count - 1);
 			TestingVar_Grid.Children.Add(tb);
 
+			//textbox for updating the data of the runtime variables
+			// ReSharper disable once IdentifierTypo
+			TextBox tblive = new TextBox()
+			{
+				IsReadOnly = true
+			};
+			
+			Binding binding = new Binding();
+			binding.Source = TestingVars_list.Last().VarData;
+			tblive.DataContext = binding;
+			Grid.SetColumn(tblive, 2); Grid.SetRow(tblive, TestingVar_Grid.RowDefinitions.Count - 1);
+			TestingVar_Grid.Children.Add(tblive);
+
 			//combobox
 			ComboBox cb = new ComboBox() { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
 			cb.SelectionChanged += RuntimeVar_Type_Changed;
 			cb.Items.Add("Bool"); cb.Items.Add("Int");
 			cb.SelectedIndex = 1;
-			Grid.SetColumn(cb, 2); Grid.SetRow(cb, TestingVar_Grid.RowDefinitions.Count - 1);
+			Grid.SetColumn(cb, 3); Grid.SetRow(cb, TestingVar_Grid.RowDefinitions.Count - 1);
 			TestingVar_Grid.Children.Add(cb);
 
 		}
@@ -2007,26 +2021,17 @@ namespace NodeEditor
 		private void TestingVars_list_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (e.OldItems == null) return;
-			if ((e.OldItems[0] as RuntimeVars).VarName == (e.NewItems[0] as RuntimeVars).VarName) return;
+			//if ((e.OldItems[0] as RuntimeVars).VarName == (e.NewItems[0] as RuntimeVars).VarName) return;
 			if (e.Action == NotifyCollectionChangedAction.Replace)
 			{
-				List<BaseNodeBlock> temp = VarDisplayBlocks_dict[(e.OldItems[0] as RuntimeVars).VarName];
-				//update list
-				foreach (BaseNodeBlock item in temp)
+				int index = Array.FindIndex<RuntimeVars>(TestingVars_list.ToArray(), x => x.VarName == (e.NewItems[0] as RuntimeVars).VarName);
+				for (int i = 0; i < TestingVar_Grid.Children.Count; i++)
 				{
-					if (item is GetConstantNodeBlock)
-						(item as GetConstantNodeBlock).InternalData = //.VarName = (e.NewItems[0] as RuntimeVars).VarName;
-					 new RuntimeVars()
-					 {
-						 VarName = (e.NewItems[0] as RuntimeVars).VarName,
-						 Type = (item as GetConstantNodeBlock).InternalData.Type,
-						 VarData = (item as GetConstantNodeBlock).InternalData.VarData,
-						 OrginalVarData = (item as GetConstantNodeBlock).InternalData.OrginalVarData
-					 };
+					if (Grid.GetRow(TestingVar_Grid.Children[i]) == index-1 && Grid.GetColumn(TestingVar_Grid.Children[i]) == 2)
+					{
+						(TestingVar_Grid.Children[i] as TextBox).Text = (e.NewItems[0] as RuntimeVars).VarData.ToString();
+					}
 				}
-
-				VarDisplayBlocks_dict.Remove((e.OldItems[0] as RuntimeVars).VarName); //remove old
-				VarDisplayBlocks_dict.Add((e.NewItems[0] as RuntimeVars).VarName, temp); //add new
 			}
 		}
 
@@ -2189,9 +2194,20 @@ namespace NodeEditor
 		}
 		private void ExecuteBlock_MI_Click(object sender, RoutedEventArgs e)
 		{
-			if(CurrentExecutionBlock.NodeBlockExecution(ref CurrentExecutionBlock)) return;
+			if(CurrentExecutionBlock.NodeBlockExecution(ref CurrentExecutionBlock) && CurrentExecutionBlock.ErrorStack.Count == 0) return;
 			while (CurrentExecutionBlock.ErrorStack.Count > 0)
-				CurrentErrors.Add(CurrentExecutionBlock.ErrorStack.Pop());
+			{
+				if (CurrentExecutionBlock.ErrorStack.Peek() is ChangeVarFlag flag)
+				{
+					//TestingVars_list[TestingVars_list.(flag.VarToChange)] = flag.NewVar;
+					//TestingVars_list.Single(x => x.VarName == flag.VarToChange.VarName);
+					int i = Array.FindIndex<RuntimeVars>(TestingVars_list.ToArray(), x => x.VarName == flag.VarToChange.VarName);
+					TestingVars_list[i] = flag.NewVar;
+					CurrentErrors.Add(CurrentExecutionBlock.ErrorStack.Pop());
+				}
+				else 
+					CurrentErrors.Add(CurrentExecutionBlock.ErrorStack.Pop());
+			}
 		}
 		private void RunOnExit_MI_Click(object sender, RoutedEventArgs e)
 		{

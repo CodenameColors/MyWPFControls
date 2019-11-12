@@ -147,7 +147,10 @@ namespace NodeEditor.Components.Logic
 						temp &= EvaluateInternalData(cn.ConnectedNodes[0].ParentBlock);
 					else //this is here for the constants that one can manually enter.
 					{
-						ResultsStack.Push(Int32.Parse(this.NewValue_Constant));
+						if (this.NewValue_Constant == "T")
+							ResultsStack.Push(true);
+						else if (this.NewValue_Constant == "F")
+							ResultsStack.Push(false);
 						Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
 					}
 				}

@@ -156,6 +156,8 @@ namespace NodeEditor.Components
 			{
 				if (cn.ConnectedNodes.Count == 0)
 				{
+					if (InputNodes.Count - 1 == i && (!NewValConnected && NewValue_Constant != ""))
+						continue;
 					temp = false;
 					ErrorStack.Push(new InputNodeConnectionException(i, this.GetType().Name));
 				}
@@ -222,6 +224,8 @@ namespace NodeEditor.Components
 			{
 				if (!(cn.ConnectedNodes.Count > 0))
 				{
+					if (InputNodes.Count - 1 == i && (!NewValConnected && NewValue_Constant != ""))
+						continue;
 					temp = false;
 					ErrorStack.Push(new InputNodeConnectionException(i, this.GetType().Name));
 				}
@@ -243,7 +247,30 @@ namespace NodeEditor.Components
 					temp = false;
 					ErrorStack.Push(new InputNodeConnectionException(0, this.GetType().Name));
 				}
-				temp &= EvaluateInternalData(NewValue.ConnectedNodes[0].ParentBlock);
+				if (NewValue.ConnectedNodes.Count != 0)
+					temp &= EvaluateInternalData(NewValue.ConnectedNodes[0].ParentBlock);
+				else //this is here for the constants that one can manually enter.
+				{
+					if (DType == ECOnnectionType.Int)
+					{
+						ResultsStack.Push(Int32.Parse(this.NewValue_Constant));
+						Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
+					}
+					else if(DType == ECOnnectionType.Bool)
+					{
+						if (this.NewValue_Constant == "T")
+							ResultsStack.Push(true);
+						else if (this.NewValue_Constant == "F")
+							ResultsStack.Push(false);
+						Console.WriteLine(String.Format("Result: {0}", ResultsStack.Peek()));
+					}
+					else
+					{
+						temp = false;
+						ErrorStack.Push(new InputNodeConnectionException(i, this.GetType().Name));
+					}
+				}
+				
 
 				if (!temp)
 				{
@@ -304,7 +331,15 @@ namespace NodeEditor.Components
 
 			if (OldValue.ConnectedNodes != null)
 			{
-				((GetConstantNodeBlock) OldValue.ConnectedNodes[0].ParentBlock).InternalData.VarData = in2;
+				BlockNodeEditor.RuntimeVars rtv = new BlockNodeEditor.RuntimeVars()
+				{
+					VarData = in2,
+					VarName = ((GetConstantNodeBlock)OldValue.ConnectedNodes[0].ParentBlock).InternalData.VarName,
+					OrginalVarData = ((GetConstantNodeBlock)OldValue.ConnectedNodes[0].ParentBlock).InternalData.OrginalVarData,
+					Type = ((GetConstantNodeBlock)OldValue.ConnectedNodes[0].ParentBlock).InternalData.Type
+				};
+				ErrorStack.Push(new ChangeVarFlag(((GetConstantNodeBlock)OldValue.ConnectedNodes[0].ParentBlock).InternalData, rtv));
+				((GetConstantNodeBlock) OldValue.ConnectedNodes[0].ParentBlock).InternalData = rtv;
 				AnswerToOutput = in2;
 			}
 

@@ -51,18 +51,6 @@ namespace NodeEditor.Components
 			}
 		}
 
-		private bool newvalconnected;
-		public bool NewValConnected
-		{
-			get { return newvalconnected; }
-			set
-			{
-				newvalconnected = value;
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NewValConnected"));
-
-			}
-		}
-
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		/// <summary>
@@ -77,7 +65,7 @@ namespace NodeEditor.Components
 			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", ECOnnectionType.Int));
 
 			dtype = ECOnnectionType.Int;
-			newvalconnected = false;
+			NewValConnected = false;
 		}
 
 		/// <summary>
@@ -124,7 +112,7 @@ namespace NodeEditor.Components
 			{
 				if (!(cn.ConnectedNodes.Count > 0))
 				{
-					if(InputNodes.Count-1 == i && (!newvalconnected && NewValue_Constant != ""))
+					if(InputNodes.Count-1 == i && (!NewValConnected && NewValue_Constant != ""))
 						continue;
 					temp = false;
 					ErrorStack.Push(new InputNodeConnectionException(i, this.GetType().Name));

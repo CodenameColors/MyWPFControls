@@ -42,15 +42,21 @@ namespace NodeEditor_Tester
 		{
 			foreach (Exception ex in e.NewItems)
 			{
-				if (ex.Message != "Dialogue Scene Completed!")
-				{
-					OutputLog.AddErrorLogItem(-1, ex.Message, "BlockNodeEditor", false);
-					OutputLog.AddLogItem("Dialogue Error Found! Check Error Log for details.");
-				}
-				else
+				if (ex.Message == "Dialogue Scene Completed!")
 				{
 					OutputLog.AddLogItem("Dialogue Scene Completed! :D");
 					OutputLog.AddErrorLogItem(0, ex.Message, "BlockNodeEditor", false);
+				}
+				else if (ex.Message.Contains("Updated Runtime Var"))
+				{
+					OutputLog.AddLogItem("Updated Global Runtime Var");
+					OutputLog.AddErrorLogItem(0, ex.Message, "BlockNodeEditor", true);
+				}
+				else
+				{
+					OutputLog.AddErrorLogItem(-1, ex.Message, "BlockNodeEditor", false);
+					OutputLog.AddLogItem("Dialogue Error Found! Check Error Log for details.");
+				
 				}
 			}
 		}
