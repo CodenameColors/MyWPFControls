@@ -1,0 +1,129 @@
+<!--this my attempt two at a protoype-->
+<DialogueScene Name="Test1">
+    <Characters>
+        <Character Name="Emma">
+            <images>
+                <image Path="/..."/>
+                <image Path="/..."/>
+                <image Path="/..."/>
+                <image Path="/..."/>
+            </images>
+        </Character>
+        <Character Name="PC">
+            <images>
+                <image Path="/..."/>
+                <image Path="/..."/>
+                <image Path="/..."/>
+                <image Path="/..."/>
+            </images>
+        </Character>
+    </Characters>
+    <NodeEditor>
+        <Params>
+            <var Name="choice" Type="int" DefaultVal="0"/>
+            <var Name="Var_0" Type="int" DefaultVal="1"/>
+            <var Name="Var_1" Type="int" DefaultVal="2"/>
+        </Params>
+        <Blocknodes>
+            <startblocknode Key="Start_0" LocX="100" LocY="100">
+                <nodes>
+                    <exitnode Type="int">
+                        <Connection ToBlock="dia_Emma_0" Node="Entry" Ind="0"/>
+                    </exitnode>
+                </nodes>
+            </startblocknode>
+            <DialougeBlockNode Key="dia_Emma_0" Character="Emma" LocX="1000" LocY="200">
+                <Nodes>
+                    <EntryNode Type="int">
+                        <Connection FromBlock="Start_0" Node="Exit" Ind="0"/>
+                    </EntryNode>
+                    <Inputs>
+                        <InputNode Type="int">
+                            <Connection FromBlock="add_0" Node="Output" Ind="0"/>
+                        </InputNode>
+                    </Inputs>
+                    <Outputs>
+                        <OutputNode Type="Exit">
+                            <Connection ToBlock="End_0" Node="Entry" Ind="0"/>
+                        </OutputNode>
+                        <OutputNode Type="Exit">
+                            <Connection ToBlock="End_0" Node="Entry" Ind="0"/>
+                        </OutputNode>
+                    </Outputs>
+                </Nodes>
+                <Timeblock Start="0.0" End="0.0"/>
+                <Data>  
+                    <DiaChoice>
+                        <Sprite Name="new sprite" Location="C:/Users/amorales/Documents/createst/newtest2/newtest2_Game/Content/Ame_icon_small.png" Width="109" Height="109" x="99" y="35" />
+                        <text>Dialogue Choice 1</text>
+                    </DiaChoice>
+                    <DiaChoice>
+                        <Sprite Name="new sprite" Location="C:/Users/amorales/Documents/createst/newtest2/newtest2_Game/Content/Ame_icon_small.png" Width="109" Height="109" x="99" y="35" />
+                        <text>Memes</text>
+                    </DiaChoice>
+                </Data>
+            </DialougeBlockNode>
+            <AddBlockNode Key="add_0" LocX="800" LocY="250">
+                <Nodes>
+                    <Inputs>
+                        <InputNode Type="int">
+                            <Connection FromBlock="get_Var_0_0" Node="Output" Ind="0"/>
+                        </InputNode>
+                        <InputNode Type="int">
+                            <Connection FromBlock="subtract_0" Node="Output" Ind="0"/>
+                        </InputNode>
+                    </Inputs>
+                    <Outputs>
+                        <OutputNode Type="int">
+                            <Connection ToBlock="dia_Emma_0" Node="Input" Ind="0"/>
+                        </OutputNode>
+                    </Outputs>
+                </Nodes>
+            </AddBlockNode>
+            <SubtractBlockNode Key="sub_0" LocX="600" LocY="350">
+                <Nodes>
+                    <Inputs>
+                        <InputNode Type="int">
+                            <Connection FromBlock="get_Var_0_0" Node="Output" Ind="0"/>
+                        </InputNode>
+                        <InputNode Type="int">
+                            <Connection FromBlock="get_Var_1_0" Node="Output" Ind="0"/>
+                        </InputNode>
+                    </Inputs>
+                    <Outputs>
+                        <OutputNode Type="int">
+                            <Connection ToBlock="add_0" Node="Input" Ind="1"/>
+                        </OutputNode>
+                    </Outputs>
+                </Nodes>
+            </SubtractBlockNode>
+            <GetBlockNode Key="get_Var_0_0" LocX="300" LocY="200">
+                <Nodes>
+                    <Outputs>
+                        <OutputNode Type="int">
+                            <Connection ToBlock="add_0" Node="Input" Ind="0"/>
+                            <Connection ToBlock="subtract_0" Node="Input" Ind="0"/>
+                        </OutputNode>
+                    </Outputs>
+                </Nodes>
+            </GetBlockNode>
+            <GetBlockNode Key="get_Var_1_0" LocX="300" LocY="300">
+                <Nodes>
+                    <Outputs>
+                        <OutputNode Type="int">
+                            <Connection ToBlock="subtract_0" Node="Input" Ind="1"/>
+                        </OutputNode>
+                    </Outputs>
+                </Nodes>
+            </GetBlockNode>
+            <EndBlockNode Key="end_0" LocX="1300" LocY="500">
+                <Nodes>
+                    <EntryNode Type="Entry">
+                        <Connection FromBlock="dia_Emma_0" Node="Output" Ind="0"/>
+                        <Connection FromBlock="dia_Emma_0" Node="Output" Ind="1"/>
+                    </EntryNode>
+                </Nodes>
+            </EndBlockNode>
+        </Blocknodes>
+    </NodeEditor>
+</DialogueScene>
