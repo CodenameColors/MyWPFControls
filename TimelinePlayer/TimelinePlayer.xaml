@@ -8,7 +8,12 @@
              mc:Ignorable="d" Background="Transparent" Height="200" Width="650">
 	<UserControl.Resources>
 
-		
+
+		<ContextMenu x:Key="AddTimeblock_CM">
+			<MenuItem Header="Add Dialogue Block" Click="AddDialogueBlockToTimeline"/>
+			<MenuItem Header="Add Dialogue Choice Block"  />
+		</ContextMenu>
+
 		<Style TargetType="{x:Type timel:TimeBlock}">
 			<Setter Property="Template">
 				<Setter.Value>
@@ -112,7 +117,7 @@
 			<Border >
 				<Grid>
 					<Button Background="Transparent"/>
-					<StackPanel Orientation="Horizontal">
+					<StackPanel Orientation="Horizontal" Visibility="Hidden">
 						<!--<Image Height="25" Width="25" Source="Images/speech-bubbles-png.png" HorizontalAlignment="Left" >-->
 						<!--</Image>-->
 						<Image Height="25" Width="25" Source="Images/defaultimage.jpg" HorizontalAlignment="Left">
@@ -141,7 +146,7 @@
 			<ColumnDefinition Width="6*"/>
 		</Grid.ColumnDefinitions>
 		<TextBlock Text="Track Items" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-		<Button x:Name="AddTrack_BTN" Content="Add+" Height="20" Width="35" HorizontalAlignment="Right" VerticalAlignment="Top" Click="AddTrack_BTN_Click" Foreground="Black"/>
+		<Button x:Name="AddTrack_BTN" Content="Add+" Height="20" Width="35" HorizontalAlignment="Right" VerticalAlignment="Top" Click="AddTrack_BTN_Click" Foreground="Black" Margin="0,0,10,0" Visibility="Hidden"/>
 
 		<ScrollViewer Grid.Column="2" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Background="#FF636363" 
 				ScrollBar.Scroll="ScrollViewer_Scroll" PreviewMouseWheel="ScrollViewer_MouseWheel" ScrollChanged="ScrollViewer_ScrollChanged" 

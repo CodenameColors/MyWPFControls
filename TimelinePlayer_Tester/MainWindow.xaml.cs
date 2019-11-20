@@ -63,6 +63,11 @@ namespace TimelinePlayer_Tester
 			//Titles[0].ItemsSource = Titles[0].Children;
 		}
 
+		/// <summary>
+		/// Adds a new timeblock to the list. and displays it. It's hooked.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Addtblock_BTN_Click(object sender, RoutedEventArgs e)
 		{
 			Titles[0].AddTimeBlock(new TimeBlock(Titles[0], 0)
@@ -70,7 +75,7 @@ namespace TimelinePlayer_Tester
 				Trackname = "Memes",
 				Width = 100,
 				Margin = new Thickness(0, 0, 0, 3)
-			});
+			},0);
 		}
 	}
 }

@@ -144,6 +144,8 @@ namespace TimelinePlayer.Components
 
 		#endregion
 
+		public object LinkedDialogueBlock = null;
+
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();

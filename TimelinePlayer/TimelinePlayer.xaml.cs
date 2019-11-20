@@ -72,7 +72,19 @@ namespace TimelinePlayer
 
 		public delegate void OnSlectionChange_Hook(object Selected);
 		public OnSlectionChange_Hook SelectionChanged_Hook;
+
+
+		public delegate Object OnCreateTimeblock_Hook(TimeBlock tbref);
+		/// <summary>
+		/// when creating a timeblock for my application i need to have a dialogue
+		/// for linking purposes. so this hooking delegate will allow the user to give us one.
+		/// </summary>
+		/// <param name="Selected">ALWAYS put </param>
+		/// <returns>Dialogue block</returns>
+		public OnCreateTimeblock_Hook OnCreateTimeblockHook;
+
 		#endregion
+
 
 
 		double TimeScrubber_BaseSize = 0.0;
@@ -80,6 +92,9 @@ namespace TimelinePlayer
 		DispatcherTimer PlayerTimer = new DispatcherTimer(DispatcherPriority.Normal);
 		List<Timeline> timelines = new List<Timeline>();
 		double ScaleWidth = 1.0;
+
+		public Timeline selectedTimeline = null;
+		private Point pointToAdd = new Point();
 
 		//public object SelectedControl = new object();
 
@@ -196,6 +211,11 @@ namespace TimelinePlayer
 			}
 		}
 
+		/// <summary>
+		/// A time block has been added to the be timeline linked list. So display it.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		void newValueINotifyCollectionChanged_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			ContentControl bor = (ContentControl)this.Resources["TimelineBlock_CC"];
@@ -212,6 +232,7 @@ namespace TimelinePlayer
 				Margin = new Thickness(0, 3, 0, 3),
 				TrackName = "Emma"
 			};
+			timeline.MouseRightButtonDown += ShowAddTimeBlockCM;
 
 			//Canvas c = new Canvas() { Background = Brushes.Gray, Margin=new Thickness(0,3,0,3)};
 			//c.MouseEnter += C_MouseEnter;
@@ -225,6 +246,17 @@ namespace TimelinePlayer
 
 			timelines.Add(timeline);
 
+		}
+
+
+		private void ShowAddTimeBlockCM(object sender, MouseButtonEventArgs e)
+		{
+			selectedTimeline = (sender as Timeline);
+			pointToAdd = Mouse.GetPosition(Timelines_Grid);
+			ContextMenu cm = this.FindResource("AddTimeblock_CM") as ContextMenu;
+			//((MenuItem)cm.Items[0]).IsChecked = ((MenuItem)cm.Items[0]).IsChecked;
+			cm.PlacementTarget = sender as ContentControl;
+			cm.IsOpen = true;
 		}
 
 		private void C_MouseEnter(object sender, MouseEventArgs e)
@@ -273,6 +305,7 @@ namespace TimelinePlayer
 				Margin = new Thickness(0, 3, 0, 3),
 				TrackName = TrackName
 			};
+			timeline.MouseRightButtonDown += ShowAddTimeBlockCM;
 			Grid.SetRow(timeline, Tracks_Grid.RowDefinitions.Count - 1);
 			Timelines_Grid.Children.Add(timeline);
 
@@ -541,6 +574,11 @@ namespace TimelinePlayer
 
 		}
 
+		/// <summary>
+		/// Add a time New timeblock to the timeline
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button_Click(object sender, RoutedEventArgs e)
 		{
 			ContentControl cc = (ContentControl)((Border)((Grid)((StackPanel)((Button)sender).Parent).Parent).Parent).Parent;
@@ -551,9 +589,7 @@ namespace TimelinePlayer
 				Trackname = "Memes",
 				Width = 100,
 				Margin = new Thickness(0, 0, 0, 3)
-			});
-			
-			
+			}, pointToAdd.X);
 		}
 
 		private void ScrollViewer_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -709,9 +745,32 @@ namespace TimelinePlayer
 			}
 			return -1;
 		}
-		
 
-	}
+		/// <summary>
+		/// This method will called when the user requests to add a time block to the timeline.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void AddDialogueBlockToTimeline(object sender, RoutedEventArgs e)
+		{
+			//ContentControl cc = (ContentControl)((Border)((Grid)((StackPanel)((Button)sender).Parent).Parent).Parent).Parent;
+			//Console.WriteLine(Grid.GetRow(cc));
+			if (OnCreateTimeblockHook != null)
+			{
+				TimeBlock tbb = new TimeBlock(timelines[Grid.GetRow(selectedTimeline)], 0)
+				{
+					Trackname = "Memes",
+					Width = 100,
+					Margin = new Thickness(0, 0, 0, 3)
+				};
+				object dialogueblock = OnCreateTimeblockHook(tbb);
+				if (dialogueblock != null) tbb.LinkedDialogueBlock = dialogueblock;
+				else return;
+				timelines[Grid.GetRow(selectedTimeline)].AddTimeBlock(tbb, pointToAdd.X);
+			}
+		}
+  }
+	
 
 	public class NumberedTickBar : TickBar
 	{

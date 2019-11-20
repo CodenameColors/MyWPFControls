@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -1497,6 +1498,7 @@ namespace NodeEditor
 
 			//add the output node data wise
 			DialogueNodeBlock BN = (DialogueNodeBlock)((Button)sender).TemplatedParent;
+			BN.DialogueData.Add("Memes");
 			Point p = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN) + 20 + (20 * OutputGrid.RowDefinitions.Count));
 			BN.OutputNodes.Add(new ConnectionNode(BN, "OutputNode" + OutputGrid.RowDefinitions.Count, p, ECOnnectionType.Exit));
 
@@ -2031,7 +2033,25 @@ namespace NodeEditor
 
 		private void AddDialogueBlock_BTN_Click(object sender, RoutedEventArgs e)
 		{
-			DialogueNodeBlock bn = new DialogueNodeBlock(""); //TODO: Change this from "" -> MenuItem.Header
+			AddDialogueBlockToGraph();
+		}
+
+		public void AddDialogueBlockToGraph(DialogueNodeBlock dialogueNode, String CharacterName = "", object Timeblock = null)
+		{
+			DialogueNodeBlock bn = dialogueNode; //TODO: Change this from "" -> MenuItem.Header
+			if (Timeblock != null)
+				bn.LinkedTimeBlock = Timeblock;
+			NodeEditor_Canvas.Children.Add(bn);
+			Point p = new Point(0, 10); Point p1 = new Point(150, 20 + 20);
+			bn.EntryNode = (new ConnectionNode(bn, "EnterNode", p, ECOnnectionType.Enter));
+			bn.OutputNodes.Add(new ConnectionNode(bn, "OutputNode1", p1, ECOnnectionType.Exit));
+		}
+
+		public void AddDialogueBlockToGraph(String CharacterName="", object Timeblock=null)
+		{
+			DialogueNodeBlock bn = new DialogueNodeBlock(CharacterName); //TODO: Change this from "" -> MenuItem.Header
+			if (Timeblock != null)
+				bn.LinkedTimeBlock = Timeblock;
 			NodeEditor_Canvas.Children.Add(bn);
 			Point p = new Point(0, 10); Point p1 = new Point(150, 20 + 20);
 			bn.EntryNode = (new ConnectionNode(bn, "EnterNode", p, ECOnnectionType.Enter));
@@ -2079,6 +2099,9 @@ namespace NodeEditor
 				NodeEditor_BackCanvas.Children.Remove(Node.Curves[index]);
 				Node.Curves.RemoveAt(index);
 			}
+
+
+
 		}
 
 		private void ConnectNodes(ConnectionNode From, ConnectionNode To)
@@ -2309,7 +2332,6 @@ namespace NodeEditor
 				this.ActiveStatus = EActiveStatus.Disabled;
 				//currentNB.OnStartNodeBlockExecution(ref currentNB);
 			}
-
 		}
 	}
 

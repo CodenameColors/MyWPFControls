@@ -17,13 +17,16 @@ namespace NodeEditor.Components
 	{
 		public int ChoiceVar = 0;
 		public object UnlockingVar = null;
+		public object LinkedTimeBlock = null;
 		public DialogueNodeBlock(String Header)
 		{
 			this.Header = Header;
 			InputNodes = new List<ConnectionNode>();
 			OutputNodes = new List<ConnectionNode>();
+			DialogueData.Add("Dialogue Option 1");
 		}
 
+		public List<String> DialogueData = new List<string>();
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
