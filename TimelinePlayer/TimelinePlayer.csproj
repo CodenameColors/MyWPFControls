@@ -52,6 +52,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Components\ChoiceTimeBlock.cs" />
     <Compile Include="Components\TimeBlock.cs" />
     <Compile Include="Components\Timeline.cs" />
     <Compile Include="TimelinePlayer.xaml.cs">

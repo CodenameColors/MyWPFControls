@@ -522,8 +522,10 @@ namespace NodeEditor
 		private void MoveThumb_Middle_DragDelta(object sender, DragDeltaEventArgs e)
 		{
 			object obj = ((Thumb)sender).TemplatedParent;
-			if (obj is DialogueNodeBlock)
+			if (obj is DialogueNodeBlock dia)
+			{
 				MoveDialogueBlock(sender, e);
+			}
 			else if (obj is GetConstantNodeBlock)
 			{
 				GetConstantNodeBlock BN = ((GetConstantNodeBlock)((Thumb)sender).TemplatedParent);
@@ -1455,6 +1457,10 @@ namespace NodeEditor
 		{
 			Grid basegrid = (Grid)((Button)sender).Parent;
 			Grid OutputGrid = null;
+
+			DialogueNodeBlock BN = (DialogueNodeBlock)((Button)sender).TemplatedParent;
+			BN.DialogueData.Add("Memes_");
+
 			foreach (UIElement item in basegrid.Children)
 			{
 				if (item is Grid && ((Grid)item).Name.Contains("Output"))
@@ -1464,11 +1470,21 @@ namespace NodeEditor
 			OutputGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(40) });
 			TextBlock tb = new TextBlock()
 			{
-				Text = "Memes",
 				Margin = new Thickness(5),
 				HorizontalAlignment = HorizontalAlignment.Left,
-				VerticalAlignment = VerticalAlignment.Top
+				VerticalAlignment = VerticalAlignment.Top,
+				Foreground = Brushes.White
 			};
+			Binding myBinding = new Binding();
+			myBinding.Source = BN;
+			myBinding.Path = new PropertyPath(String.Format("DialogueData[{0}]", OutputGrid.RowDefinitions.Count - 1));
+			//myBinding.RelativeSource= RelativeSource.TemplatedParent;
+			myBinding.Mode = BindingMode.TwoWay;
+			myBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+
+			tb.SetBinding(TextBlock.TextProperty, myBinding);
+
+
 			Grid.SetRow(tb, OutputGrid.RowDefinitions.Count - 1); Grid.SetColumn(tb, 1);
 			OutputGrid.Children.Add(tb);
 
@@ -1497,8 +1513,6 @@ namespace NodeEditor
 			OutputGrid.Children.Add(g);
 
 			//add the output node data wise
-			DialogueNodeBlock BN = (DialogueNodeBlock)((Button)sender).TemplatedParent;
-			BN.DialogueData.Add("Memes");
 			Point p = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN) + 20 + (20 * OutputGrid.RowDefinitions.Count));
 			BN.OutputNodes.Add(new ConnectionNode(BN, "OutputNode" + OutputGrid.RowDefinitions.Count, p, ECOnnectionType.Exit));
 
@@ -2218,7 +2232,7 @@ namespace NodeEditor
 
 		}
 
-		private void StartBlockExecution_MI_Click(object sender, RoutedEventArgs e)
+		public void ResetExecution()
 		{
 			CurrentExecutionBlock.ActiveStatus = EActiveStatus.Disabled;
 			CurrentExecutionBlock = StartExecutionBlock;
@@ -2229,15 +2243,32 @@ namespace NodeEditor
 			}
 		}
 
+		private void StartBlockExecution_MI_Click(object sender, RoutedEventArgs e)
+		{
+			ResetExecution();
+		}
+
+		public bool StartBlockExecution()
+		{
+			bool b = true;
+			if (CurrentExecutionBlock.OnStartNodeBlockExecution(ref CurrentExecutionBlock)) b = true;
+			while (CurrentExecutionBlock.ErrorStack.Count > 0)
+			{
+				CurrentErrors.Add(CurrentExecutionBlock.ErrorStack.Pop());
+				b = false;
+			}
+			return b;
+		}
+
 		private void RunOnStart_MI_Click(object sender, RoutedEventArgs e)
 		{
-			if (CurrentExecutionBlock.OnStartNodeBlockExecution(ref CurrentExecutionBlock)) return;
-			while (CurrentExecutionBlock.ErrorStack.Count > 0)
-				CurrentErrors.Add(CurrentExecutionBlock.ErrorStack.Pop());
+			StartBlockExecution();
 		}
-		private void ExecuteBlock_MI_Click(object sender, RoutedEventArgs e)
+
+		public bool ExecuteBlock()
 		{
-			if(CurrentExecutionBlock.NodeBlockExecution(ref CurrentExecutionBlock) && CurrentExecutionBlock.ErrorStack.Count == 0) return;
+			bool b = true;
+			if (CurrentExecutionBlock.NodeBlockExecution(ref CurrentExecutionBlock) && CurrentExecutionBlock.ErrorStack.Count == 0) b = true;
 			while (CurrentExecutionBlock.ErrorStack.Count > 0)
 			{
 				if (CurrentExecutionBlock.ErrorStack.Peek() is ChangeVarFlag flag)
@@ -2247,20 +2278,38 @@ namespace NodeEditor
 					int i = Array.FindIndex<RuntimeVars>(TestingVars_list.ToArray(), x => x.VarName == flag.VarToChange.VarName);
 					TestingVars_list[i] = flag.NewVar;
 					CurrentErrors.Add(CurrentExecutionBlock.ErrorStack.Pop());
+					b = false;
 				}
-				else 
+				else
+				{
 					CurrentErrors.Add(CurrentExecutionBlock.ErrorStack.Pop());
+					b = false;
+				}
 			}
+
+			return b;
 		}
-		private void RunOnExit_MI_Click(object sender, RoutedEventArgs e)
+
+		private void ExecuteBlock_MI_Click(object sender, RoutedEventArgs e)
 		{
+			ExecuteBlock();
+		}
+
+		public bool EndblockExecution()
+		{
+			bool b = true;
 			if (CurrentExecutionBlock is ExitBlockNode)
 			{
 				CurrentErrors.Add(new NodeEditorException("Dialogue Scene Completed!"));
 			}
 			CurrentExecutionBlock.OnEndNodeBlockExecution(ref CurrentExecutionBlock);
+			return b;
 		}
 
+		private void RunOnExit_MI_Click(object sender, RoutedEventArgs e)
+		{
+			EndblockExecution();
+		}
 
 		private void EvalOnStart_MI_Click(object sender, RoutedEventArgs e)
 		{
@@ -2326,7 +2375,7 @@ namespace NodeEditor
 
 		public override void OnEndNodeBlockExecution(ref BaseNodeBlock currentNB)
 		{
-			if (this.ExitNode.ConnectedNodes[0].ParentBlock != null)
+			if (this.ExitNode.ConnectedNodes.Count > 0)
 			{
 				currentNB = this.ExitNode.ConnectedNodes[0].ParentBlock;
 				this.ActiveStatus = EActiveStatus.Disabled;

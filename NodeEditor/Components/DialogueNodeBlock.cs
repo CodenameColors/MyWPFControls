@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -20,16 +21,22 @@ namespace NodeEditor.Components
 		public object LinkedTimeBlock = null;
 		public DialogueNodeBlock(String Header)
 		{
+			DialogueData = new ObservableCollection<string>();
 			this.Header = Header;
 			InputNodes = new List<ConnectionNode>();
 			OutputNodes = new List<ConnectionNode>();
-			DialogueData.Add("Dialogue Option 1");
+			DialogueData.Add("Dialogue Option 1_");
 		}
 
-		public List<String> DialogueData = new List<string>();
+		public ObservableCollection<String> DialogueData { get; set; }
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
+		}
+
+		public void ChangeDialogueData(String newDialogueText, int choiceVal = 0)
+		{
+			
 		}
 
 		/// <summary>
@@ -213,6 +220,5 @@ namespace NodeEditor.Components
 		{
 			throw new NotImplementedException();
 		}
-
 	}
 }

@@ -73,6 +73,14 @@ namespace TimelinePlayer
 		public delegate void OnSlectionChange_Hook(object Selected);
 		public OnSlectionChange_Hook SelectionChanged_Hook;
 
+		public delegate Object OnCreateChoiceTimeblock_Hook(TimeBlock tbref);
+		/// <summary>
+		/// when creating a timeblock for my application i need to have a dialogue choice blocks
+		/// for linking purposes. so this hooking delegate will allow the user to give us one.
+		/// </summary>
+		/// <param name="Selected">ALWAYS put </param>
+		/// <returns>Dialogue block</returns>
+		public OnCreateTimeblock_Hook OnCreateChoiceTimeblockHook;
 
 		public delegate Object OnCreateTimeblock_Hook(TimeBlock tbref);
 		/// <summary>
@@ -83,6 +91,8 @@ namespace TimelinePlayer
 		/// <returns>Dialogue block</returns>
 		public OnCreateTimeblock_Hook OnCreateTimeblockHook;
 
+		public delegate void OnReset_Hook();
+		public OnReset_Hook Reset_Hook;
 		#endregion
 
 
@@ -443,38 +453,42 @@ namespace TimelinePlayer
 
 		private void MoveThumb_Middle_DragDelta(object sender, DragDeltaEventArgs e)
 		{
-			TimeBlock tb = ((TimeBlock)((Thumb)sender).TemplatedParent);
-			if (VisualTreeHelper.GetOffset(tb).X + e.HorizontalChange > 0) {
-				if (CanMoveTimeBlock(timelines[Grid.GetRow(tb.TimelineParent)], tb, (int)(Canvas.GetLeft(tb) + e.HorizontalChange), (int)(Canvas.GetLeft(tb) + tb.ActualWidth + e.HorizontalChange)))
-				{
-					Canvas.SetLeft(tb, VisualTreeHelper.GetOffset(tb).X + e.HorizontalChange);
-					tb.StartTime = Canvas.GetLeft(tb) * tb.TimelineParent.TimePerPixel;
-					tb.BringIntoView();
-				}
-			}
-
-			double left = Canvas.GetLeft(tb);
-			if (left + tb.Width > tb.TimelineParent.Width)
-			{ //expands the time line if the block goes off screen
-				foreach (Timeline tline in timelines)
-					tline.Width = left + tb.Width;
-				TimeScrubber_BaseSize = tb.TimelineParent.Width / ScaleWidth;
-				TimelineScrubber_Canvas.Width = tb.TimelineParent.Width;
-				RedrawTimeScrubber(TimelineScrubber_Canvas, TimeWidth);
-			}
-			//snapping
-			if (Keyboard.IsKeyDown(Key.LeftCtrl))
+			if (((TimeBlock)((Thumb)sender).TemplatedParent) is TimeBlock tb)
 			{
-				TimeBlock snap_tb = null;
-				foreach (Timeline tline in timelines)
-					if ((snap_tb = GetSnapStatus(tline, tb)) != null) break;
-				if(snap_tb != null)
+				if (VisualTreeHelper.GetOffset(tb).X + e.HorizontalChange > 0)
 				{
-					SetSnap(snap_tb, tb);
+					if (CanMoveTimeBlock(timelines[Grid.GetRow(tb.TimelineParent)], tb, (int)(Canvas.GetLeft(tb) + e.HorizontalChange), (int)(Canvas.GetLeft(tb) + tb.ActualWidth + e.HorizontalChange)))
+					{
+						Canvas.SetLeft(tb, VisualTreeHelper.GetOffset(tb).X + e.HorizontalChange);
+						tb.StartTime = Canvas.GetLeft(tb) * tb.TimelineParent.TimePerPixel;
+						tb.BringIntoView();
+					}
 				}
+
+
+				double left = Canvas.GetLeft(tb);
+				if (left + tb.Width > tb.TimelineParent.Width)
+				{ //expands the time line if the block goes off screen
+					foreach (Timeline tline in timelines)
+						tline.Width = left + tb.Width;
+					TimeScrubber_BaseSize = tb.TimelineParent.Width / ScaleWidth;
+					TimelineScrubber_Canvas.Width = tb.TimelineParent.Width;
+					RedrawTimeScrubber(TimelineScrubber_Canvas, TimeWidth);
+				}
+				//snapping
+				if (Keyboard.IsKeyDown(Key.LeftCtrl))
+				{
+					TimeBlock snap_tb = null;
+					foreach (Timeline tline in timelines)
+						if ((snap_tb = GetSnapStatus(tline, tb)) != null) break;
+					if (snap_tb != null)
+					{
+						SetSnap(snap_tb, tb);
+					}
+				}
+				tb.StartTime = Canvas.GetLeft(tb) * tb.TimelineParent.TimePerPixel;
+				SelectedControl = tb;
 			}
-			tb.StartTime = Canvas.GetLeft(tb) * tb.TimelineParent.TimePerPixel;
-			SelectedControl = tb;
 		}
 
 		private void SetSnap(TimeBlock ToSnapto_TB, TimeBlock Snap_TB, bool bMove = true)
@@ -624,22 +638,6 @@ namespace TimelinePlayer
 			//PlayLine.X1 *= ScaleWidth; PlayLine.X2 *= ScaleWidth;
 		}
 
-		private void PlayTimeline_BTN_Click(object sender, RoutedEventArgs e)
-		{
-			ActiveTBblocks.Clear();
-			PlayerTimer.Interval = TimeSpan.FromMilliseconds((1.0 / TimeWidth)*1000);
-			PlayerTimer.Start();
-
-			if(TimeBlockSync != null)
-			{
-				TimeBlockSync();
-			}
-
-			foreach(Timeline tline in timelines)
-				tline.InitActiveBlock(PlayLine.X1 * (1.0 / TimeWidth/ScaleWidth));
-
-		}
-
 		void PlayTimer_Tick(object sender, EventArgs e)
 		{
 			if (Timelines_Grid.ActualWidth - 5 > PlayLine.X1)
@@ -680,19 +678,60 @@ namespace TimelinePlayer
 			SnapLine.Y2 = Tracks_Grid.ActualHeight;
 		}
 
-		private void PlayerStop_BTN_Click(object sender, RoutedEventArgs e)
+		public void ResetTimeline()
+		{
+			Reset_Hook?.Invoke();
+			PlayerTimer.Stop();
+			ActiveTBblocks.Clear();
+			PlayLine.X1 = 0; PlayLine.X2 = 0;
+		}
+
+		private void PlayerReset_BTN_Click(object sender, RoutedEventArgs e)
+		{
+			ResetTimeline();
+		}
+
+		public void StopTimeline()
 		{
 			PlayerTimer.Stop();
 			ActiveTBblocks.Clear();
 			PlayLine.X1 = TempStartLine.X1; PlayLine.X2 = TempStartLine.X2;
 		}
 
-		private void PlayerPause_BTN_Click(object sender, RoutedEventArgs e)
+		private void PlayerStop_BTN_Click(object sender, RoutedEventArgs e)
+		{
+			StopTimeline();
+		}
+
+		public void PauseTimeline()
 		{
 			PlayerTimer.Stop();
 		}
 
-	
+		private void PlayerPause_BTN_Click(object sender, RoutedEventArgs e)
+		{
+			PauseTimeline();
+		}
+
+		public void PlayTimeline()
+		{
+			ActiveTBblocks.Clear();
+			PlayerTimer.Interval = TimeSpan.FromMilliseconds((1.0 / TimeWidth) * 1000);
+			PlayerTimer.Start();
+
+			if (TimeBlockSync != null)
+			{
+				TimeBlockSync();
+			}
+
+			foreach (Timeline tline in timelines)
+				tline.InitActiveBlock(PlayLine.X1 * (1.0 / TimeWidth / ScaleWidth));
+		}
+
+		private void PlayTimeline_BTN_Click(object sender, RoutedEventArgs e)
+		{
+			PlayTimeline();
+		}
 
 		private void ScrollViewer_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
@@ -715,7 +754,7 @@ namespace TimelinePlayer
 		{
 			Point Mpos = Mouse.GetPosition((ScrollViewer)sender);
 			if (Mpos.X < Timelines_Grid.ActualWidth - 1)
-				TempStartLine.X1 = Mpos.X; TempStartLine.X2 = Mpos.X + 2;
+				TempStartLine.X1 = Mpos.X; TempStartLine.X2 = Mpos.X;
 		}
 
 		private void TimelineScrubber_SV_PreviewMouseMove(object sender, MouseEventArgs e)
@@ -724,7 +763,7 @@ namespace TimelinePlayer
 			{
 				Point Mpos = Mouse.GetPosition((ScrollViewer)sender);
 				if (Mpos.X < Timelines_Grid.ActualWidth - 1)
-					TempStartLine.X1 = Mpos.X; TempStartLine.X2 = Mpos.X + 2;
+					TempStartLine.X1 = Mpos.X; TempStartLine.X2 = Mpos.X;
 			}
 		}
 
@@ -769,8 +808,23 @@ namespace TimelinePlayer
 				timelines[Grid.GetRow(selectedTimeline)].AddTimeBlock(tbb, pointToAdd.X);
 			}
 		}
-  }
-	
+
+		private void AddChoiceDialogueBlockToTimeline(object sender, RoutedEventArgs e)
+		{
+			ChoiceTimeBlock tbb = new ChoiceTimeBlock(timelines[Grid.GetRow(selectedTimeline)], 0)
+			{
+				Trackname = "Memes",
+				Width = 100,
+				Margin = new Thickness(0, 0, 0, 3)
+			};
+			//object dialogueblock = OnCreateTimeblockHook(tbb);
+			//if (dialogueblock != null) tbb.LinkedDialogueBlock = dialogueblock;
+			//else return;
+			timelines[Grid.GetRow(selectedTimeline)].AddTimeBlock(tbb, pointToAdd.X);
+		}
+	}
+
+
 
 	public class NumberedTickBar : TickBar
 	{

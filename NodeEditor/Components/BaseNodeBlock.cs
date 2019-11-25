@@ -24,6 +24,17 @@ namespace NodeEditor.Components
 		public String Header { get; set; }
 		public String NewValue_Constant { get; set; }
 
+		//for displaying active status
+		private bool _bChoice = false;
+		public bool bChoice
+		{
+			get => _bChoice;
+			set
+			{
+				_bChoice = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("bChoice"));
+			}
+		}
 
 		//for displaying active status
 		private EActiveStatus activeStatus = EActiveStatus.Disabled;

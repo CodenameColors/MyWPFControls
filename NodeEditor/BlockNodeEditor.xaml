@@ -2246,7 +2246,7 @@
 										<RowDefinition Height="40"/>
 									</Grid.RowDefinitions>
 
-									<TextBlock Grid.Column="1" Foreground="White" Margin="5" Text="Dialogue Option 1"/>
+									<TextBlock Grid.Column="1" Foreground="White" Margin="5" Text="{Binding Path=DialogueData[0], RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
 									<GridSplitter ResizeDirection="Rows" Height="2" Background="White" Grid.Row="1" IsEnabled="False"/>
 									<!--default input thumb-->
 									<!--<ContentPresenter HorizontalAlignment="Stretch" Grid.Column="0" IsHitTestVisible="True"
@@ -2288,8 +2288,34 @@
 										</ContentPresenter.Content>
 									</ContentPresenter>
 								</Grid>
-								<Button x:Name="AddInputNode_BTN" Grid.Row="3" Content="+" Width="15" Height="15" Margin="5,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Click="AddDialogueInput_BTN_Click" />
-								<Button x:Name="AddOutputNode_BTN" Grid.Row="3" Content="+" Width="15" Height="15" Margin="0,0,5,0" HorizontalAlignment="Right" VerticalAlignment="Center" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Click="AddDialogueOutput_BTN_Click" />
+								<Button x:Name="AddInputNode_BTN" Grid.Row="3" Content="+" Width="15" Height="15" Margin="5,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Click="AddDialogueInput_BTN_Click" >
+									<Button.Style>
+										<Style TargetType="Button">
+											<Style.Triggers>
+												<DataTrigger Binding="{Binding Path=bChoice, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="False">
+													<Setter Property="Visibility" Value="Hidden"></Setter>
+												</DataTrigger>
+												<DataTrigger Binding="{Binding Path=bChoice, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="True">
+													<Setter Property="Visibility" Value="Visible"></Setter>
+												</DataTrigger>
+											</Style.Triggers>
+										</Style>
+									</Button.Style>
+								</Button>
+								<Button x:Name="AddOutputNode_BTN" Grid.Row="3" Content="+" Width="15" Height="15" Margin="0,0,5,0" HorizontalAlignment="Right" VerticalAlignment="Center" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Click="AddDialogueOutput_BTN_Click">
+									<Button.Style>
+										<Style TargetType="Button">
+											<Style.Triggers>
+												<DataTrigger Binding="{Binding Path=bChoice, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="False">
+													<Setter Property="Visibility" Value="Hidden"></Setter>
+												</DataTrigger>
+												<DataTrigger Binding="{Binding Path=bChoice, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="True">
+													<Setter Property="Visibility" Value="Visible"></Setter>
+												</DataTrigger>
+											</Style.Triggers>
+										</Style>
+									</Button.Style>
+								</Button>
 							</Grid>
 						</Border>
 					</ControlTemplate>

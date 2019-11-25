@@ -11,7 +11,7 @@
 
 		<ContextMenu x:Key="AddTimeblock_CM">
 			<MenuItem Header="Add Dialogue Block" Click="AddDialogueBlockToTimeline"/>
-			<MenuItem Header="Add Dialogue Choice Block"  />
+			<MenuItem Header="Add Dialogue Choice Block"  Click="AddChoiceDialogueBlockToTimeline"/>
 		</ContextMenu>
 
 		<Style TargetType="{x:Type timel:TimeBlock}">
@@ -76,7 +76,58 @@
 			</Setter>
 		</Style>
 
-		<Style x:Key="LeftScrollViewer" TargetType="{x:Type ScrollViewer}">
+		<Style TargetType="{x:Type timel:ChoiceTimeBlock}">
+			<Setter Property="Template">
+					<Setter.Value>
+						<ControlTemplate TargetType="{x:Type timel:TimeBlock}"  >
+							<Grid Height="70">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="1*"/>
+							</Grid.RowDefinitions>
+
+							<TextBlock Grid.Column="1" Text="Choice Dialogue Block" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" />
+							<ContentPresenter HorizontalAlignment="Right" Grid.Column="1" Grid.RowSpan="3"
+                                              VerticalAlignment="Stretch"
+                                              x:Name="PART_RightIndicator">
+									<ContentPresenter.Content>
+										<Thumb x:Name="resizeThumb_Right"  Width="10" Cursor="ScrollWE" Background="Transparent" Opacity="0"
+										 HorizontalAlignment="Right" VerticalAlignment="Stretch"
+										 DragDelta="TimeBlock_Resize_Right" />
+									</ContentPresenter.Content>
+								</ContentPresenter>
+
+								<ContentPresenter HorizontalAlignment="Stretch" Grid.ColumnSpan="5" Grid.RowSpan="3"
+                                              VerticalAlignment="Stretch"
+                                              x:Name="PART_MiddleIndicator">
+									<ContentPresenter.Content>
+										<Thumb x:Name="MoveThumb_Middle" Cursor="ScrollAll" Background="Transparent" Opacity="0"
+										 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+										 Margin="0,0,5,0" DragDelta="MoveThumb_Middle_DragDelta" />
+									</ContentPresenter.Content>
+								</ContentPresenter>
+
+								<ContentPresenter HorizontalAlignment="Left" Grid.Column="0" Grid.RowSpan="3"
+                                              VerticalAlignment="Stretch"
+                                              x:Name="PARTLeftIndicator">
+									<ContentPresenter.Content>
+										<Thumb x:Name="resizeThumb_Left"  Width="10" Cursor="ScrollWE" Background="Transparent" Opacity="0"
+										 HorizontalAlignment="Right" VerticalAlignment="Stretch"
+										 DragDelta="TimeBlock_Resize_Left" />
+									</ContentPresenter.Content>
+								</ContentPresenter>
+								<Border Grid.ColumnSpan="5" Panel.ZIndex="100" BorderBrush="#FF595959" BorderThickness="2" Grid.RowSpan="3" Width="Auto"/>
+								<GridSplitter Grid.Row="0" VerticalAlignment="Bottom" Grid.ColumnSpan="5" Height="2" HorizontalAlignment="Stretch" Background="#7F404040" ResizeDirection="Rows" Margin="50,0,4,0"/>
+								<GridSplitter Grid.Row="1" VerticalAlignment="Bottom" Grid.ColumnSpan="5" Height="2" HorizontalAlignment="Stretch" Background="#7F404040" ResizeDirection="Rows" Margin="3,0,3,0"/>
+							</Grid>
+						</ControlTemplate>
+					</Setter.Value>
+				</Setter>
+			</Style>
+
+			<Style x:Key="LeftScrollViewer" TargetType="{x:Type ScrollViewer}">
 			<Setter Property="OverridesDefaultStyle" Value="True"/>
 			<Setter Property="Template">
 				<Setter.Value>
@@ -117,7 +168,7 @@
 			<Border >
 				<Grid>
 					<Button Background="Transparent"/>
-					<StackPanel Orientation="Horizontal" Visibility="Hidden">
+					<StackPanel Orientation="Horizontal" Visibility="Visible">
 						<!--<Image Height="25" Width="25" Source="Images/speech-bubbles-png.png" HorizontalAlignment="Left" >-->
 						<!--</Image>-->
 						<Image Height="25" Width="25" Source="Images/defaultimage.jpg" HorizontalAlignment="Left">
@@ -185,9 +236,10 @@
 
 		<TextBlock Grid.Row="3" Text="Rate 1.0:" Foreground="White" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="3,0,0,3"/>
 		<Slider Grid.Row="3" Minimum="0" Maximum="2" Value="1" VerticalAlignment="Bottom" Margin="45,0,0,0" Height="20"/>
-		<Button x:Name="PlayerStop_BTN" Grid.Column="2" Content="Stop"  Width="40"  Grid.Row="3" Margin="4,0,0,0" HorizontalAlignment="Left" Click="PlayerStop_BTN_Click"/>
-		<Button x:Name="PlayerPause_BTN" Grid.Column="2" Content="Pause" Width="40"  Grid.Row="3" Margin="51,0,0,0" HorizontalAlignment="Left" Click="PlayerPause_BTN_Click"/>
-		<Button x:Name="PlayTimeline_BTN" Grid.Column="2" Content="Play"  Width="40"  Grid.Row="3" Margin="101,0,0,0" HorizontalAlignment="Left" Click="PlayTimeline_BTN_Click" Height="25" VerticalAlignment="Top"/>
+		<Button x:Name="PlayerReset_BTN" Grid.Column="2" Content="Reset"  Width="40"  Grid.Row="3" Margin="2,0,0,0" HorizontalAlignment="Left" Click="PlayerReset_BTN_Click"/>
+		<Button x:Name="PlayerStop_BTN" Grid.Column="2" Content="Stop"  Width="40"  Grid.Row="3" Margin="54,0,0,0" HorizontalAlignment="Left" Click="PlayerStop_BTN_Click"/>
+		<Button x:Name="PlayerPause_BTN" Grid.Column="2" Content="Pause" Width="40"  Grid.Row="3" Margin="106,0,0,0" HorizontalAlignment="Left" Click="PlayerPause_BTN_Click"/>
+		<Button x:Name="PlayTimeline_BTN" Grid.Column="2" Content="Play"  Width="40"  Grid.Row="3" Margin="156,0,0,0" HorizontalAlignment="Left" Click="PlayTimeline_BTN_Click" Height="25" VerticalAlignment="Top"/>
 		<GridSplitter Grid.Row="2" Grid.ColumnSpan="4" Background="#FF9B9B9B" ResizeDirection="Columns" HorizontalAlignment="Stretch"/>
 	</Grid>
 </UserControl>
