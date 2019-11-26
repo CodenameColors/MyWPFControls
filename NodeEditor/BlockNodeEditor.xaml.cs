@@ -158,6 +158,7 @@ namespace NodeEditor
 		Point CurveStart = new Point();
 		Point NewBlockLocation = new Point();
 		object SelectedBlockNode = null;
+
 		ConnectionNode SelectedNode = null;
 		int SelectedNodeRow = 0;
 
@@ -170,6 +171,28 @@ namespace NodeEditor
 
 		public BaseNodeBlock StartExecutionBlock { get; set; }
 		public BaseNodeBlock CurrentExecutionBlock;
+
+		private BaseNodeBlock selectedBlockNode_UI = null;
+		public BaseNodeBlock SelectedBlockNode_UI
+		{
+			get { return selectedBlockNode_UI; }
+			set
+			{
+				selectedBlockNode_UI = value;
+				OnSelectedControl_Changed(value);
+			}
+		}
+
+		public void OnSelectedControl_Changed(object sender)
+		{
+			if (SelectionChanged_Hook != null)
+				SelectionChanged_Hook(sender);
+		}
+
+		#region delegates
+			public delegate void OnSlectionChange_Hook(object Selected);
+			public OnSlectionChange_Hook SelectionChanged_Hook;
+		#endregion
 
 		/// <summary>
 		/// constructor
@@ -517,6 +540,14 @@ namespace NodeEditor
 		#endregion
 
 		#endregion
+
+		private void ChangeUISelectedNode(object sender, MouseEventArgs e)
+		{
+			if(((Thumb)sender).TemplatedParent is BaseNodeBlock baseNode)
+			{
+				SelectedBlockNode_UI = baseNode;
+			}
+		}
 
 		#region MoveBlockNodes
 		private void MoveThumb_Middle_DragDelta(object sender, DragDeltaEventArgs e)

@@ -122,6 +122,7 @@ namespace TimelinePlayer.Components
 			TimeBlock tb = (TimeBlock)d;
 			tb.EndTime = tb.StartTime + (tb.ActualWidth * tb.TimelineParent.TimePerPixel);
 			tb.Duration = tb.EndTime - tb.StartTime;
+			Canvas.SetLeft(tb, (1 / tb.TimelineParent.TimePerPixel) * (double)e.NewValue);
 		}
 
 		public double EndTime
@@ -138,9 +139,19 @@ namespace TimelinePlayer.Components
 			TimeBlock tb = (TimeBlock)d;
 			//tb.EndTime = tb.StartTime + (tb.ActualWidth * tb.TimelineParent.TimePerPixel);
 			tb.Duration = tb.EndTime - tb.StartTime;
+			tb.Width = (1 / tb.TimelineParent.TimePerPixel) * (tb.EndTime - tb.StartTime);
 		}
 
-		public double Duration { get; set; }
+		private double duration;
+		public double Duration
+		{
+			get { return duration; }
+			set
+			{
+				duration = value;
+				EndTime = StartTime + value;
+			}
+		}
 
 		#endregion
 

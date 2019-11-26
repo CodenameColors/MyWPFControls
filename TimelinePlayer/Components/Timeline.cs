@@ -96,10 +96,14 @@ namespace TimelinePlayer.Components
 		/// <summary>
 		/// this method is here to INSERT the time block into the timeline's linked list in the CORRECT spot
 		/// </summary>
-		public void AddTimeBlock(TimeBlock timeBlock, double x)
+		public void AddTimeBlock(TimeBlock timeBlock, double timeWidth)
 		{
 			LLTimeBlocks.AddLast(timeBlock);
-			Canvas.SetLeft(timeBlock,x);
+			Canvas.SetLeft(timeBlock, timeBlock.StartTime *  timeWidth);
+			if (timeBlock.Duration > 0.0)
+				timeBlock.Width = timeWidth * (timeBlock.EndTime - timeBlock.StartTime);
+			else
+				timeBlock.Width = timeWidth * 2;
 			this.Children.Add(timeBlock);
 			ActiveBlock = timeBlocksLL.First;
 		}

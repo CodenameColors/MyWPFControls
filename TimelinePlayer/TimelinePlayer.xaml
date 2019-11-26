@@ -54,7 +54,7 @@
 								<ContentPresenter.Content>
 									<Thumb x:Name="MoveThumb_Middle" Cursor="ScrollAll" Background="Transparent" Opacity="0"
 										 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-										 Margin="0,0,5,0" DragDelta="MoveThumb_Middle_DragDelta" />
+										 Margin="0,0,5,0" DragDelta="MoveThumb_Middle_DragDelta" MouseDown="MoveThumb_Middle_MouseDown"/>
 								</ContentPresenter.Content>
 							</ContentPresenter>
 
@@ -105,7 +105,7 @@
 									<ContentPresenter.Content>
 										<Thumb x:Name="MoveThumb_Middle" Cursor="ScrollAll" Background="Transparent" Opacity="0"
 										 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-										 Margin="0,0,5,0" DragDelta="MoveThumb_Middle_DragDelta" />
+										 Margin="0,0,5,0" DragDelta="MoveThumb_Middle_DragDelta" MouseDown="MoveThumb_Middle_MouseDown"/>
 									</ContentPresenter.Content>
 								</ContentPresenter>
 
@@ -127,7 +127,7 @@
 				</Setter>
 			</Style>
 
-			<Style x:Key="LeftScrollViewer" TargetType="{x:Type ScrollViewer}">
+		<Style x:Key="LeftScrollViewer" TargetType="{x:Type ScrollViewer}">
 			<Setter Property="OverridesDefaultStyle" Value="True"/>
 			<Setter Property="Template">
 				<Setter.Value>
@@ -174,7 +174,7 @@
 						<Image Height="25" Width="25" Source="Images/defaultimage.jpg" HorizontalAlignment="Left">
 						</Image>
 						<TextBlock x:Name="Timeline_Text" Text="" VerticalAlignment="Center" Padding="5,0,5,0" Foreground="White"/>
-						<Button Content="Add Item" HorizontalAlignment="Right" Width="50" Height="30" Click="Button_Click"	/>
+						<Button Content="Add Item" HorizontalAlignment="Right" Width="50" Height="30" Click="Button_Click" Visibility="Hidden"	/>
 					</StackPanel>
 				</Grid>
 
@@ -240,6 +240,7 @@
 		<Button x:Name="PlayerStop_BTN" Grid.Column="2" Content="Stop"  Width="40"  Grid.Row="3" Margin="54,0,0,0" HorizontalAlignment="Left" Click="PlayerStop_BTN_Click"/>
 		<Button x:Name="PlayerPause_BTN" Grid.Column="2" Content="Pause" Width="40"  Grid.Row="3" Margin="106,0,0,0" HorizontalAlignment="Left" Click="PlayerPause_BTN_Click"/>
 		<Button x:Name="PlayTimeline_BTN" Grid.Column="2" Content="Play"  Width="40"  Grid.Row="3" Margin="156,0,0,0" HorizontalAlignment="Left" Click="PlayTimeline_BTN_Click" Height="25" VerticalAlignment="Top"/>
+		<Button x:Name="Test_BTN" Grid.Column="2" Content="Test"  Width="40"  Grid.Row="3" Margin="209,0,0,0" HorizontalAlignment="Left" Click="Test_BTN_Click" Height="25" VerticalAlignment="Top" Visibility="Hidden"/>
 		<GridSplitter Grid.Row="2" Grid.ColumnSpan="4" Background="#FF9B9B9B" ResizeDirection="Columns" HorizontalAlignment="Stretch"/>
 	</Grid>
 </UserControl>

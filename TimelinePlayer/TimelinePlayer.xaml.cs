@@ -126,7 +126,13 @@ namespace TimelinePlayer
 				SelectionChanged_Hook(sender);
 		}
 
-		
+		private void MoveThumb_Middle_MouseDown(object sender, MouseButtonEventArgs e)
+		{
+			if (sender is TimeBlock timeBlock)
+			{
+				SelectedControl = timeBlock;
+			}
+		}
 
 		static TimeBlockDragAdorner _dragAdorner;
 
@@ -598,12 +604,17 @@ namespace TimelinePlayer
 			ContentControl cc = (ContentControl)((Border)((Grid)((StackPanel)((Button)sender).Parent).Parent).Parent).Parent;
 			Console.WriteLine(Grid.GetRow(cc));
 
-			timelines[Grid.GetRow(cc)].AddTimeBlock(new TimeBlock(timelines[Grid.GetRow(cc)], 0)
+			TimeBlock timeBlock = new TimeBlock(timelines[Grid.GetRow(cc)], 2)
 			{
 				Trackname = "Memes",
 				Width = 100,
-				Margin = new Thickness(0, 0, 0, 3)
-			}, pointToAdd.X);
+				Margin = new Thickness(0, 0, 0, 3),
+				EndTime = 5,
+				StartTime = 2,
+			};
+
+
+			timelines[Grid.GetRow(cc)].AddTimeBlock(timeBlock, TimeWidth);
 		}
 
 		private void ScrollViewer_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -786,6 +797,17 @@ namespace TimelinePlayer
 		}
 
 		/// <summary>
+		/// This method is here to add and position existing time blocks.
+		/// Assume this method is called by the engine, and links to the 
+		/// NodeEditor.DialogueBlockNode.LinkedTimeblock  
+		/// </summary>
+		/// <param name="timeBlock"></param>
+		public void AddExistingTimeblockToTimeline(TimeBlock timeBlock, int timelineIndex)
+		{
+			timelines[timelineIndex].AddTimeBlock(timeBlock,TimeWidth);
+		}
+
+		/// <summary>
 		/// This method will called when the user requests to add a time block to the timeline.
 		/// </summary>
 		/// <param name="sender"></param>
@@ -800,28 +822,41 @@ namespace TimelinePlayer
 				{
 					Trackname = "Memes",
 					Width = 100,
-					Margin = new Thickness(0, 0, 0, 3)
+					Margin = new Thickness(0, 0, 0, 3),
+					StartTime = pointToAdd.X/TimeWidth,
+					//EndTime = 2,
 				};
 				object dialogueblock = OnCreateTimeblockHook(tbb);
 				if (dialogueblock != null) tbb.LinkedDialogueBlock = dialogueblock;
 				else return;
-				timelines[Grid.GetRow(selectedTimeline)].AddTimeBlock(tbb, pointToAdd.X);
+				timelines[Grid.GetRow(selectedTimeline)].AddTimeBlock(tbb, TimeWidth);
 			}
 		}
 
 		private void AddChoiceDialogueBlockToTimeline(object sender, RoutedEventArgs e)
 		{
-			ChoiceTimeBlock tbb = new ChoiceTimeBlock(timelines[Grid.GetRow(selectedTimeline)], 0)
+			if (OnCreateTimeblockHook != null)
 			{
-				Trackname = "Memes",
-				Width = 100,
-				Margin = new Thickness(0, 0, 0, 3)
-			};
-			//object dialogueblock = OnCreateTimeblockHook(tbb);
-			//if (dialogueblock != null) tbb.LinkedDialogueBlock = dialogueblock;
-			//else return;
-			timelines[Grid.GetRow(selectedTimeline)].AddTimeBlock(tbb, pointToAdd.X);
+				ChoiceTimeBlock tbb = new ChoiceTimeBlock(timelines[Grid.GetRow(selectedTimeline)], 0)
+				{
+					Trackname = "Memes",
+					Width = 100,
+					Margin = new Thickness(0, 0, 0, 3),
+					StartTime = pointToAdd.X / TimeWidth
+				};
+				object dialogueblock = OnCreateTimeblockHook(tbb);
+				if (dialogueblock != null) tbb.LinkedDialogueBlock = dialogueblock;
+				else return;
+				timelines[Grid.GetRow(selectedTimeline)].AddTimeBlock(tbb, TimeWidth);
+			}
 		}
+
+		private void Test_BTN_Click(object sender, RoutedEventArgs e)
+		{
+			timelines[0].timeBlocksLL.First.Value.Duration = 3;
+		}
+
+
 	}
 
 

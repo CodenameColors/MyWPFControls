@@ -2272,7 +2272,7 @@
 										<ContentPresenter.Content>
 											<Thumb Cursor="ScrollAll" Background="Transparent" Opacity="0"
 										 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-										 Margin="0,0,5,0" DragDelta="MoveThumb_Middle_DragDelta" />
+										 Margin="0,0,5,0" DragDelta="MoveThumb_Middle_DragDelta" PreviewMouseLeftButtonDown="ChangeUISelectedNode"/>
 										</ContentPresenter.Content>
 									</ContentPresenter>
 
