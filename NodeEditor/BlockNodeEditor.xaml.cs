@@ -192,6 +192,15 @@ namespace NodeEditor
 		#region delegates
 			public delegate void OnSlectionChange_Hook(object Selected);
 			public OnSlectionChange_Hook SelectionChanged_Hook;
+
+		public delegate Object OnCreateTimeblock_Hook(DialogueNodeBlock dialogueNodeBlockRef);
+		/// <summary>
+		/// when creating a timeblock for my application i need to have a dialogue
+		/// for linking purposes. so this hooking delegate will allow the user to give us one.
+		/// </summary>
+		/// <param name="Selected">ALWAYS put </param>
+		/// <returns>Dialogue block</returns>
+		public OnCreateTimeblock_Hook OnCreateTimeblockHook;
 		#endregion
 
 		/// <summary>
@@ -203,7 +212,7 @@ namespace NodeEditor
 			TestingVars_list.CollectionChanged += TestingVars_list_CollectionChanged;
 
 			//List
-			TestingVars_list.Add(new RuntimeVars() { VarName = ("ChoiceVar"), VarData = 0 });
+			TestingVars_list.Add(new RuntimeVars() { VarName = ("ChoiceVar"),Type = typeof(int) , OrginalVarData = 0 ,VarData = 0 });
 			VarDisplayBlocks_dict.Add(TestingVars_list.Last().VarName, new List<BaseNodeBlock>());
 
 			StartBlockNode bn = new StartBlockNode();
@@ -2090,6 +2099,8 @@ namespace NodeEditor
 			Point p = new Point(0, 10); Point p1 = new Point(150, 20 + 20);
 			bn.EntryNode = (new ConnectionNode(bn, "EnterNode", p, ECOnnectionType.Enter));
 			bn.OutputNodes.Add(new ConnectionNode(bn, "OutputNode1", p1, ECOnnectionType.Exit));
+			
+
 		}
 
 		public void AddDialogueBlockToGraph(String CharacterName="", object Timeblock=null)
@@ -2101,6 +2112,10 @@ namespace NodeEditor
 			Point p = new Point(0, 10); Point p1 = new Point(150, 20 + 20);
 			bn.EntryNode = (new ConnectionNode(bn, "EnterNode", p, ECOnnectionType.Enter));
 			bn.OutputNodes.Add(new ConnectionNode(bn, "OutputNode1", p1, ECOnnectionType.Exit));
+
+			object TimeblockNode = OnCreateTimeblockHook(bn);
+			if (TimeblockNode != null) bn.LinkedTimeBlock = TimeblockNode;
+			else return;
 		}
 
 		private void TestingVars_list_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -2144,9 +2159,27 @@ namespace NodeEditor
 				NodeEditor_BackCanvas.Children.Remove(Node.Curves[index]);
 				Node.Curves.RemoveAt(index);
 			}
+		}
 
+		public void ChangeChoiceVar(int newChoiecValue)
+		{ 
+			//update the GLOBAL var value.
+			TestingVars_list[0] = new NodeEditor.BlockNodeEditor.RuntimeVars()
+			{
+				OrginalVarData = TestingVars_list[0].OrginalVarData,
+				Type = TestingVars_list[0].Type,
+				VarName = TestingVars_list[0].VarName,
+				VarData = newChoiecValue,
+			};
 
-
+			//use the global VAR value to update the ALL the local nodes that use this.
+			for (int j = 0; j < VarDisplayBlocks_dict["ChoiceVar"].Count; j++)
+			{
+				if (VarDisplayBlocks_dict["ChoiceVar"][j] is GetConstantNodeBlock constantnode)
+				{
+					constantnode.InternalData = TestingVars_list[0];
+				}
+			}
 		}
 
 		private void ConnectNodes(ConnectionNode From, ConnectionNode To)
@@ -2307,7 +2340,18 @@ namespace NodeEditor
 					//TestingVars_list[TestingVars_list.(flag.VarToChange)] = flag.NewVar;
 					//TestingVars_list.Single(x => x.VarName == flag.VarToChange.VarName);
 					int i = Array.FindIndex<RuntimeVars>(TestingVars_list.ToArray(), x => x.VarName == flag.VarToChange.VarName);
-					TestingVars_list[i] = flag.NewVar;
+					TestingVars_list[i] = flag.NewVar; //update the GLOBAL var value.
+																						 
+					//use the global VAR value to update the ALL the local nodes that use this.
+					for (int j = 0; j < VarDisplayBlocks_dict[flag.VarToChange.VarName].Count; j++)
+					{
+						if(VarDisplayBlocks_dict[flag.VarToChange.VarName][j] is GetConstantNodeBlock constantnode)
+						{
+							constantnode.InternalData = TestingVars_list[i];
+						}
+					}
+
+
 					CurrentErrors.Add(CurrentExecutionBlock.ErrorStack.Pop());
 					b = false;
 				}
@@ -2354,6 +2398,25 @@ namespace NodeEditor
 		private void EvalOnExit_MI_Click(object sender, RoutedEventArgs e)
 		{
 			CurrentExecutionBlock.OnEndEvaluateInternalData();
+		}
+
+		/// <summary>
+		/// This method is used to find a Linked list of basenodes LEADING up to a desired node.
+		/// </summary>
+		/// <param name="DesiredDIA"></param>
+		/// <param name="CurrentBN"></param>
+		/// <returns></returns>
+		public LinkedList<BaseNodeBlock> GetNextBlock(DialogueNodeBlock dialogue)
+		{
+			LinkedList<BaseNodeBlock> retLL = new LinkedList<BaseNodeBlock>();
+
+			BaseNodeBlock currentBN = dialogue; 
+			while(currentBN != StartExecutionBlock)
+			{
+				retLL.AddFirst(dialogue);
+				currentBN = currentBN.EntryNode.ConnectedNodes[0].ParentBlock;
+			}
+			return retLL;
 		}
 
 	}

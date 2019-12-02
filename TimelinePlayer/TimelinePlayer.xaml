@@ -9,6 +9,10 @@
 	<UserControl.Resources>
 
 
+		<ContextMenu x:Key="DeleteTimeblock_CM">
+			<MenuItem Header="Delete Block" Click="DeleteTimeBlock"/>
+		</ContextMenu>
+
 		<ContextMenu x:Key="AddTimeblock_CM">
 			<MenuItem Header="Add Dialogue Block" Click="AddDialogueBlockToTimeline"/>
 			<MenuItem Header="Add Dialogue Choice Block"  Click="AddChoiceDialogueBlockToTimeline"/>
@@ -49,7 +53,7 @@
 							</ContentPresenter>
 
 							<ContentPresenter HorizontalAlignment="Stretch" Grid.ColumnSpan="5" Grid.RowSpan="3"
-                                              VerticalAlignment="Stretch"
+                                              VerticalAlignment="Stretch"  PreviewMouseRightButtonDown="ShowAddTimeBlockCM_CC"
                                               x:Name="PART_MiddleIndicator">
 								<ContentPresenter.Content>
 									<Thumb x:Name="MoveThumb_Middle" Cursor="ScrollAll" Background="Transparent" Opacity="0"
@@ -174,7 +178,7 @@
 						<Image Height="25" Width="25" Source="Images/defaultimage.jpg" HorizontalAlignment="Left">
 						</Image>
 						<TextBlock x:Name="Timeline_Text" Text="" VerticalAlignment="Center" Padding="5,0,5,0" Foreground="White"/>
-						<Button Content="Add Item" HorizontalAlignment="Right" Width="50" Height="30" Click="Button_Click" Visibility="Hidden"	/>
+						<Button Content="Add Item" HorizontalAlignment="Right" Width="50" Height="30" Click="Button_Click" Visibility="Visible"	/>
 					</StackPanel>
 				</Grid>
 

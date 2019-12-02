@@ -82,7 +82,7 @@ namespace TimelinePlayer
 		/// <returns>Dialogue block</returns>
 		public OnCreateTimeblock_Hook OnCreateChoiceTimeblockHook;
 
-		public delegate Object OnCreateTimeblock_Hook(TimeBlock tbref);
+		public delegate Object OnCreateTimeblock_Hook(TimeBlock tbref, bool bchoices);
 		/// <summary>
 		/// when creating a timeblock for my application i need to have a dialogue
 		/// for linking purposes. so this hooking delegate will allow the user to give us one.
@@ -103,6 +103,7 @@ namespace TimelinePlayer
 		List<Timeline> timelines = new List<Timeline>();
 		double ScaleWidth = 1.0;
 
+		private TimeBlock SelectedTB = null;
 		public Timeline selectedTimeline = null;
 		private Point pointToAdd = new Point();
 
@@ -264,6 +265,13 @@ namespace TimelinePlayer
 
 		}
 
+		private void ShowAddTimeBlockCM_CC(object sender, MouseButtonEventArgs e)
+		{
+			SelectedTB = (sender as ContentPresenter).TemplatedParent as TimeBlock;
+			ContextMenu cm = this.FindResource("DeleteTimeblock_CM") as ContextMenu;
+			cm.PlacementTarget = sender as ContentControl;
+			cm.IsOpen = true;
+		}
 
 		private void ShowAddTimeBlockCM(object sender, MouseButtonEventArgs e)
 		{
@@ -272,6 +280,7 @@ namespace TimelinePlayer
 			ContextMenu cm = this.FindResource("AddTimeblock_CM") as ContextMenu;
 			//((MenuItem)cm.Items[0]).IsChecked = ((MenuItem)cm.Items[0]).IsChecked;
 			cm.PlacementTarget = sender as ContentControl;
+			//SelectedCC = sender as ContentControl;
 			cm.IsOpen = true;
 		}
 
@@ -724,6 +733,16 @@ namespace TimelinePlayer
 			PauseTimeline();
 		}
 
+		public void ResumeTimeline()
+		{
+			PlayerTimer.Start();
+
+			if (TimeBlockSync != null)
+			{
+				TimeBlockSync();
+			}
+		}
+
 		public void PlayTimeline()
 		{
 			ActiveTBblocks.Clear();
@@ -826,7 +845,7 @@ namespace TimelinePlayer
 					StartTime = pointToAdd.X/TimeWidth,
 					//EndTime = 2,
 				};
-				object dialogueblock = OnCreateTimeblockHook(tbb);
+				object dialogueblock = OnCreateTimeblockHook(tbb, false);
 				if (dialogueblock != null) tbb.LinkedDialogueBlock = dialogueblock;
 				else return;
 				timelines[Grid.GetRow(selectedTimeline)].AddTimeBlock(tbb, TimeWidth);
@@ -844,7 +863,7 @@ namespace TimelinePlayer
 					Margin = new Thickness(0, 0, 0, 3),
 					StartTime = pointToAdd.X / TimeWidth
 				};
-				object dialogueblock = OnCreateTimeblockHook(tbb);
+				object dialogueblock = OnCreateTimeblockHook(tbb, true);
 				if (dialogueblock != null) tbb.LinkedDialogueBlock = dialogueblock;
 				else return;
 				timelines[Grid.GetRow(selectedTimeline)].AddTimeBlock(tbb, TimeWidth);
@@ -856,6 +875,48 @@ namespace TimelinePlayer
 			timelines[0].timeBlocksLL.First.Value.Duration = 3;
 		}
 
+		/// <summary>
+		/// Delete one timeblock. used on right click
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void DeleteTimeBlock(object sender, RoutedEventArgs e)
+		{
+			timelines[GetTimelinePosition(null, SelectedTB)].timeBlocksLL?.Remove(SelectedTB);
+			timelines[GetTimelinePosition(null, SelectedTB)]?.Children.Remove(SelectedTB);
+		}
+
+		/// <summary>
+		/// Clear all the timelines
+		/// </summary>
+		public void DeleteAllTimeBlocks()
+		{
+			foreach (Timeline tl in timelines)
+			{
+				foreach (UIElement uie in tl.Children)
+				{
+					if (uie is TimeBlock timeBlock)
+					{
+						tl.timeBlocksLL.Remove(timeBlock);
+						tl.Children.Remove(timeBlock);
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="newLL">This LL is a mixed bag. Meaning all different character/timeline timeblock are contained in here.</param>
+		public void AddTimeblock_LL(LinkedList<TimeBlock> newLL, List<String> CharacterNames)
+		{
+			foreach (TimeBlock timeblock in newLL)
+			{
+				int ?i = Array.FindIndex(CharacterNames.ToArray(), (x => x == timeblock.Trackname)); //get index
+				if (i == null) { Console.WriteLine("Timeblock doesn't belong"); continue; } //this shouldn't happen...
+				timelines[i].AddTimeBlock(timeblock, TimeWidth);
+			}
+		}
 
 	}
 
