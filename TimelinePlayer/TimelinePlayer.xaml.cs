@@ -914,7 +914,7 @@ namespace TimelinePlayer
 			{
 				int ?i = Array.FindIndex(CharacterNames.ToArray(), (x => x == timeblock.Trackname)); //get index
 				if (i == null) { Console.WriteLine("Timeblock doesn't belong"); continue; } //this shouldn't happen...
-				timelines[i].AddTimeBlock(timeblock, TimeWidth);
+				timelines[(int) i].AddTimeBlock(timeblock, TimeWidth);
 			}
 		}
 
