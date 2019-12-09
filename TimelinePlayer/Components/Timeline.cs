@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace TimelinePlayer.Components
 {
@@ -96,17 +97,29 @@ namespace TimelinePlayer.Components
 		/// <summary>
 		/// this method is here to INSERT the time block into the timeline's linked list in the CORRECT spot
 		/// </summary>
-		public void AddTimeBlock(TimeBlock timeBlock, double timeWidth)
+		public void AddTimeBlock(TimeBlock timeBlock, double timeWidth, bool resetptr = true)
 		{
+			
 			LLTimeBlocks.AddLast(timeBlock);
 			Canvas.SetLeft(timeBlock, timeBlock.StartTime *  timeWidth);
 			if (timeBlock.Duration > 0.0)
 				timeBlock.Width = timeWidth * (timeBlock.EndTime - timeBlock.StartTime);
 			else
 				timeBlock.Width = timeWidth * 2;
-			this.Children.Add(timeBlock);
-			ActiveBlock = timeBlocksLL.First;
+			
+			{
+				var parentObject = VisualTreeHelper.GetParent(timeBlock);
+				if (parentObject != null)
+				{
+					(parentObject as Canvas).Children.Remove(timeBlock);
+				}
+				this.Children.Add(timeBlock);
+			}
+			if(resetptr)
+				ActiveBlock = timeBlocksLL.First;
 		}
+
+
 
 		public void SetActiveBlock(double CurTime)
 		{
@@ -145,6 +158,28 @@ namespace TimelinePlayer.Components
 			{
 				LLTimeBlocks.AddLast(tblock);
 			}
+		}
+
+		public void ClearLLTimeBlocks()
+		{
+			LLTimeBlocks.Clear();
+		}
+
+		public bool SetActiveTBlock(TimeBlock desiredTimeBlock)
+		{
+			bool retb = false;
+			LinkedListNode<TimeBlock> TBN = LLTimeBlocks.First;
+			while (TBN != null)
+			{
+				if (TBN.Value == desiredTimeBlock)
+				{
+					ActiveBlock = TBN;
+					retb = true;
+					break;
+				}
+			}
+
+			return retb;
 		}
 
 	}

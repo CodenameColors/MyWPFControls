@@ -42,7 +42,7 @@
 				<MenuItem Header="Mod" Click="Math_MI_Click"/>
 			</MenuItem>
 			<Separator/>
-			<MenuItem Header="Dialogue" Name="Dialogue_MI" Click="AddDialogueBlock_BTN_Click"/>
+			<MenuItem Header="Dialogue" Name="Dialogue_MI"/>
 			<Separator/>
 			<MenuItem Header="Get Constant" Name="GetConstant_MI">
 				

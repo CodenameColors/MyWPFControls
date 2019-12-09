@@ -95,8 +95,6 @@ namespace TimelinePlayer
 		public OnReset_Hook Reset_Hook;
 		#endregion
 
-
-
 		double TimeScrubber_BaseSize = 0.0;
 		public ObservableCollection<TimeBlock> ActiveTBblocks = new ObservableCollection<TimeBlock>();
 		DispatcherTimer PlayerTimer = new DispatcherTimer(DispatcherPriority.Normal);
@@ -893,13 +891,31 @@ namespace TimelinePlayer
 		{
 			foreach (Timeline tl in timelines)
 			{
-				foreach (UIElement uie in tl.Children)
+				for (int i = 0; i < tl.Children.Count; i++)
 				{
-					if (uie is TimeBlock timeBlock)
+					if (tl.Children[i] is TimeBlock timeBlock)
 					{
 						tl.timeBlocksLL.Remove(timeBlock);
 						tl.Children.Remove(timeBlock);
+						timeBlock.UpdateLayout();
 					}
+				}
+				//tl.timeBlocksLL.Clear();
+				 tl.ClearLLTimeBlocks();
+				tl.UpdateLayout();
+			}
+		}
+
+		/// <summary>
+		/// Delete all the time blocks in each timeline AFTER the current active time block
+		/// </summary>
+		public void DeleteTimeBlocksAfter()
+		{
+			foreach (Timeline tl in timelines)
+			{
+				while (tl.ActiveBlock != null)
+				{
+					tl.timeBlocksLL.RemoveLast();
 				}
 			}
 		}
@@ -908,17 +924,30 @@ namespace TimelinePlayer
 		/// 
 		/// </summary>
 		/// <param name="newLL">This LL is a mixed bag. Meaning all different character/timeline timeblock are contained in here.</param>
-		public void AddTimeblock_LL(LinkedList<TimeBlock> newLL, List<String> CharacterNames)
+		public void AddTimeblock_LL(LinkedList<TimeBlock> newLL, List<String> CharacterNames, bool resetptr = true)
 		{
 			foreach (TimeBlock timeblock in newLL)
 			{
-				int ?i = Array.FindIndex(CharacterNames.ToArray(), (x => x == timeblock.Trackname)); //get index
-				if (i == null) { Console.WriteLine("Timeblock doesn't belong"); continue; } //this shouldn't happen...
-				timelines[(int) i].AddTimeBlock(timeblock, TimeWidth);
+				int? i = Array.FindIndex(CharacterNames.ToArray(), (x => x == timeblock.Trackname)); //get index
+				if (i == -1)
+				{
+					Console.WriteLine("Timeblock doesn't belong");
+					continue;
+				} //this shouldn't happen...
+
+				timelines[(int) i].AddTimeBlock(timeblock, TimeWidth, resetptr);
+			}
+
+			if (resetptr)
+			{
+				foreach (Timeline tl in timelines)
+				{
+					tl.ActiveBlock = tl.ActiveBlock.Next;
+				}
 			}
 		}
-
-	}
+		
+  }
 
 
 

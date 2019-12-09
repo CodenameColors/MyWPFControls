@@ -2010,7 +2010,9 @@ namespace NodeEditor
 			}
 			foreach (String Name in SceneCharacters_list)
 			{
-				mi_dia.Items.Add(new MenuItem() { Header = Name });
+				MenuItem mi_d = new MenuItem() {Header = Name};
+				mi_d.Click += AddDialogueBlock_BTN_Click;
+				mi_dia.Items.Add(mi_d);
 			}
 
 			cm.MaxHeight = 400;
@@ -2087,7 +2089,7 @@ namespace NodeEditor
 
 		private void AddDialogueBlock_BTN_Click(object sender, RoutedEventArgs e)
 		{
-			AddDialogueBlockToGraph();
+			AddDialogueBlockToGraph((sender as MenuItem).Header.ToString());
 		}
 
 		public void AddDialogueBlockToGraph(DialogueNodeBlock dialogueNode, String CharacterName = "", object Timeblock = null)
@@ -2112,10 +2114,14 @@ namespace NodeEditor
 			Point p = new Point(0, 10); Point p1 = new Point(150, 20 + 20);
 			bn.EntryNode = (new ConnectionNode(bn, "EnterNode", p, ECOnnectionType.Enter));
 			bn.OutputNodes.Add(new ConnectionNode(bn, "OutputNode1", p1, ECOnnectionType.Exit));
+			bn.Header = CharacterName;
 
-			object TimeblockNode = OnCreateTimeblockHook(bn);
-			if (TimeblockNode != null) bn.LinkedTimeBlock = TimeblockNode;
-			else return;
+			if (OnCreateTimeblockHook != null)
+			{
+				object TimeblockNode = OnCreateTimeblockHook(bn);
+				if (TimeblockNode != null) bn.LinkedTimeBlock = TimeblockNode;
+				else return;
+			}
 		}
 
 		private void TestingVars_list_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
