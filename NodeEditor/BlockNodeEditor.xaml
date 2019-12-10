@@ -2246,7 +2246,7 @@
 										<RowDefinition Height="40"/>
 									</Grid.RowDefinitions>
 
-									<TextBlock Grid.Column="1" Foreground="White" Margin="5" Text="{Binding Path=DialogueData[0], RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+									<TextBlock Grid.Column="1" Foreground="White" Margin="5" Text="{Binding Path=DialogueTextOptions[0], RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
 									<GridSplitter ResizeDirection="Rows" Height="2" Background="White" Grid.Row="1" IsEnabled="False"/>
 									<!--default input thumb-->
 									<!--<ContentPresenter HorizontalAlignment="Stretch" Grid.Column="0" IsHitTestVisible="True"

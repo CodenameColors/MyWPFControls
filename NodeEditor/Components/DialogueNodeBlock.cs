@@ -21,14 +21,15 @@ namespace NodeEditor.Components
 		public object LinkedTimeBlock = null;
 		public DialogueNodeBlock(String Header)
 		{
-			DialogueData = new ObservableCollection<string>();
+			DialogueTextOptions = new ObservableCollection<string>();
 			this.Header = Header;
 			InputNodes = new List<ConnectionNode>();
 			OutputNodes = new List<ConnectionNode>();
-			DialogueData.Add("Dialogue Option 1_");
+			DialogueTextOptions.Add("Dialogue Option 1_");
 		}
 
-		public ObservableCollection<String> DialogueData { get; set; }
+		public List<Object> DialogueSprites = new List<object>();
+		public ObservableCollection<String> DialogueTextOptions { get; set; }
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();

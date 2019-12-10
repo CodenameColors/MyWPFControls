@@ -1499,7 +1499,7 @@ namespace NodeEditor
 			Grid OutputGrid = null;
 
 			DialogueNodeBlock BN = (DialogueNodeBlock)((Button)sender).TemplatedParent;
-			BN.DialogueData.Add("Memes_");
+			BN.DialogueTextOptions.Add("Memes_");
 
 			foreach (UIElement item in basegrid.Children)
 			{

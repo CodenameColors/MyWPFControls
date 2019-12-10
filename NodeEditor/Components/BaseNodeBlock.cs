@@ -24,6 +24,9 @@ namespace NodeEditor.Components
 		public String Header { get; set; }
 		public String NewValue_Constant { get; set; }
 
+		public double LocX = 0.0;
+		public double LocY = 0.0;
+
 		//for displaying active status
 		private bool _bChoice = false;
 		public bool bChoice
