@@ -2137,8 +2137,8 @@ namespace NodeEditor
 			Canvas.SetLeft(bn, NewBlockLocation.X); Canvas.SetTop(bn, NewBlockLocation.Y);
 			NodeEditor_Canvas.Children.Add(bn);
 			VarDisplayBlocks_dict[selectedRV.VarName].Add(bn);
+			bn.Name = "GetVar_" + numOfGetConstants_dict[selectedRV.VarName] + 1;
 			numOfGetConstants_dict[selectedRV.VarName] = numOfGetConstants_dict[selectedRV.VarName]++;
-
 		}
 
 		private void AddDialogueBlock_BTN_Click(object sender, RoutedEventArgs e)
