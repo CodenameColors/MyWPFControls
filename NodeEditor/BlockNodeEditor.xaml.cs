@@ -145,6 +145,7 @@ namespace NodeEditor
 
 		static NodeBlockDragAdorner _dragAdorner;
 
+		public Canvas NodeCanvas;
 
 		Point MPos = new Point();
 		Point GridOffset = new Point();
@@ -203,6 +204,44 @@ namespace NodeEditor
 		public OnCreateTimeblock_Hook OnCreateTimeblockHook;
 		#endregion
 
+		#region BlockTrackingNums
+
+		//start
+		private int numOfStart = 0;
+
+		//end
+		private int numOfEnd = 0;
+
+		//conditionals
+		private int numOfCondLT = 0;
+		private int numOfCondLE = 0;
+		private int numOfCondGT = 0;
+		private int numOfCondGE = 0;
+		private int numOfCondEq = 0;
+		private int numOfCondNEq = 0;
+
+		//logic
+		private int numOfAnd = 0;
+		private int numOfOR = 0;
+		private int numOfNOT = 0;
+
+		//math
+		private int numOfAdd = 0;
+		private int numOfSubtact = 0;
+		private int numOfDivide = 0; 
+		private int numOfMultiply = 0;
+		private int numOfMod = 0;
+
+		//dialogue
+		private int numOfDialogue = 0;
+
+		//get constant
+		private Dictionary<String, int> numOfGetConstants_dict = new Dictionary<string, int>();
+		//set constant
+		private Dictionary<String,int> numOfSetConstants_dict = new Dictionary<string, int>();
+		private int numOfSetConstants = 0;
+		#endregion
+
 		/// <summary>
 		/// constructor
 		/// </summary>
@@ -214,10 +253,12 @@ namespace NodeEditor
 			//List
 			TestingVars_list.Add(new RuntimeVars() { VarName = ("ChoiceVar"),Type = typeof(int) , OrginalVarData = 0 ,VarData = 0 });
 			VarDisplayBlocks_dict.Add(TestingVars_list.Last().VarName, new List<BaseNodeBlock>());
+			numOfGetConstants_dict.Add("ChoiceVar",0);
 
 			StartBlockNode bn = new StartBlockNode();
 			Canvas.SetLeft(bn, 50); Canvas.SetTop(bn, 200);
 			NodeEditor_Canvas.Children.Add(bn);
+			bn.Name = "Start_" + numOfStart;
 
 			//Set Starting PTRs
 			StartExecutionBlock = bn;
@@ -226,7 +267,9 @@ namespace NodeEditor
 			ExitBlockNode bnn = new ExitBlockNode();
 			Canvas.SetLeft(bnn, 400); Canvas.SetTop(bnn, 200);
 			NodeEditor_Canvas.Children.Add(bnn);
+			bnn.Name = "End_" + numOfEnd;
 
+			NodeCanvas = NodeEditor_Canvas;
 		}
 
 		#region Panning
@@ -1827,6 +1870,8 @@ namespace NodeEditor
 			//List
 			TestingVars_list.Add(new RuntimeVars() { VarName = ("Var_" + (TestingVar_Grid.RowDefinitions.Count - 1)), VarData = 0 , OrginalVarData = 0});
 			VarDisplayBlocks_dict.Add(TestingVars_list.Last().VarName, new List<BaseNodeBlock>());
+			numOfGetConstants_dict.Add(TestingVars_list.Last().VarName, 0);
+
 			//textbox for naming the runtime variables
 			TextBox TBlock = new TextBox()
 			{
@@ -1966,6 +2011,9 @@ namespace NodeEditor
 			VarDisplayBlocks_dict.Remove(TestingVars_list[currow].VarName);
 			VarDisplayBlocks_dict.Add(((TextBox)sender).Text, tempBaseNodeBlocks);
 
+			int gettemp = numOfGetConstants_dict[TestingVars_list[currow].VarName];
+			numOfGetConstants_dict.Remove(TestingVars_list[currow].VarName);
+			numOfGetConstants_dict.Add(((TextBox)sender).Text, gettemp);
 
 			//set it new so we have a property change event go off
 			TestingVars_list[currow] = new RuntimeVars() { VarName = ((TextBox)sender).Text, Type = TestingVars_list[currow].Type, VarData = TestingVars_list[currow].VarData, OrginalVarData = TestingVars_list[currow].VarData}; //;
@@ -2032,6 +2080,7 @@ namespace NodeEditor
 			Canvas.SetLeft(bn, NewBlockLocation.X); Canvas.SetTop(bn, NewBlockLocation.Y);
 			VarDisplayBlocks_dict[selectedRV.VarName].Add(bn);
 			NodeEditor_Canvas.Children.Add(bn);
+			bn.Name = "SetVar_" + selectedRV.VarName + "_" + numOfSetConstants++;
 
 			//add the get
 			GetConstantNodeBlock bnget = null;
@@ -2043,6 +2092,9 @@ namespace NodeEditor
 			NodeEditor_Canvas.Children.Add(bnget);
 			VarDisplayBlocks_dict[selectedRV.VarName].Add(bnget);
 			bnget.Loaded += RuntimeVarSetBlock_Loaded;
+			bnget.Name = "GetVar_" + selectedRV.VarName + "_" + numOfGetConstants_dict[selectedRV.VarName] + 1;
+			numOfGetConstants_dict[selectedRV.VarName] = numOfGetConstants_dict[selectedRV.VarName]++;
+
 		}
 
 		/// <summary>
@@ -2085,6 +2137,8 @@ namespace NodeEditor
 			Canvas.SetLeft(bn, NewBlockLocation.X); Canvas.SetTop(bn, NewBlockLocation.Y);
 			NodeEditor_Canvas.Children.Add(bn);
 			VarDisplayBlocks_dict[selectedRV.VarName].Add(bn);
+			numOfGetConstants_dict[selectedRV.VarName] = numOfGetConstants_dict[selectedRV.VarName]++;
+
 		}
 
 		private void AddDialogueBlock_BTN_Click(object sender, RoutedEventArgs e)
@@ -2101,7 +2155,8 @@ namespace NodeEditor
 			Point p = new Point(0, 10); Point p1 = new Point(150, 20 + 20);
 			bn.EntryNode = (new ConnectionNode(bn, "EnterNode", p, ECOnnectionType.Enter));
 			bn.OutputNodes.Add(new ConnectionNode(bn, "OutputNode1", p1, ECOnnectionType.Exit));
-			
+			bn.Header = CharacterName;
+			bn.Name = "Dialogue_" + bn.Header + "_" + numOfDialogue++;
 
 		}
 
@@ -2115,6 +2170,7 @@ namespace NodeEditor
 			bn.EntryNode = (new ConnectionNode(bn, "EnterNode", p, ECOnnectionType.Enter));
 			bn.OutputNodes.Add(new ConnectionNode(bn, "OutputNode1", p1, ECOnnectionType.Exit));
 			bn.Header = CharacterName;
+			bn.Name = "Dialogue_" + bn.Header + "_" + numOfDialogue++;
 
 			if (OnCreateTimeblockHook != null)
 			{
@@ -2234,21 +2290,127 @@ namespace NodeEditor
 
 		private void ConditonalsLT_MI_Click(object sender, RoutedEventArgs e)
 		{
+			ConditionalNodeBlock bn;
 			if ((sender as MenuItem).Header.ToString() == "Bool")
 			{
-				ConditionalNodeBlock bn = new ConditionalNodeBlock(ECOnnectionType.Bool);
+				 bn = new ConditionalNodeBlock(ECOnnectionType.Bool, EConditionalTypes.Less);
 				NodeEditor_Canvas.Children.Add(bn);
 			}
 			else if ((sender as MenuItem).Header.ToString() == "Int")
 			{
-				ConditionalNodeBlock bn = new ConditionalNodeBlock(ECOnnectionType.Int);
+				 bn = new ConditionalNodeBlock(ECOnnectionType.Int, EConditionalTypes.Less);
 				NodeEditor_Canvas.Children.Add(bn);
 			}
 			else
 			{
-				ConditionalNodeBlock bn = new ConditionalNodeBlock(ECOnnectionType.Int);
+				bn = new ConditionalNodeBlock(ECOnnectionType.Int, EConditionalTypes.Less);
 				NodeEditor_Canvas.Children.Add(bn);
 			}
+			bn.Name = "ConditionalLT_" + numOfCondLT++;
+		}
+
+		private void ConditonalsLE_MI_Click(object sender, RoutedEventArgs e)
+		{
+			ConditionalNodeBlock bn;
+			if ((sender as MenuItem).Header.ToString() == "Bool")
+			{
+				 bn = new ConditionalNodeBlock(ECOnnectionType.Bool,EConditionalTypes.LessEquals);
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+			else if ((sender as MenuItem).Header.ToString() == "Int")
+			{
+				 bn = new ConditionalNodeBlock(ECOnnectionType.Int,EConditionalTypes.LessEquals);
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+			else
+			{
+				bn = new ConditionalNodeBlock(ECOnnectionType.Int, EConditionalTypes.LessEquals);
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+			bn.Name = "ConditionalLE_" + numOfCondLE++;
+		}
+
+		private void ConditonalsGT_MI_Click(object sender, RoutedEventArgs e)
+		{
+			ConditionalNodeBlock bn;
+			if ((sender as MenuItem).Header.ToString() == "Bool")
+			{
+				 bn = new ConditionalNodeBlock(ECOnnectionType.Bool,EConditionalTypes.Greater);
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+			else if ((sender as MenuItem).Header.ToString() == "Int")
+			{
+				 bn = new ConditionalNodeBlock(ECOnnectionType.Int,EConditionalTypes.Greater);
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+			else
+			{
+				bn = new ConditionalNodeBlock(ECOnnectionType.Int, EConditionalTypes.Greater);
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+			bn.Name = "ConditionalGT_" + numOfCondGT++;
+		}
+
+		private void ConditonalsGE_MI_Click(object sender, RoutedEventArgs e)
+		{
+			ConditionalNodeBlock bn;
+			if ((sender as MenuItem).Header.ToString() == "Bool")
+			{
+				 bn = new ConditionalNodeBlock(ECOnnectionType.Bool, EConditionalTypes.GreaterEquals);
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+			else if ((sender as MenuItem).Header.ToString() == "Int")
+			{
+				 bn = new ConditionalNodeBlock(ECOnnectionType.Int, EConditionalTypes.GreaterEquals);
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+			else
+			{
+				bn = new ConditionalNodeBlock(ECOnnectionType.Int, EConditionalTypes.GreaterEquals);
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+			bn.Name = "ConditionalGE_" + numOfCondGE++;
+		}
+		private void ConditonalsEq_MI_Click(object sender, RoutedEventArgs e)
+		{
+			ConditionalNodeBlock bn;
+			if ((sender as MenuItem).Header.ToString() == "Bool")
+			{
+				 bn = new ConditionalNodeBlock(ECOnnectionType.Bool, EConditionalTypes.Equals);
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+			else if ((sender as MenuItem).Header.ToString() == "Int")
+			{
+				 bn = new ConditionalNodeBlock(ECOnnectionType.Int, EConditionalTypes.Equals);
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+			else
+			{
+				bn = new ConditionalNodeBlock(ECOnnectionType.Int, EConditionalTypes.Equals);
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+			bn.Name = "ConditionalEq_" + numOfCondEq++;
+		}
+
+		private void ConditonalsNEq_MI_Click(object sender, RoutedEventArgs e)
+		{
+			ConditionalNodeBlock bn;
+			if ((sender as MenuItem).Header.ToString() == "Bool")
+			{
+				 bn = new ConditionalNodeBlock(ECOnnectionType.Bool, EConditionalTypes.NotEquals);
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+			else if ((sender as MenuItem).Header.ToString() == "Int")
+			{
+				 bn = new ConditionalNodeBlock(ECOnnectionType.Int, EConditionalTypes.NotEquals);
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+			else
+			{
+				bn = new ConditionalNodeBlock(ECOnnectionType.Int, EConditionalTypes.NotEquals);
+				NodeEditor_Canvas.Children.Add(bn);
+			}
+			bn.Name = "ConditionalNEq_" + numOfCondNEq++;
 		}
 
 		private void Math_MI_Click(object sender, RoutedEventArgs e)
@@ -2258,26 +2420,31 @@ namespace NodeEditor
 			{
 				BaseArithmeticBlock bnn = new AddBlock();
 				NodeEditor_Canvas.Children.Add(bnn);
+				bnn.Name = "MathAdd_" + numOfAdd++;
 			}
 			else if (mi.Header.ToString().Contains("Sub"))
 			{
 				BaseArithmeticBlock bnn = new SubtractBlock();
 				NodeEditor_Canvas.Children.Add(bnn);
+				bnn.Name = "MathSubtract_" + numOfSubtact++;
 			}
 			else if (mi.Header.ToString().Contains("Mul"))
 			{
 				BaseArithmeticBlock bnn = new MultiplyBlock();
 				NodeEditor_Canvas.Children.Add(bnn);
+				bnn.Name = "MathMultiply_" + numOfMultiply++;
 			}
 			else if (mi.Header.ToString().Contains("Div"))
 			{
 				BaseArithmeticBlock bnn = new DivisionBlock();
 				NodeEditor_Canvas.Children.Add(bnn);
+				bnn.Name = "MathDivide_" + numOfDivide++;
 			}
 			else if (mi.Header.ToString().Contains("Mod"))
 			{
 				BaseArithmeticBlock bnn = new ModuloBlock();
 				NodeEditor_Canvas.Children.Add(bnn);
+				bnn.Name = "MathMod_" + numOfMod++;
 			}
 		}
 
@@ -2288,18 +2455,28 @@ namespace NodeEditor
 			{
 				BaseLogicNodeBlock bn = new ANDBlock();
 				NodeEditor_Canvas.Children.Add(bn);
+				bn.Name = "LogicAND_" + numOfAnd++;
 			}
 			else if (mi.Header.ToString().Contains("OR"))
 			{
 				BaseLogicNodeBlock bn = new ORBlock();
 				NodeEditor_Canvas.Children.Add(bn);
+				bn.Name = "LogicOR_" + numOfOR++;
 			}
 			else if (mi.Header.ToString().Contains("NOT"))
 			{
 				BaseLogicNodeBlock bn = new NOTBlock();
 				NodeEditor_Canvas.Children.Add(bn);
+				bn.Name = "LogicNOT_" + numOfNOT++;
 			}
 
+		}
+
+		private void ExitBlock_MI_Click(object sender, RoutedEventArgs e)
+		{
+			ExitBlockNode bn = new ExitBlockNode();
+			NodeEditor_Canvas.Children.Add(bn);
+			bn.Name = "EndBlock_" + numOfEnd++;
 		}
 
 		public void ResetExecution()
@@ -2435,6 +2612,7 @@ namespace NodeEditor
 		public StartBlockNode()
 		{
 			this.ExitNode = new ConnectionNode(this, "ExitNode", new Point(0, 0), ECOnnectionType.Exit);
+			DType = ECOnnectionType.Enter;
 		}
 
 		public override bool OnStartEvaluateInternalData()
@@ -2493,6 +2671,7 @@ namespace NodeEditor
 		public ExitBlockNode()
 		{
 			this.EntryNode = new ConnectionNode(this, "EntryNode", new Point(0, 0), ECOnnectionType.Enter);
+			DType = ECOnnectionType.Exit;
 		}
 
 		public override void DeleteConnection(EConditionalTypes contype, int row)

@@ -1,15 +1,15 @@
 <!--this my attempt two at a protoype-->
 <DialogueScene Name="Test1">
     <Characters>
-        <Character Name="Emma">
+        <Character Name="Emma" UI="/..." Vertical="Bottom" Horizontal="Left">
             <images>
                 <image Path="/..."/>
                 <image Path="/..."/>
-                <image Path="/..."/>
+                <image Path="/..."/>s
                 <image Path="/..."/>
             </images>
         </Character>
-        <Character Name="PC">
+        <Character Name="PC" UI="/..." Vertical="Bottom" Horizontal="Right">
             <images>
                 <image Path="/..."/>
                 <image Path="/..."/>

@@ -14,19 +14,19 @@
 			<MenuItem Header="Conditionals">
 				<MenuItem Header="Less Than" Click="ConditonalsLT_MI_Click"> 
 				</MenuItem>
-				<MenuItem Header="Less Equal" Click="ConditonalsLT_MI_Click">
+				<MenuItem Header="Less Equal" Click="ConditonalsLE_MI_Click">
 				</MenuItem>
-				<MenuItem Header="Greater Than" Click="ConditonalsLT_MI_Click">
+				<MenuItem Header="Greater Than" Click="ConditonalsGT_MI_Click">
 				</MenuItem>
-				<MenuItem Header="Greater Equal" Click="ConditonalsLT_MI_Click">
+				<MenuItem Header="Greater Equal" Click="ConditonalsGE_MI_Click">
 				</MenuItem>
 				<MenuItem Header="Equals">
-					<MenuItem Header="Bool" Click="ConditonalsLT_MI_Click"/>
-					<MenuItem Header="Int" Click="ConditonalsLT_MI_Click"/>
+					<MenuItem Header="Bool" Click="ConditonalsEq_MI_Click"/>
+					<MenuItem Header="Int" Click="ConditonalsEq_MI_Click"/>
 				</MenuItem>
 				<MenuItem Header="Not Equals">
-					<MenuItem Header="Bool" Click="ConditonalsLT_MI_Click"/>
-					<MenuItem Header="Int" Click="ConditonalsLT_MI_Click"/>
+					<MenuItem Header="Bool" Click="ConditonalsNEq_MI_Click"/>
+					<MenuItem Header="Int" Click="ConditonalsNEq_MI_Click"/>
 				</MenuItem>
 			</MenuItem>
 			<MenuItem Header="Logic" >
@@ -49,6 +49,10 @@
 			</MenuItem>
 			<MenuItem Header="Set Constant" Name="SetConstant_MI">
 				
+			</MenuItem>
+			<Separator/>
+			<MenuItem Header="Exit Block" Name="End_MI" Click="ExitBlock_MI_Click">
+
 			</MenuItem>
 
 		</ContextMenu>

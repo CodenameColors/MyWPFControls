@@ -43,7 +43,7 @@ namespace NodeEditor.Components
 
 		private BlockNodeEditor.RuntimeVars data = new BlockNodeEditor.RuntimeVars();
 
-		public ConditionalNodeBlock(ECOnnectionType nodetype)
+		public ConditionalNodeBlock(ECOnnectionType nodetype, EConditionalTypes condType)
 		{
 			this.InputNodes = new List<ConnectionNode>();
 			this.OutputNodes = new List<ConnectionNode>();
@@ -53,6 +53,7 @@ namespace NodeEditor.Components
 			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", ECOnnectionType.Exit));
 			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode2", ECOnnectionType.Exit));
 			this.DType = nodetype;
+			this.CondType = condType;
 		}
 
 		public override void OnApplyTemplate()

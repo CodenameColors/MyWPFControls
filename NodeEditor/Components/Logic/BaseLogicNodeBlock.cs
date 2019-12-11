@@ -221,5 +221,10 @@ namespace NodeEditor.Components.Logic
 		{
 			throw new NotImplementedException();
 		}
+
+		public static implicit operator BaseLogicNodeBlock(ExitBlockNode v)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
