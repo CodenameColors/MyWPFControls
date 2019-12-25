@@ -693,6 +693,14 @@ namespace PropertyGridEditor
 			return null;
 		}
 
+		private void InnerGridSplitterVert_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+		{
+			Property_Grid.ColumnDefinitions[0].Width = new GridLength(InnerPropGrid.ColumnDefinitions[0].ActualWidth);
+		}
 
+		private void gridSplitterVert_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+		{
+			InnerPropGrid.ColumnDefinitions[0].Width = new GridLength(Property_Grid.ColumnDefinitions[0].ActualWidth);
+		}
 	}
 }

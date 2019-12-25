@@ -18,6 +18,20 @@ namespace CollapsedPropertyGrid
 
 		ObservableCollection<object> PropertyGrids = new ObservableCollection<object>();
 
+		public bool StartCollapsed
+		{
+			get { return (bool)GetValue(StartCollapsedProperty); }
+			set { SetValue(StartCollapsedProperty, value); }
+		}
+
+		public static readonly DependencyProperty StartCollapsedProperty =
+			DependencyProperty.Register("StartCollapsed", typeof(bool), typeof(CollapsedPropertyGrid),
+				new PropertyMetadata(true, new PropertyChangedCallback(OnStartCollapsedChanged)));
+		private static void OnStartCollapsedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+
+		}
+
 		public IEnumerable ItemsSource
 		{
 			get { return (IEnumerable)GetValue(ItemsSourceProperty); }
@@ -62,6 +76,10 @@ namespace CollapsedPropertyGrid
 							s = PropertyHasValue(o, "Name").ToString();
 
 						TreeViewItem tvi = new TreeViewItem() { Header = s, Foreground = Brushes.White };
+						if (StartCollapsed)
+							tvi.IsExpanded = false;
+						else
+							tvi.IsExpanded = true;
 						tvi.Items.Add(pgrid);
 						PGrid_TreeView.Items.Add(tvi);
 					}
@@ -90,6 +108,11 @@ namespace CollapsedPropertyGrid
 
 						TreeViewItem tvi = new TreeViewItem() { Header = s, Foreground = Brushes.White };
 						tvi.Items.Add(pgrid);
+
+						if(StartCollapsed)
+							tvi.IsExpanded = false;
+						else
+							tvi.IsExpanded = true;
 						PGrid_TreeView.Items.Add(tvi);
 					}
 				}
@@ -129,9 +152,6 @@ namespace CollapsedPropertyGrid
 			{
 				PGrid_TreeView.Items.Clear();
 			}
-			//quick and dirty fix for now00
-			foreach (TreeViewItem tvi in PGrid_TreeView.Items)
-				tvi.IsExpanded = true;
 		}
 
 		public CollapsedPropertyGrid()
