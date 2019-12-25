@@ -93,6 +93,9 @@ namespace TimelinePlayer
 
 		public delegate void OnReset_Hook();
 		public OnReset_Hook Reset_Hook;
+
+		public delegate void OnUIPositionChange(HorizontalAlignment hori, VerticalAlignment vert, int timelineInd);
+		public OnUIPositionChange ChangeUIPosition_Hook;
 		#endregion
 
 		double TimeScrubber_BaseSize = 0.0;
@@ -233,33 +236,60 @@ namespace TimelinePlayer
 		/// <param name="e"></param>
 		void newValueINotifyCollectionChanged_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			ContentControl bor = (ContentControl)this.Resources["TimelineBlock_CC"];
-			Tracks_Grid.RowDefinitions.Add(new RowDefinition(){ Height=new GridLength(75)});
-			Grid.SetRow(bor, Tracks_Grid.RowDefinitions.Count - 1);
-			Tracks_Grid.Children.Add(bor);
-			Timelines_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
 
-			Timeline timeline = new Timeline(TimeWidth, TimelineScrubber_Canvas.ActualWidth)
+			if (e.Action == NotifyCollectionChangedAction.Add)
 			{
-				HorizontalAlignment = HorizontalAlignment.Stretch,
-				VerticalAlignment = VerticalAlignment.Stretch,
-				Background = Brushes.Gray,
-				Margin = new Thickness(0, 3, 0, 3),
-				TrackName = "Emma"
-			};
-			timeline.MouseRightButtonDown += ShowAddTimeBlockCM;
+				foreach (Timeline tl in e.NewItems)
+				{
+					ContentControl bor = (ContentControl)this.Resources["TimelineBlock_CC"];
+					Tracks_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
+					Grid.SetRow(bor, Tracks_Grid.RowDefinitions.Count - 1);
+					Tracks_Grid.Children.Add(bor);
+					Timelines_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
 
-			//Canvas c = new Canvas() { Background = Brushes.Gray, Margin=new Thickness(0,3,0,3)};
-			//c.MouseEnter += C_MouseEnter;
-			Grid.SetRow(timeline, Tracks_Grid.RowDefinitions.Count - 1);
+					tl.HorizontalAlignment = HorizontalAlignment.Stretch;
+					tl.VerticalAlignment = VerticalAlignment.Stretch;
+					tl.Background = Brushes.Gray;
+					tl.Margin = new Thickness(0, 3, 0, 3);
+					tl.MouseRightButtonDown += ShowAddTimeBlockCM;
 
-			////add my custom time block
-			TimeBlock timeBlock = new TimeBlock(timeline, 0) { Trackname = "Memes", Width = 100, Margin = new Thickness(0, 0, 0, 3) };
-			Canvas.SetLeft(timeBlock, 1);
-			//timeline.Children.Add(timeBlock);
-			Timelines_Grid.Children.Add(timeline);
+					//Canvas c = new Canvas() { Background = Brushes.Gray, Margin=new Thickness(0,3,0,3)};
+					//c.MouseEnter += C_MouseEnter;
+					Grid.SetRow(tl, Tracks_Grid.RowDefinitions.Count - 1);
 
-			timelines.Add(timeline);
+					Timelines_Grid.Children.Add(tl);
+					timelines.Add(tl);
+
+				}
+			}
+
+			//ContentControl bor = (ContentControl)this.Resources["TimelineBlock_CC"];
+			//Tracks_Grid.RowDefinitions.Add(new RowDefinition(){ Height=new GridLength(75)});
+			//Grid.SetRow(bor, Tracks_Grid.RowDefinitions.Count - 1);
+			//Tracks_Grid.Children.Add(bor);
+			//Timelines_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
+
+			//Timeline timeline = new Timeline(TimeWidth, TimelineScrubber_Canvas.ActualWidth)
+			//{
+			//	HorizontalAlignment = HorizontalAlignment.Stretch,
+			//	VerticalAlignment = VerticalAlignment.Stretch,
+			//	Background = Brushes.Gray,
+			//	Margin = new Thickness(0, 3, 0, 3),
+			//	TrackName = "Emma"
+			//};
+			//timeline.MouseRightButtonDown += ShowAddTimeBlockCM;
+
+			////Canvas c = new Canvas() { Background = Brushes.Gray, Margin=new Thickness(0,3,0,3)};
+			////c.MouseEnter += C_MouseEnter;
+			//Grid.SetRow(timeline, Tracks_Grid.RowDefinitions.Count - 1);
+
+			//////add my custom time block
+			//TimeBlock timeBlock = new TimeBlock(timeline, 0) { Trackname = "Memes", Width = 100, Margin = new Thickness(0, 0, 0, 3) };
+			//Canvas.SetLeft(timeBlock, 1);
+			////timeline.Children.Add(timeBlock);
+			//Timelines_Grid.Children.Add(timeline);
+
+			//timelines.Add(timeline);
 
 		}
 
@@ -314,6 +344,36 @@ namespace TimelinePlayer
 			RedrawTimeScrubber(TimelineScrubber_Canvas, TimeWidth);
 		}
 
+
+		public void AddTimeline(Timeline tl )
+		{
+			ContentControl bor = (ContentControl)this.Resources["TimelineBlock_CC"];
+			((TextBlock)((StackPanel)((Grid)((Border)(bor.Content)).Child).Children[1]).Children[1]).Text = tl.TrackName;
+			if(tl.TrackImagePath != null)
+				((Image)((StackPanel)((Grid)((Border)(bor.Content)).Child).Children[1]).Children[0]).Source = 
+					new BitmapImage(new Uri(tl.TrackImagePath));
+
+
+			Tracks_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
+			Grid.SetRow(bor, Tracks_Grid.RowDefinitions.Count - 1);
+			Tracks_Grid.Children.Add(bor);
+			Timelines_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(75) });
+
+			tl.TimePerPixel = 1.0 / (double)TimeWidth;
+			tl.Width = TimelineScrubber_Canvas.ActualWidth;
+			tl.HorizontalAlignment = HorizontalAlignment.Stretch;
+			tl.VerticalAlignment = VerticalAlignment.Stretch;
+			tl.Background = Brushes.Gray;
+			tl.Margin = new Thickness(0, 3, 0, 3);
+			tl.MouseRightButtonDown += ShowAddTimeBlockCM;
+
+			//Canvas c = new Canvas() { Background = Brushes.Gray, Margin=new Thickness(0,3,0,3)};
+			//c.MouseEnter += C_MouseEnter;
+			Grid.SetRow(tl, Tracks_Grid.RowDefinitions.Count - 1);
+
+			Timelines_Grid.Children.Add(tl);
+			timelines.Add(tl);
+		}
 
 		public void AddTimeline(String TrackName = "")
 		{
@@ -891,17 +951,27 @@ namespace TimelinePlayer
 		{
 			foreach (Timeline tl in timelines)
 			{
-				for (int i = 0; i < tl.Children.Count; i++)
+				int i = 0;
+				while (tl.Children.Count > 0)
 				{
-					if (tl.Children[i] is TimeBlock timeBlock)
+					if (tl.timeBlocksLL.First.Value is TimeBlock timeBlock)
 					{
 						tl.timeBlocksLL.Remove(timeBlock);
 						tl.Children.Remove(timeBlock);
 						timeBlock.UpdateLayout();
 					}
 				}
+				//for (int i = 0; i < tl.Children.Count; i++)
+				//{
+				//	if (tl.Children[i] is TimeBlock timeBlock)
+				//	{
+				//		tl.timeBlocksLL.Remove(timeBlock);
+				//		tl.Children.Remove(timeBlock);
+				//		timeBlock.UpdateLayout();
+				//	}
+				//}
 				//tl.timeBlocksLL.Clear();
-				 tl.ClearLLTimeBlocks();
+				tl.ClearLLTimeBlocks();
 				tl.UpdateLayout();
 			}
 		}
@@ -913,10 +983,19 @@ namespace TimelinePlayer
 		{
 			foreach (Timeline tl in timelines)
 			{
-				while (tl.ActiveBlock != null)
+				if(tl.ActiveBlock is null)
 				{
+					//if (tl.timeBlocksLL.First != null)
+					//	tl.ActiveBlock = tl.timeBlocksLL.First;
+					Console.WriteLine("No ActiveBlock in this timeline: {0}", tl.TrackName);
+					//continue;
+				}
+				while (tl.ActiveBlock.List != null)
+				{
+					tl.Children.Remove(tl.timeBlocksLL.Last());
 					tl.timeBlocksLL.RemoveLast();
 				}
+				tl.ActiveBlock = tl.timeBlocksLL.Last;
 			}
 		}
 
@@ -932,21 +1011,57 @@ namespace TimelinePlayer
 				if (i == -1)
 				{
 					Console.WriteLine("Timeblock doesn't belong");
-					continue;
+					//continue;
 				} //this shouldn't happen...
 
 				timelines[(int) i].AddTimeBlock(timeblock, TimeWidth, resetptr);
+				timeblock.TimelineParent = timelines[(int)i];
+				if (timelines[(int) i].ActiveBlock == null)
+					timelines[(int)i].TimelineisNull_flag = true;
+				//	timelines[(int)i].ActiveBlock = timelines[(int) i ].timeBlocksLL.First;
 			}
 
 			if (resetptr)
 			{
 				foreach (Timeline tl in timelines)
 				{
-					tl.ActiveBlock = tl.ActiveBlock.Next;
+					try
+					{
+						tl.ActiveBlock = tl.ActiveBlock.Next;
+					}
+					catch (Exception e)
+					{
+						System.Console.WriteLine("No Blocks Found In this timeline");
+					}
+					
 				}
 			}
 		}
+
 		
+
+		private void ChangeGameUIAnchorPos_BTN_Click(object sender, RoutedEventArgs e)
+		{
+			if (ChangeUIPosition_Hook == null) return;
+			Button b = sender as Button;
+			int rowind = Grid.GetRow(((((sender as Button).Parent as Grid).Parent as Grid).Parent as Border).Parent as ContentControl);
+			if (b.Name.ToLower().Contains("topleft"))
+			{
+				ChangeUIPosition_Hook(HorizontalAlignment.Left, VerticalAlignment.Top, rowind);
+			}
+			else if (b.Name.ToLower().Contains("topright")) 
+			{
+				ChangeUIPosition_Hook(HorizontalAlignment.Right, VerticalAlignment.Top, rowind);
+			}
+			else if (b.Name.ToLower().Contains("bottomleft")) 
+			{
+				ChangeUIPosition_Hook(HorizontalAlignment.Left, VerticalAlignment.Bottom, rowind);
+			}
+			else if (b.Name.ToLower().Contains("bottomright")) 
+			{
+				ChangeUIPosition_Hook(HorizontalAlignment.Right, VerticalAlignment.Bottom, rowind);
+			}
+		}
   }
 
 

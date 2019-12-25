@@ -16,6 +16,7 @@ namespace TimelinePlayer.Components
 	public class Timeline : Canvas
 	{
 		public String TrackName = "";
+		public String TrackImagePath = null;
 		public double TimePerPixel;
 		public LinkedListNode<TimeBlock> ActiveBlock;
 		public LinkedList<TimeBlock> timeBlocksLL
@@ -61,7 +62,7 @@ namespace TimelinePlayer.Components
 
 		}
 
-
+		public bool TimelineisNull_flag { get; set; }
 		private LinkedList<TimeBlock> LLTimeBlocks = new LinkedList<TimeBlock>();
 
 		public Timeline(int TimeWidth, double InitialSize)

@@ -188,11 +188,17 @@ namespace NodeEditor
 		{
 			if (SelectionChanged_Hook != null)
 				SelectionChanged_Hook(sender);
+			//call delegate To Load the timeline dynamically
+			if (TimelineLoad_Hook != null)
+				TimelineLoad_Hook(sender);
 		}
 
 		#region delegates
-			public delegate void OnSlectionChange_Hook(object Selected);
-			public OnSlectionChange_Hook SelectionChanged_Hook;
+		public delegate void OnSlectionChange_Hook(object Selected);
+		public OnSlectionChange_Hook SelectionChanged_Hook;
+
+		public delegate void OnTimelineLoad_Hook(object selectedBlock);
+		public OnTimelineLoad_Hook TimelineLoad_Hook;
 
 		public delegate Object OnCreateTimeblock_Hook(DialogueNodeBlock dialogueNodeBlockRef);
 		/// <summary>
@@ -939,6 +945,9 @@ namespace NodeEditor
 				{
 					EndDrawingCurveConditionalBlock(sender);
 				}
+				//call delegate To Load the timeline dynamically
+				if (TimelineLoad_Hook != null)
+					TimelineLoad_Hook(obj);
 			}
 		}
 
@@ -1538,19 +1547,26 @@ namespace NodeEditor
 
 		private void AddDialogueOutput_BTN_Click(object sender, RoutedEventArgs e)
 		{
-			Grid basegrid = (Grid)((Button)sender).Parent;
+			Grid basegrid = (Grid) ((Button) sender).Parent;
 			Grid OutputGrid = null;
 
-			DialogueNodeBlock BN = (DialogueNodeBlock)((Button)sender).TemplatedParent;
-			BN.DialogueTextOptions.Add("Memes_");
+			DialogueNodeBlock BN = (DialogueNodeBlock) ((Button) sender).TemplatedParent;
+			if (bAddNew_Flag)
+			{
+				BN.DialogueTextOptions.Add("Memes_");
+			}
 
 			foreach (UIElement item in basegrid.Children)
 			{
-				if (item is Grid && ((Grid)item).Name.Contains("Output"))
-				{ OutputGrid = item as Grid; break; }
+				if (item is Grid && ((Grid) item).Name.Contains("Output"))
+				{
+					OutputGrid = item as Grid;
+					break;
+				}
 			}
+
 			//add the dialouge textblock
-			OutputGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(40) });
+			OutputGrid.RowDefinitions.Add(new RowDefinition() {Height = new GridLength(40)});
 			TextBlock tb = new TextBlock()
 			{
 				Margin = new Thickness(5),
@@ -1560,7 +1576,7 @@ namespace NodeEditor
 			};
 			Binding myBinding = new Binding();
 			myBinding.Source = BN;
-			myBinding.Path = new PropertyPath(String.Format("DialogueData[{0}]", OutputGrid.RowDefinitions.Count - 1));
+			myBinding.Path = new PropertyPath(String.Format("DialogueTextOptions[{0}]", OutputGrid.RowDefinitions.Count - 1));
 			//myBinding.RelativeSource= RelativeSource.TemplatedParent;
 			myBinding.Mode = BindingMode.TwoWay;
 			myBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
@@ -1568,7 +1584,8 @@ namespace NodeEditor
 			tb.SetBinding(TextBlock.TextProperty, myBinding);
 
 
-			Grid.SetRow(tb, OutputGrid.RowDefinitions.Count - 1); Grid.SetColumn(tb, 1);
+			Grid.SetRow(tb, OutputGrid.RowDefinitions.Count - 1);
+			Grid.SetColumn(tb, 1);
 			OutputGrid.Children.Add(tb);
 
 			//add the output node Display wise
@@ -1589,7 +1606,8 @@ namespace NodeEditor
 				VerticalAlignment = VerticalAlignment.Center
 			};
 			g.Children.Add(ee);
-			Grid.SetRow(g, OutputGrid.RowDefinitions.Count - 1); Grid.SetColumn(g, 2);
+			Grid.SetRow(g, OutputGrid.RowDefinitions.Count - 1);
+			Grid.SetColumn(g, 2);
 			g.PreviewMouseLeftButtonDown += MoveThumb_Right_MouseLeftButtonDown;
 			g.PreviewMouseRightButtonDown += COnnectionNode_RightClick;
 			g.Name = "OutputNode" + OutputGrid.RowDefinitions.Count;
@@ -1597,11 +1615,14 @@ namespace NodeEditor
 
 			//add the output node data wise
 			Point p = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN) + 20 + (20 * OutputGrid.RowDefinitions.Count));
-			BN.OutputNodes.Add(new ConnectionNode(BN, "OutputNode" + OutputGrid.RowDefinitions.Count, p, ECOnnectionType.Exit));
-
+			if (bAddNew_Flag)
+			
+				BN.OutputNodes.Add(new ConnectionNode(BN, "OutputNode" + OutputGrid.RowDefinitions.Count, p,
+					ECOnnectionType.Exit));
+			
 
 			//add an input node IF row definition count is 2. This is the dialogue choice val. ONLY CAN HAVE ONE
-			if (OutputGrid.RowDefinitions.Count != 2) return;
+		if (OutputGrid.RowDefinitions.Count != 2) return;
 			Grid inputGrid = null;
 			foreach (UIElement item in basegrid.Children)
 			{
@@ -1652,7 +1673,16 @@ namespace NodeEditor
 
 			//add the Input node data wise
 			Point pp = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN) + 20 + (20 * inputGrid.RowDefinitions.Count));
-			BN.InputNodes.Add(new ConnectionNode(BN, "InputNode" + inputGrid.RowDefinitions.Count, pp, ECOnnectionType.Int));
+			if(bAddNew_Flag)
+				BN.InputNodes.Add(new ConnectionNode(BN, "InputNode" + inputGrid.RowDefinitions.Count, pp, ECOnnectionType.Int));
+			bAddNew_Flag = true;
+		}
+
+		public bool bAddNew_Flag { get; set; }
+
+		public void AddDialogueBlockOutput(Button b)
+		{
+			AddDialogueOutput_BTN_Click(b, new RoutedEventArgs());
 		}
 
 		private void AddDialogueInput_BTN_Click(object sender, RoutedEventArgs e)
@@ -1711,8 +1741,14 @@ namespace NodeEditor
 			//add the Input node data wise
 			DialogueNodeBlock BN = (DialogueNodeBlock)((Button)sender).TemplatedParent;
 			Point p = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN) + 20 + (20 * inputGrid.RowDefinitions.Count));
-			BN.InputNodes.Add(new ConnectionNode(BN, "InputNode" + inputGrid.RowDefinitions.Count, p, ECOnnectionType.Bool));
+			if(bAddNew_Flag)
+				BN.InputNodes.Add(new ConnectionNode(BN, "InputNode" + inputGrid.RowDefinitions.Count, p, ECOnnectionType.Bool));
+			bAddNew_Flag = true;
+		}
 
+		public void AddDialogueInput(Button b)
+		{
+			AddDialogueInput_BTN_Click(b, new RoutedEventArgs());
 		}
 
 		/// <summary>
@@ -1866,18 +1902,34 @@ namespace NodeEditor
 		//Add a testing Variable to the UI and list 
 		private void AddRuntimeVar_BTN_Click(object sender, RoutedEventArgs e)
 		{
+			AddRuntimeVar();
+
+		}
+
+		public void AddRuntimeVar(RuntimeVars rtv = null)
+		{
+			if((rtv != null) && rtv.VarName == "ChoiceVar" && TestingVars_list.Count == 1) return;
 			TestingVar_Grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(20) });
 			//List
-			TestingVars_list.Add(new RuntimeVars() { VarName = ("Var_" + (TestingVar_Grid.RowDefinitions.Count - 1)), VarData = 0 , OrginalVarData = 0});
-			VarDisplayBlocks_dict.Add(TestingVars_list.Last().VarName, new List<BaseNodeBlock>());
-			numOfGetConstants_dict.Add(TestingVars_list.Last().VarName, 0);
+			if (rtv is null)
+			{
+				TestingVars_list.Add(new RuntimeVars()
+					{VarName = ("Var_" + (TestingVar_Grid.RowDefinitions.Count - 1)), VarData = 0, OrginalVarData = 0, Type = typeof(int)});
+				VarDisplayBlocks_dict.Add(TestingVars_list.Last().VarName, new List<BaseNodeBlock>());
+			}
+			else
+			{
+				TestingVars_list.Add(rtv);
+				VarDisplayBlocks_dict.Add(TestingVars_list.Last().VarName, new List<BaseNodeBlock>());
+			}
 
+			numOfGetConstants_dict.Add(TestingVars_list.Last().VarName, 0);
 			//textbox for naming the runtime variables
 			TextBox TBlock = new TextBox()
 			{
 				Background = Brushes.Transparent,
 				Foreground = Brushes.White,
-				Text = "Var_" + (TestingVar_Grid.RowDefinitions.Count - 1)
+				Text = TestingVars_list.Last().VarName
 			};
 			TBlock.TextChanged += RuntimeVar_Name_Changed;
 			Grid.SetColumn(TBlock, 0); Grid.SetRow(TBlock, TestingVar_Grid.RowDefinitions.Count - 1);
@@ -1886,7 +1938,7 @@ namespace NodeEditor
 			//textbox for updating the data of the runtime variables
 			TextBox tb = new TextBox()
 			{
-				Text = "0"
+				Text = TestingVars_list.Last().OrginalVarData.ToString()
 			};
 			tb.TextChanged += RuntimeVar_Data_Changed;
 			Grid.SetColumn(tb, 1); Grid.SetRow(tb, TestingVar_Grid.RowDefinitions.Count - 1);
@@ -1898,7 +1950,7 @@ namespace NodeEditor
 			{
 				IsReadOnly = true
 			};
-			
+
 			Binding binding = new Binding();
 			binding.Source = TestingVars_list.Last().VarData;
 			tblive.DataContext = binding;
@@ -1909,14 +1961,24 @@ namespace NodeEditor
 			ComboBox cb = new ComboBox() { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
 			cb.SelectionChanged += RuntimeVar_Type_Changed;
 			cb.Items.Add("Bool"); cb.Items.Add("Int");
-			cb.SelectedIndex = 1;
+
+			if (TestingVars_list.Last().Type == typeof(int))
+				cb.SelectedIndex = 1;
+			else
+				cb.SelectedIndex = 0;
+
 			Grid.SetColumn(cb, 3); Grid.SetRow(cb, TestingVar_Grid.RowDefinitions.Count - 1);
 			TestingVar_Grid.Children.Add(cb);
-
 		}
-
+		
 		private void RuntimeVar_Type_Changed(object sender, SelectionChangedEventArgs e)
 		{
+			if (bAddNew_Flag)
+			{
+				bAddNew_Flag = false; 
+				return;
+			}
+
 			if (!(TestingVars_list.Count > 0)) return;
 			int dtype = 0;
 			//get the grid row position
@@ -2037,9 +2099,9 @@ namespace NodeEditor
 			//w.Show();
 
 			ContextMenu cm = (ContextMenu)this.Resources["AddBlock_CM"];
-			MenuItem mi_get = (MenuItem)cm.Items.GetItemAt(6);
+			MenuItem mi_get = (MenuItem)cm.Items.GetItemAt(7);
 			mi_get.Items.Clear();
-			MenuItem mi_set = (MenuItem)cm.Items.GetItemAt(7);
+			MenuItem mi_set = (MenuItem)cm.Items.GetItemAt(8);
 			mi_set.Items.Clear();
 			MenuItem mi_dia = (MenuItem)cm.Items.GetItemAt(4);
 			mi_dia.Items.Clear();
@@ -2092,7 +2154,7 @@ namespace NodeEditor
 			NodeEditor_Canvas.Children.Add(bnget);
 			VarDisplayBlocks_dict[selectedRV.VarName].Add(bnget);
 			bnget.Loaded += RuntimeVarSetBlock_Loaded;
-			bnget.Name = "GetVar_" + selectedRV.VarName + "_" + numOfGetConstants_dict[selectedRV.VarName] + 1;
+			bnget.Name = "GetVar_" + selectedRV.VarName + "_" + (numOfGetConstants_dict[selectedRV.VarName] + 1).ToString();
 			numOfGetConstants_dict[selectedRV.VarName] = numOfGetConstants_dict[selectedRV.VarName]++;
 
 		}
@@ -2137,7 +2199,7 @@ namespace NodeEditor
 			Canvas.SetLeft(bn, NewBlockLocation.X); Canvas.SetTop(bn, NewBlockLocation.Y);
 			NodeEditor_Canvas.Children.Add(bn);
 			VarDisplayBlocks_dict[selectedRV.VarName].Add(bn);
-			bn.Name = "GetVar_" + numOfGetConstants_dict[selectedRV.VarName] + 1;
+			bn.Name = "GetVar_" + selectedRV.VarName + "_" + (numOfGetConstants_dict[selectedRV.VarName] + 1).ToString();
 			numOfGetConstants_dict[selectedRV.VarName] = numOfGetConstants_dict[selectedRV.VarName]++;
 		}
 
@@ -2244,9 +2306,19 @@ namespace NodeEditor
 			}
 		}
 
-		private void ConnectNodes(ConnectionNode From, ConnectionNode To)
+		public void ConnectNodes(ConnectionNode from, Point fromPoint,ConnectionNode to, Point toPoint)
 		{
+			//data reference connection
+			from.ConnectedNodes.Add(to);
+			to.ConnectedNodes.Add(from);
 
+			//curve references
+			Path p = CreateBezierCurve(fromPoint, toPoint);
+			from.Curves.Add(p);
+			to.Curves.Add(p);
+
+			//actual drawing of the curve
+			NodeEditor_BackCanvas.Children.Add(p);
 		}
 
 
@@ -2602,6 +2674,22 @@ namespace NodeEditor
 			return retLL;
 		}
 
+		public void AddToNodeEditor(BaseNodeBlock baseNode)
+		{
+			NodeCanvas.Children.Add(baseNode);
+
+			if (baseNode is GetConstantNodeBlock getVar)
+			{
+				//find the var
+				RuntimeVars temprtv = TestingVars_list.ToList().Find(x => x.VarName == getVar.VarHeader);
+				String key = temprtv.VarName;
+
+				//set the data
+				getVar.InternalData = temprtv;
+				VarDisplayBlocks_dict[key].Add(getVar);
+				numOfGetConstants_dict[key] = numOfGetConstants_dict[key] +1; //inc
+			}
+		}
 	}
 	/// <summary>
 	/// This is the starting pointer for a given graph

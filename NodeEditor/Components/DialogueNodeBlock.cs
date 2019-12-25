@@ -8,6 +8,7 @@ using System.Security.RightsManagement;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Converters;
 using NodeEditor.Components.Logic;
 using NodeEditor.Resources;
@@ -19,13 +20,14 @@ namespace NodeEditor.Components
 		public int ChoiceVar = 0;
 		public object UnlockingVar = null;
 		public object LinkedTimeBlock = null;
-		public DialogueNodeBlock(String Header)
+		public DialogueNodeBlock(String Header, bool bAddDefault = true)
 		{
+			this.EntryNode =new ConnectionNode(this, "EntryNode", ECOnnectionType.Enter);
 			DialogueTextOptions = new ObservableCollection<string>();
 			this.Header = Header;
 			InputNodes = new List<ConnectionNode>();
 			OutputNodes = new List<ConnectionNode>();
-			DialogueTextOptions.Add("Dialogue Option 1_");
+			if(bAddDefault) DialogueTextOptions.Add("Dialogue Option 1_");
 		}
 
 		public List<Object> DialogueSprites = new List<object>();
