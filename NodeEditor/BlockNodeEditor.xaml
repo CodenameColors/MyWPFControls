@@ -2197,7 +2197,7 @@
                   </Style.Triggers>
 								</Style>
 							</Border.Style>
-							<Grid MinHeight="100" MinWidth="150" Background="#FF494949" ClipToBounds="False" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click" >
+							<Grid MinHeight="100" MinWidth="150" MaxWidth="150" Background="#FF494949" ClipToBounds="False" PreviewMouseRightButtonDown="BaseNodeRight_BTN_Click" >
 								<Grid.RowDefinitions>
 									<RowDefinition Height="20"/>
 									<RowDefinition Height="Auto"/>
@@ -2251,7 +2251,7 @@
 										<RowDefinition Height="40"/>
 									</Grid.RowDefinitions>
 
-									<TextBlock Grid.Column="1" Foreground="White" Margin="5" Text="{Binding Path=DialogueTextOptions[0], RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+									<TextBlock Grid.Column="1" Foreground="White" Margin="5" MaxWidth="150" TextWrapping="Wrap" Text="{Binding Path=DialogueTextOptions[0], RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
 									<GridSplitter ResizeDirection="Rows" Height="2" Background="White" Grid.Row="1" IsEnabled="False"/>
 									<!--default input thumb-->
 									<!--<ContentPresenter HorizontalAlignment="Stretch" Grid.Column="0" IsHitTestVisible="True"

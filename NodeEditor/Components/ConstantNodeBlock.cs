@@ -127,16 +127,18 @@ namespace NodeEditor.Components
 		}
 
 
-		public SetConstantNodeBlock(ECOnnectionType nodetype)
+		public SetConstantNodeBlock(ECOnnectionType nodetype, bool bInitNNodes = true)
 		{
 			this.InputNodes = new List<ConnectionNode>();
 			this.OutputNodes = new List<ConnectionNode>();
 			this.EntryNode = new ConnectionNode(this, "EntryNode", ECOnnectionType.Enter);
 			this.ExitNode = new ConnectionNode(this, "ExitNode", ECOnnectionType.Exit);
-			this.InputNodes.Add(new ConnectionNode(this, "InputNode1", nodetype));
-			this.InputNodes.Add(new ConnectionNode(this, "InputNode2", nodetype));
-			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", nodetype));
-
+			if (bInitNNodes)
+			{
+				this.InputNodes.Add(new ConnectionNode(this, "InputNode1", nodetype));
+				this.InputNodes.Add(new ConnectionNode(this, "InputNode2", nodetype));
+				this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", nodetype));
+			}
 			DType = nodetype;
 			NewValConnected = false;
 		}

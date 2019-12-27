@@ -1008,10 +1008,11 @@ namespace TimelinePlayer
 			foreach (TimeBlock timeblock in newLL)
 			{
 				int? i = Array.FindIndex(CharacterNames.ToArray(), (x => x == timeblock.Trackname)); //get index
+				if (i == -1 && timeblock.Trackname.ToLower() == "choice") i = 0;
 				if (i == -1)
 				{
 					Console.WriteLine("Timeblock doesn't belong");
-					//continue;
+					continue;
 				} //this shouldn't happen...
 
 				timelines[(int) i].AddTimeBlock(timeblock, TimeWidth, resetptr);

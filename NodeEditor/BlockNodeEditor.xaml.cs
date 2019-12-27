@@ -163,6 +163,14 @@ namespace NodeEditor
 		ConnectionNode SelectedNode = null;
 		int SelectedNodeRow = 0;
 
+		private bool _badd_flag = true;
+		public bool bAddNew_Flag
+		{
+			get { return _badd_flag; }
+			set { _badd_flag = value; }
+		}
+
+
 		public ObservableCollection<RuntimeVars> TestingVars_list = new ObservableCollection<RuntimeVars>();
 		public ObservableCollection<String> SceneCharacters_list = new ObservableCollection<string>();
 
@@ -1572,7 +1580,10 @@ namespace NodeEditor
 				Margin = new Thickness(5),
 				HorizontalAlignment = HorizontalAlignment.Left,
 				VerticalAlignment = VerticalAlignment.Top,
-				Foreground = Brushes.White
+				Foreground = Brushes.White,
+				TextWrapping = TextWrapping.Wrap,
+				MinWidth = 150,
+				MaxWidth = 150
 			};
 			Binding myBinding = new Binding();
 			myBinding.Source = BN;
@@ -1677,8 +1688,6 @@ namespace NodeEditor
 				BN.InputNodes.Add(new ConnectionNode(BN, "InputNode" + inputGrid.RowDefinitions.Count, pp, ECOnnectionType.Int));
 			bAddNew_Flag = true;
 		}
-
-		public bool bAddNew_Flag { get; set; }
 
 		public void AddDialogueBlockOutput(Button b)
 		{
@@ -2236,7 +2245,7 @@ namespace NodeEditor
 
 			if (OnCreateTimeblockHook != null)
 			{
-				object TimeblockNode = OnCreateTimeblockHook(bn);
+				object TimeblockNode = OnCreateTimeblockHook(bn); 
 				if (TimeblockNode != null) bn.LinkedTimeBlock = TimeblockNode;
 				else return;
 			}
@@ -2321,6 +2330,10 @@ namespace NodeEditor
 			NodeEditor_BackCanvas.Children.Add(p);
 		}
 
+		public void IncrementDialogueBlockCounter()
+		{
+			numOfDialogue++;
+		}
 
 		public partial class RuntimeVars
 		{

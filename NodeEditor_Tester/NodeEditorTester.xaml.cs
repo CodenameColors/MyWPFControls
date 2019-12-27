@@ -63,7 +63,7 @@ namespace NodeEditor_Tester
 
 		private void BaseNode_BTN_Click(object sender, RoutedEventArgs e)
 		{
-			nodes.Add(new DialogueNodeBlock("Emma"));
+			nodes.Add(new DialogueNodeBlock("Emma") { bChoice = true });
 		}
 		private void BaseNode_BTN_Click1(object sender, RoutedEventArgs e)
 		{
