@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:NodeEditor"
 			xmlns:nec="clr-namespace:NodeEditor.Components"
 			xmlns:logic="clr-namespace:NodeEditor.Components.Logic"
+			xmlns:arithmetic="clr-namespace:NodeEditor.Components.Arithmetic"
 			mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 	<UserControl.Resources>
@@ -592,7 +593,7 @@
 		</Style>
 
 		
-		<Style TargetType="{x:Type nec:AddBlock}">
+		<Style TargetType="{x:Type arithmetic:AddBlock}">
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
@@ -785,7 +786,7 @@
 			</Setter>
 		</Style>
 
-		<Style TargetType="{x:Type nec:SubtractBlock}">
+		<Style TargetType="{x:Type arithmetic:SubtractBlock}">
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
@@ -978,7 +979,7 @@
 			</Setter>
 		</Style>
 
-		<Style TargetType="{x:Type nec:MultiplyBlock}">
+		<Style TargetType="{x:Type arithmetic:MultiplyBlock}">
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
@@ -1171,7 +1172,7 @@
 			</Setter>
 		</Style>
 
-		<Style TargetType="{x:Type nec:DivisionBlock}">
+		<Style TargetType="{x:Type arithmetic:DivisionBlock}">
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
@@ -1364,7 +1365,7 @@
 			</Setter>
 		</Style>
 
-		<Style TargetType="{x:Type nec:ModuloBlock}">
+		<Style TargetType="{x:Type arithmetic:ModuloBlock}">
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
@@ -2096,6 +2097,9 @@
 													<Ellipse.Style>
 														<Style TargetType="Ellipse">
 															<Style.Triggers>
+																<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="0">
+																	<Setter Property="Fill" Value="LawnGreen"></Setter>
+																</DataTrigger>
 																<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="3">
 																	<Setter Property="Fill" Value="BlueViolet"></Setter>
 																</DataTrigger>
@@ -2124,6 +2128,9 @@
 													<Ellipse.Style>
 														<Style TargetType="Ellipse">
 															<Style.Triggers>
+																<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="0">
+																	<Setter Property="Fill" Value="LawnGreen"></Setter>
+																</DataTrigger>
 																<DataTrigger Binding="{Binding Path=DType, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Value="3">
 																	<Setter Property="Fill" Value="BlueViolet"></Setter>
 																</DataTrigger>

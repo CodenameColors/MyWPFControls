@@ -3,7 +3,7 @@
 	class ANDBlock : BaseLogicNodeBlock
 	{
 
-		public ANDBlock() : base ()
+		public ANDBlock(bool bInitNodes = true) : base(bInitNodes)
 		{
 
 		}

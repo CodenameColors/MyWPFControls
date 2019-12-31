@@ -9,7 +9,7 @@ namespace NodeEditor.Components
 {
 	class ORBlock : BaseLogicNodeBlock
 	{
-		public ORBlock() : base()
+		public ORBlock(bool bInitNodes = true) : base(bInitNodes)
 		{
 
 		}

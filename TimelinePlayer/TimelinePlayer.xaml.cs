@@ -988,7 +988,7 @@ namespace TimelinePlayer
 					//if (tl.timeBlocksLL.First != null)
 					//	tl.ActiveBlock = tl.timeBlocksLL.First;
 					Console.WriteLine("No ActiveBlock in this timeline: {0}", tl.TrackName);
-					//continue;
+					continue;
 				}
 				while (tl.ActiveBlock.List != null)
 				{

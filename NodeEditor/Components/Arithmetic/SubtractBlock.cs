@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
-namespace NodeEditor.Components
+namespace NodeEditor.Components.Arithmetic
 {
 	public class SubtractBlock : BaseArithmeticBlock
 	{
 
-		public SubtractBlock() : base()
+		public SubtractBlock(bool bInitNodes =  true) : base(bInitNodes)
 		{
 
 		}

@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NodeEditor.Components
+﻿namespace NodeEditor.Components.Arithmetic
 {
 	public class AddBlock : BaseArithmeticBlock
 	{
 
-		public AddBlock() : base()
+		public AddBlock(bool bInitNodes = true) : base(bInitNodes)
 		{
 			
 

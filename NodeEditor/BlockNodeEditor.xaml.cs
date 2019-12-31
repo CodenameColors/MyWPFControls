@@ -14,6 +14,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using NodeEditor.Components.Arithmetic;
 using NodeEditor.Components.Logic;
 using NodeEditor.Resources;
 
@@ -2691,16 +2692,83 @@ namespace NodeEditor
 		{
 			NodeCanvas.Children.Add(baseNode);
 
-			if (baseNode is GetConstantNodeBlock getVar)
+			switch (baseNode)
 			{
-				//find the var
-				RuntimeVars temprtv = TestingVars_list.ToList().Find(x => x.VarName == getVar.VarHeader);
-				String key = temprtv.VarName;
+				case null:
+					break;
+				case AddBlock addBlock:
+					numOfAdd++;
+					break;
+				case DivisionBlock divisionBlock:
+					numOfDivide++;
+					break;
+				case ModuloBlock moduloBlock:
+					numOfMod++;
+					break;
+				case MultiplyBlock multiplyBlock:
+					numOfMultiply++;
+					break;
+				case SubtractBlock subtractBlock:
+					numOfSubtact++;
+					break;
+				case ConditionalNodeBlock conditionalNodeBlock:
+					switch (conditionalNodeBlock.CondType)
+					{
+						case EConditionalTypes.Equals:
+							numOfCondEq++;
+							break;
+						case EConditionalTypes.NotEquals:
+							numOfCondNEq++;
+							break;
+						case EConditionalTypes.Greater:
+							numOfCondGT++;
+							break;
+						case EConditionalTypes.Less:
+							numOfCondLT++;
+							break;
+						case EConditionalTypes.GreaterEquals:
+							numOfCondGE++;
+							break;
+						case EConditionalTypes.LessEquals:
+							numOfCondLE++;
+							break;
+						default:
+							throw new ArgumentOutOfRangeException();
+					}
+					break;
+				case DialogueNodeBlock dialogueNodeBlock:
+					numOfDialogue++;
+					break;
+				case GetConstantNodeBlock getConstantNodeBlock:
+					//find the var
+					RuntimeVars temprtv = TestingVars_list.ToList().Find(x => x.VarName == getConstantNodeBlock.VarHeader);
+					String key = temprtv.VarName;
 
-				//set the data
-				getVar.InternalData = temprtv;
-				VarDisplayBlocks_dict[key].Add(getVar);
-				numOfGetConstants_dict[key] = numOfGetConstants_dict[key] +1; //inc
+					//set the data
+					getConstantNodeBlock.InternalData = temprtv;
+					VarDisplayBlocks_dict[key].Add(getConstantNodeBlock);
+					numOfGetConstants_dict[key] = numOfGetConstants_dict[key] + 1; //inc
+					break;
+				case ANDBlock andBlock:
+					numOfAnd++;
+					break;
+				case NOTBlock notBlock:
+					numOfNOT++;
+					break;
+				case ORBlock orBlock:
+					numOfOR++;
+					break;
+				case SetConstantNodeBlock _:
+					numOfSetConstants++;
+					break;
+				case ExitBlockNode exitBlockNode:
+					numOfEnd++;
+					break;
+				case StartBlockNode startBlockNode:
+					numOfStart++;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(baseNode));
 			}
 		}
 	}

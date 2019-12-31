@@ -40,21 +40,22 @@ namespace NodeEditor.Components
 			set => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("VarHeader"));
 		}
 
-		public GetConstantNodeBlock(ECOnnectionType type)
+		public GetConstantNodeBlock(ECOnnectionType type, bool bInitNodes = true)
 		{
 			DType = type;
 			Header = String.Format("Get Constant [{0}]", type.ToString());
 			OutputNodes = new List<ConnectionNode>(); //There is only ONE output
-			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", type));
+			if(bInitNodes)
+				this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", type));
 		}
 
-		public GetConstantNodeBlock(ECOnnectionType type, ref BlockNodeEditor.RuntimeVars varptr)
+		public GetConstantNodeBlock(ECOnnectionType type, ref BlockNodeEditor.RuntimeVars varptr, bool bInitNodes = true)
 		{
 			DType = type;
 			Header = String.Format("Get Constant [{0}]", type.ToString());
 			OutputNodes = new List<ConnectionNode>(); //There is only ONE output
-			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", type));
-
+			if(bInitNodes)
+				this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", type));
 			this.InternalData = varptr;
 		}
 

@@ -9,12 +9,15 @@ namespace NodeEditor.Components
 {
 	class NOTBlock : BaseLogicNodeBlock
 	{
-		public NOTBlock() 
+		public NOTBlock(bool bInitNodes = true) : base(bInitNodes)
 		{
 			this.InputNodes = new List<ConnectionNode>();
 			this.OutputNodes = new List<ConnectionNode>();
-			this.InputNodes.Add(new ConnectionNode(this, "InputNode1", ECOnnectionType.Bool));
-			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", ECOnnectionType.Bool));
+			if (bInitNodes)
+			{
+				this.InputNodes.Add(new ConnectionNode(this, "InputNode1", ECOnnectionType.Bool));
+				this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", ECOnnectionType.Bool));
+			}
 		}
 
 		public override bool OnEndEvaluateInternalData()

@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NodeEditor.Components.Logic;
 using NodeEditor.Resources;
 
-namespace NodeEditor.Components
+namespace NodeEditor.Components.Arithmetic
 {
 	public class BaseArithmeticBlock : BaseNodeBlock, INotifyPropertyChanged
 	{
@@ -56,13 +53,16 @@ namespace NodeEditor.Components
 		/// <summary>
 		/// Base constructor for XAML PTR
 		/// </summary>
-		public BaseArithmeticBlock()
-		{
+		public BaseArithmeticBlock( bool bInitNodes = true )
+		{	
 			this.InputNodes = new List<ConnectionNode>();
 			this.OutputNodes = new List<ConnectionNode>();
-			this.InputNodes.Add(new ConnectionNode(this, "InputNode1", ECOnnectionType.Int));
-			this.InputNodes.Add(new ConnectionNode(this, "InputNode2", ECOnnectionType.Int));
-			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", ECOnnectionType.Int));
+			if (bInitNodes)
+			{
+				this.InputNodes.Add(new ConnectionNode(this, "InputNode1", ECOnnectionType.Int));
+				this.InputNodes.Add(new ConnectionNode(this, "InputNode2", ECOnnectionType.Int));
+				this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", ECOnnectionType.Int));
+			}
 
 			dtype = ECOnnectionType.Int;
 			NewValConnected = false;

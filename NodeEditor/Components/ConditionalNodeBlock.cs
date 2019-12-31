@@ -43,15 +43,19 @@ namespace NodeEditor.Components
 
 		private BlockNodeEditor.RuntimeVars data = new BlockNodeEditor.RuntimeVars();
 
-		public ConditionalNodeBlock(ECOnnectionType nodetype, EConditionalTypes condType)
+		public ConditionalNodeBlock(ECOnnectionType nodetype, EConditionalTypes condType, bool bInitNode = true)
 		{
 			this.InputNodes = new List<ConnectionNode>();
 			this.OutputNodes = new List<ConnectionNode>();
 			this.EntryNode = new ConnectionNode(this, "EntryNode", ECOnnectionType.Enter);
-			this.InputNodes.Add(new ConnectionNode(this, "InputNode1", nodetype));
-			this.InputNodes.Add(new ConnectionNode(this, "InputNode2", nodetype));
-			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", ECOnnectionType.Exit));
-			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode2", ECOnnectionType.Exit));
+			if (bInitNode)
+			{
+				this.InputNodes.Add(new ConnectionNode(this, "InputNode1", nodetype));
+				this.InputNodes.Add(new ConnectionNode(this, "InputNode2", nodetype));
+				this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", ECOnnectionType.Exit));
+				this.OutputNodes.Add(new ConnectionNode(this, "OutputNode2", ECOnnectionType.Exit));
+			}
+
 			this.DType = nodetype;
 			this.CondType = condType;
 		}

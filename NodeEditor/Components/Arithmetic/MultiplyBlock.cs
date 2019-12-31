@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
-namespace NodeEditor.Components
+namespace NodeEditor.Components.Arithmetic
 {
 	public class MultiplyBlock : BaseArithmeticBlock
 	{
 
-		public MultiplyBlock() : base()
+		public MultiplyBlock(bool bInitNodes = true) : base(bInitNodes)
 		{
 		}
 		public override bool OnEndEvaluateInternalData()

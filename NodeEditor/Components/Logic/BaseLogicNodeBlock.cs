@@ -69,13 +69,16 @@ namespace NodeEditor.Components.Logic
 		/// Constructor. it will always have this setup.
 		/// </summary>
 		/// <param name="nodetype"></param>
-		public BaseLogicNodeBlock()
+		public BaseLogicNodeBlock(bool bInitNodes = true)
 		{
 			this.InputNodes = new List<ConnectionNode>();
 			this.OutputNodes = new List<ConnectionNode>();
-			this.InputNodes.Add(new ConnectionNode(this, "InputNode1", ECOnnectionType.Bool));
-			this.InputNodes.Add(new ConnectionNode(this, "InputNode2", ECOnnectionType.Bool));
-			this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", ECOnnectionType.Bool));
+			if (bInitNodes)
+			{
+				this.InputNodes.Add(new ConnectionNode(this, "InputNode1", ECOnnectionType.Bool));
+				this.InputNodes.Add(new ConnectionNode(this, "InputNode2", ECOnnectionType.Bool));
+				this.OutputNodes.Add(new ConnectionNode(this, "OutputNode1", ECOnnectionType.Bool));
+			}
 
 			dtype = ECOnnectionType.Bool;
 			newvalconnected = false;
