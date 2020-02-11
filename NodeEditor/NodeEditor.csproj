@@ -48,6 +48,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Resources\IStateMachineTraversal.cs" />
     <Compile Include="Resources\NodeEditorExceptions.cs" />
     <Page Include="BlockNodeEditor.xaml">
       <Generator>MSBuild:Compile</Generator>

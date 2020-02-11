@@ -1,25 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Security.RightsManagement;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Converters;
 using NodeEditor.Components.Logic;
 using NodeEditor.Resources;
 
 namespace NodeEditor.Components
 {
-	public class DialogueNodeBlock : BaseNodeBlock
+	public class DialogueNodeBlock : BaseNodeBlock, IStateMachineTraversal
 	{
 		public int ChoiceVar = 0;
 		public object UnlockingVar = null;
 		public object LinkedTimeBlock = null;
+
+		//this is here to avoid windows DLL requirements in MONOGAME
+		public DialogueNodeBlock NextDialogueNodeBlock
+		{
+			get
+			{
+				if (OutputNodes != null && OutputNodes[ChoiceVar].ConnectedNodes.First().ParentBlock is DialogueNodeBlock dia)
+					return dia;
+				else
+					return null;
+			}
+		}
+
 		public DialogueNodeBlock(String Header, bool bAddDefault = true)
 		{
 			this.EntryNode =new ConnectionNode(this, "EntryNode", ECOnnectionType.Enter);
