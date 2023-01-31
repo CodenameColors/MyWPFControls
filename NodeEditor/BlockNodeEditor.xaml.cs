@@ -1,5 +1,4 @@
-﻿using NodeEditor.Components;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,9 +13,10 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using NodeEditor.Components.Arithmetic;
-using NodeEditor.Components.Logic;
-using NodeEditor.Resources;
+using BixBite.NodeEditor;
+using BixBite.NodeEditor.Arithmetic;
+using BixBite.NodeEditor.Logic;
+using BixBite.Resources;
 
 namespace NodeEditor
 {
@@ -66,8 +66,8 @@ namespace NodeEditor
 					DialogueNodeBlock bn = (DialogueNodeBlock)e.NewItems[0];
 					NodeEditor_Canvas.Children.Add(bn);
 					Point p = new Point(0, 10); Point p1 = new Point(150, 20 + 20);
-					bn.EntryNode = (new ConnectionNode(bn, "EnterNode", p, ECOnnectionType.Enter));
-					bn.OutputNodes.Add(new ConnectionNode(bn, "OutputNode1", p1, ECOnnectionType.Exit));
+					bn.EntryNode = (new ConnectionNode(bn, "EnterNode", (int)p.X, (int)p.Y, ECOnnectionType.Enter));
+					bn.OutputNodes.Add(new ConnectionNode(bn, "OutputNode1", (int)p1.X, (int)p1.Y, ECOnnectionType.Exit));
 				}
 				else if (e.NewItems[0] is GetConstantNodeBlock)
 				{
@@ -1629,7 +1629,7 @@ namespace NodeEditor
 			Point p = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN) + 20 + (20 * OutputGrid.RowDefinitions.Count));
 			if (bAddNew_Flag)
 			
-				BN.OutputNodes.Add(new ConnectionNode(BN, "OutputNode" + OutputGrid.RowDefinitions.Count, p,
+				BN.OutputNodes.Add(new ConnectionNode(BN, "OutputNode" + OutputGrid.RowDefinitions.Count, (int)p.X, (int)p.Y,
 					ECOnnectionType.Exit));
 			
 
@@ -1686,7 +1686,7 @@ namespace NodeEditor
 			//add the Input node data wise
 			Point pp = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN) + 20 + (20 * inputGrid.RowDefinitions.Count));
 			if(bAddNew_Flag)
-				BN.InputNodes.Add(new ConnectionNode(BN, "InputNode" + inputGrid.RowDefinitions.Count, pp, ECOnnectionType.Int));
+				BN.InputNodes.Add(new ConnectionNode(BN, "InputNode" + inputGrid.RowDefinitions.Count, (int)pp.X, (int)pp.Y, ECOnnectionType.Int));
 			bAddNew_Flag = true;
 		}
 
@@ -1752,7 +1752,7 @@ namespace NodeEditor
 			DialogueNodeBlock BN = (DialogueNodeBlock)((Button)sender).TemplatedParent;
 			Point p = new Point(Canvas.GetLeft(BN) + 150, Canvas.GetTop(BN) + 20 + (20 * inputGrid.RowDefinitions.Count));
 			if(bAddNew_Flag)
-				BN.InputNodes.Add(new ConnectionNode(BN, "InputNode" + inputGrid.RowDefinitions.Count, p, ECOnnectionType.Bool));
+				BN.InputNodes.Add(new ConnectionNode(BN, "InputNode" + inputGrid.RowDefinitions.Count, (int)p.X, (int)p.Y, ECOnnectionType.Bool));
 			bAddNew_Flag = true;
 		}
 
@@ -2225,8 +2225,8 @@ namespace NodeEditor
 				bn.LinkedTimeBlock = Timeblock;
 			NodeEditor_Canvas.Children.Add(bn);
 			Point p = new Point(0, 10); Point p1 = new Point(150, 20 + 20);
-			bn.EntryNode = (new ConnectionNode(bn, "EnterNode", p, ECOnnectionType.Enter));
-			bn.OutputNodes.Add(new ConnectionNode(bn, "OutputNode1", p1, ECOnnectionType.Exit));
+			bn.EntryNode = (new ConnectionNode(bn, "EnterNode", (int)p.X, (int)p.Y, ECOnnectionType.Enter));
+			bn.OutputNodes.Add(new ConnectionNode(bn, "OutputNode1", (int)p1.X, (int)p1.Y, ECOnnectionType.Exit));
 			bn.Header = CharacterName;
 			bn.Name = "Dialogue_" + bn.Header + "_" + numOfDialogue++;
 
@@ -2239,8 +2239,8 @@ namespace NodeEditor
 				bn.LinkedTimeBlock = Timeblock;
 			NodeEditor_Canvas.Children.Add(bn);
 			Point p = new Point(0, 10); Point p1 = new Point(150, 20 + 20);
-			bn.EntryNode = (new ConnectionNode(bn, "EnterNode", p, ECOnnectionType.Enter));
-			bn.OutputNodes.Add(new ConnectionNode(bn, "OutputNode1", p1, ECOnnectionType.Exit));
+			bn.EntryNode = (new ConnectionNode(bn, "EnterNode", (int)p.X, (int)p.Y, ECOnnectionType.Enter));
+			bn.OutputNodes.Add(new ConnectionNode(bn, "OutputNode1", (int)p1.X, (int)p1.Y, ECOnnectionType.Exit));
 			bn.Header = CharacterName;
 			bn.Name = "Dialogue_" + bn.Header + "_" + numOfDialogue++;
 
@@ -2298,7 +2298,7 @@ namespace NodeEditor
 		public void ChangeChoiceVar(int newChoiecValue)
 		{ 
 			//update the GLOBAL var value.
-			TestingVars_list[0] = new NodeEditor.BlockNodeEditor.RuntimeVars()
+			TestingVars_list[0] = new RuntimeVars()
 			{
 				OrginalVarData = TestingVars_list[0].OrginalVarData,
 				Type = TestingVars_list[0].Type,
@@ -2336,43 +2336,43 @@ namespace NodeEditor
 			numOfDialogue++;
 		}
 
-		public partial class RuntimeVars
-		{
-			public string VarName { get; set; }
-			public object VarData { get; set; }
-			public object OrginalVarData { get; set; }
-			public Type Type { get; set; }
+		//public partial class RuntimeVars
+		//{
+		//	public string VarName { get; set; }
+		//	public object VarData { get; set; }
+		//	public object OrginalVarData { get; set; }
+		//	public Type Type { get; set; }
 
-			public RuntimeVars()
-			{
-				Type = typeof(int);
-			}
+		//	public RuntimeVars()
+		//	{
+		//		Type = typeof(int);
+		//	}
 
-			public static RuntimeVars GetRuntimeVar(List<RuntimeVars> list, String Name)
-			{
-				foreach (RuntimeVars item in list)
-				{
-					if (item.VarName == Name) return item;
-				}
-				return null;
-			}
+		//	public static RuntimeVars GetRuntimeVar(List<RuntimeVars> list, String Name)
+		//	{
+		//		foreach (RuntimeVars item in list)
+		//		{
+		//			if (item.VarName == Name) return item;
+		//		}
+		//		return null;
+		//	}
 
-			public bool Equals(RuntimeVars rv)
-			{
-				return rv.Type.Equals(Type) && rv.VarData.Equals(VarData) && rv.VarName.Equals(VarName);
-			}
+		//	public bool Equals(RuntimeVars rv)
+		//	{
+		//		return rv.Type.Equals(Type) && rv.VarData.Equals(VarData) && rv.VarName.Equals(VarName);
+		//	}
 
-			public override bool Equals(object obj)
-			{
-				return this.Equals(obj as RuntimeVars);
-			}
+		//	public override bool Equals(object obj)
+		//	{
+		//		return this.Equals(obj as RuntimeVars);
+		//	}
 
-			public override int GetHashCode()
-			{
-				return 1;//VarName.GetHashCode() ^ VarData.GetHashCode() ^ Type.GetHashCode();
-			}
+		//	public override int GetHashCode()
+		//	{
+		//		return 1;//VarName.GetHashCode() ^ VarData.GetHashCode() ^ Type.GetHashCode();
+		//	}
 
-		}
+		//}
 
 		private void ConditonalsLT_MI_Click(object sender, RoutedEventArgs e)
 		{
@@ -2772,123 +2772,121 @@ namespace NodeEditor
 			}
 		}
 	}
-	/// <summary>
-	/// This is the starting pointer for a given graph
-	/// CONTAINS ONE OUTPUT (EXIT NODE)
-	/// </summary>
-	public partial class StartBlockNode : BaseNodeBlock
-	{
-		public StartBlockNode()
-		{
-			this.ExitNode = new ConnectionNode(this, "ExitNode", new Point(0, 0), ECOnnectionType.Exit);
-			DType = ECOnnectionType.Enter;
-		}
+	///// <summary>
+	///// This is the starting pointer for a given graph
+	///// CONTAINS ONE OUTPUT (EXIT NODE)
+	///// </summary>
+	//public partial class StartBlockNode : BaseNodeBlock
+	//{
+	//	public StartBlockNode()
+	//	{
+	//		this.ExitNode = new ConnectionNode(this, "ExitNode", new Point(0, 0), ECOnnectionType.Exit);
+	//		DType = ECOnnectionType.Enter;
+	//	}
 
-		public override bool OnStartEvaluateInternalData()
-		{
-			throw new NotImplementedException();
-		}
-		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock)
-		{
-			throw new NotImplementedException();
-		}
-		public override bool OnEndEvaluateInternalData()
-		{
-			throw new NotImplementedException();
-		}
+	//	public override bool OnStartEvaluateInternalData()
+	//	{
+	//		throw new NotImplementedException();
+	//	}
+	//	public override bool EvaluateInternalData(BaseNodeBlock connectedBlock)
+	//	{
+	//		throw new NotImplementedException();
+	//	}
+	//	public override bool OnEndEvaluateInternalData()
+	//	{
+	//		throw new NotImplementedException();
+	//	}
 
-		public override void DeleteConnection(EConditionalTypes contype, int row)
-		{
-			throw new NotImplementedException();
-		}
+	//	public override void DeleteConnection(EConditionalTypes contype, int row)
+	//	{
+	//		throw new NotImplementedException();
+	//	}
 
-		public override bool OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
-		{
-		//check to make sure the exit node is connected.
-		if (this.ExitNode.ConnectedNodes.Count == 0)
-		{
-			this.ActiveStatus = EActiveStatus.Error;
-			return false;
-		}
+	//	public override bool OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
+	//	{
+	//	//check to make sure the exit node is connected.
+	//	if (this.ExitNode.ConnectedNodes.Count == 0)
+	//	{
+	//		this.ActiveStatus = EActiveStatus.Error;
+	//		return false;
+	//	}
 
-		this.NodeBlockExecution(ref currentNB);
-		this.ActiveStatus = EActiveStatus.Active;
-		return true;
-		}
-		public override bool NodeBlockExecution(ref BaseNodeBlock currentNB)
-		{
-			return true;
-		}
+	//	this.NodeBlockExecution(ref currentNB);
+	//	this.ActiveStatus = EActiveStatus.Active;
+	//	return true;
+	//	}
+	//	public override bool NodeBlockExecution(ref BaseNodeBlock currentNB)
+	//	{
+	//		return true;
+	//	}
 
-		public override void OnEndNodeBlockExecution(ref BaseNodeBlock currentNB)
-		{
-			if (this.ExitNode.ConnectedNodes.Count > 0)
-			{
-				currentNB = this.ExitNode.ConnectedNodes[0].ParentBlock;
-				this.ActiveStatus = EActiveStatus.Disabled;
-				//currentNB.OnStartNodeBlockExecution(ref currentNB);
-			}
-		}
-	}
+	//	public override void OnEndNodeBlockExecution(ref BaseNodeBlock currentNB)
+	//	{
+	//		if (this.ExitNode.ConnectedNodes.Count > 0)
+	//		{
+	//			currentNB = this.ExitNode.ConnectedNodes[0].ParentBlock;
+	//			this.ActiveStatus = EActiveStatus.Disabled;
+	//			//currentNB.OnStartNodeBlockExecution(ref currentNB);
+	//		}
+	//	}
+	//}
 
-	/// <summary>
-	/// THis is the Stopping pointer for a given graph
-	/// CONTAINS ONE INPUT (ENTRY NODE)
-	/// </summary>
-	public partial class ExitBlockNode : BaseNodeBlock
-	{
-		public ExitBlockNode()
-		{
-			this.EntryNode = new ConnectionNode(this, "EntryNode", new Point(0, 0), ECOnnectionType.Enter);
-			DType = ECOnnectionType.Exit;
-		}
+	///// <summary>
+	///// THis is the Stopping pointer for a given graph
+	///// CONTAINS ONE INPUT (ENTRY NODE)
+	///// </summary>
+	//public partial class ExitBlockNode : BaseNodeBlock
+	//{
+	//	public ExitBlockNode()
+	//	{
+	//		this.EntryNode = new ConnectionNode(this, "EntryNode", new Point(0, 0), ECOnnectionType.Enter);
+	//		DType = ECOnnectionType.Exit;
+	//	}
 
-		public override void DeleteConnection(EConditionalTypes contype, int row)
-		{
-			throw new NotImplementedException();
-		}
+	//	public override void DeleteConnection(EConditionalTypes contype, int row)
+	//	{
+	//		throw new NotImplementedException();
+	//	}
 
-		public override bool EvaluateInternalData(BaseNodeBlock connectedBlock)
-		{
-			throw new NotImplementedException();
-		}
+	//	public override bool EvaluateInternalData(BaseNodeBlock connectedBlock)
+	//	{
+	//		throw new NotImplementedException();
+	//	}
 
-		public override bool NodeBlockExecution(ref BaseNodeBlock currentNB)
-		{
-			return true;
-		}
+	//	public override bool NodeBlockExecution(ref BaseNodeBlock currentNB)
+	//	{
+	//		return true;
+	//	}
 
-		public override bool OnEndEvaluateInternalData()
-		{
-			return true;
-		}
+	//	public override bool OnEndEvaluateInternalData()
+	//	{
+	//		return true;
+	//	}
 
-		public override void OnEndNodeBlockExecution(ref BaseNodeBlock currentNB)
-		{
-			this.ActiveStatus = EActiveStatus.Done;
-			return;
-		}
+	//	public override void OnEndNodeBlockExecution(ref BaseNodeBlock currentNB)
+	//	{
+	//		this.ActiveStatus = EActiveStatus.Done;
+	//		return;
+	//	}
 
-		public override bool OnStartEvaluateInternalData()
-		{
-			throw new NotImplementedException();
-		}
+	//	public override bool OnStartEvaluateInternalData()
+	//	{
+	//		throw new NotImplementedException();
+	//	}
 
-		public override bool OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
-		{
-			//check to make sure the exit node is connected.
-			if (this.EntryNode.ConnectedNodes.Count == 0)
-			{
-				this.ActiveStatus = EActiveStatus.Error;
-				return false;
-			}
+	//	public override bool OnStartNodeBlockExecution(ref BaseNodeBlock currentNB)
+	//	{
+	//		//check to make sure the exit node is connected.
+	//		if (this.EntryNode.ConnectedNodes.Count == 0)
+	//		{
+	//			this.ActiveStatus = EActiveStatus.Error;
+	//			return false;
+	//		}
 
-			//this.NodeBlockExecution(ref currentNB);
-			this.ActiveStatus = EActiveStatus.Active;
-			return true;
-		}
-	}
-
-
+	//		//this.NodeBlockExecution(ref currentNB);
+	//		this.ActiveStatus = EActiveStatus.Active;
+	//		return true;
+	//	}
+	//}
 
 }

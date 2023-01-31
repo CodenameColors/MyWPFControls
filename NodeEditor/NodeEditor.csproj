@@ -51,8 +51,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Resources\IStateMachineTraversal.cs" />
-    <Compile Include="Resources\NodeEditorExceptions.cs" />
     <Page Include="BlockNodeEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -63,6 +61,31 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NodeEditor_Windows\Arithmetic\AddBlock.cs" />
+    <Compile Include="NodeEditor_Windows\Arithmetic\BaseArithmeticBlock.cs" />
+    <Compile Include="NodeEditor_Windows\Arithmetic\DivisionBlock.cs" />
+    <Compile Include="NodeEditor_Windows\Arithmetic\ModuloBlock.cs" />
+    <Compile Include="NodeEditor_Windows\Arithmetic\MultiplyBlock.cs" />
+    <Compile Include="NodeEditor_Windows\Arithmetic\SubtractBlock.cs" />
+    <Compile Include="NodeEditor_Windows\BaseNodeBlock.cs" />
+    <Compile Include="NodeEditor_Windows\ConditionalNodeBlock.cs" />
+    <Compile Include="NodeEditor_Windows\ConnectionNode.cs" />
+    <Compile Include="NodeEditor_Windows\ConstantNodeBlock.cs" />
+    <Compile Include="NodeEditor_Windows\DialogueNodeBlock.cs" />
+    <Compile Include="NodeEditor_Windows\ExitNodeBlock.cs" />
+    <Compile Include="NodeEditor_Windows\Logic\ANDBlock.cs" />
+    <Compile Include="NodeEditor_Windows\Logic\BaseLogicNodeBlock.cs" />
+    <Compile Include="NodeEditor_Windows\Logic\NOTBlock.cs" />
+    <Compile Include="NodeEditor_Windows\Logic\ORBlock.cs" />
+    <Compile Include="NodeEditor_Windows\Resources\EE_Exceptions.cs" />
+    <Compile Include="NodeEditor_Windows\Resources\IProperties.cs" />
+    <Compile Include="NodeEditor_Windows\Resources\IStateMachineTraversal.cs" />
+    <Compile Include="NodeEditor_Windows\Resources\NodeEditorExceptions.cs" />
+    <Compile Include="NodeEditor_Windows\Resources\ObservableDictionary.cs" />
+    <Compile Include="NodeEditor_Windows\Resources\ObservablePropertyDictionary.cs" />
+    <Compile Include="NodeEditor_Windows\Resources\ObservableSortedDictionary.cs" />
+    <Compile Include="NodeEditor_Windows\Resources\SQLite.cs" />
+    <Compile Include="NodeEditor_Windows\StartNodeBlock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -89,10 +112,6 @@
     <Folder Include="Forms\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Bixbite\BixBite.csproj">
-      <Project>{d50deef5-20be-4a57-b0f8-6cb460f71d82}</Project>
-      <Name>BixBite</Name>
-    </ProjectReference>
     <ProjectReference Include="..\OutputLog\OutputLog.csproj">
       <Project>{a76b8058-f9fc-4308-a49b-66409bc0d437}</Project>
       <Name>OutputLog</Name>

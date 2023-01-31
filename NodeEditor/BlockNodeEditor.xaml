@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NodeEditor"
-			xmlns:nec="clr-namespace:NodeEditor.Components"
-			xmlns:logic="clr-namespace:NodeEditor.Components.Logic"
-			xmlns:arithmetic="clr-namespace:NodeEditor.Components.Arithmetic"
+			xmlns:nec="clr-namespace:NodeEditor"
+             xmlns:logic="clr-namespace:BixBite.NodeEditor.Logic"
+			xmlns:arithmetic="clr-namespace:BixBite.NodeEditor.Arithmetic"
+			xmlns:nodeEditor="clr-namespace:BixBite.NodeEditor"
 			mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 	<UserControl.Resources>
@@ -263,7 +264,7 @@
 			</Setter>
 		</Style>
 
-		<Style TargetType="{x:Type nec:ORBlock}">
+		<Style TargetType="{x:Type logic:ORBlock}">
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
@@ -456,7 +457,7 @@
 			</Setter>
 		</Style>
 
-		<Style TargetType="{x:Type nec:NOTBlock}">
+		<Style TargetType="{x:Type logic:NOTBlock}">
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
@@ -1559,7 +1560,7 @@
 		</Style>
 
 		
-		<Style TargetType="{x:Type local:ExitBlockNode}">
+		<Style TargetType="{x:Type nodeEditor:ExitBlockNode}">
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
@@ -1567,16 +1568,16 @@
 							<Border.Style>
 								<Style TargetType="Border">
 									<Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="{x:Static nec:EActiveStatus.Disabled}">
+                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="{x:Static nodeEditor:EActiveStatus.Disabled}">
                                             <Setter Property="BorderBrush" Value="#FF494949"></Setter>
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="{x:Static nec:EActiveStatus.Active}">
+                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="{x:Static nodeEditor:EActiveStatus.Active}">
                                             <Setter Property="BorderBrush" Value="White"></Setter>
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="{x:Static nec:EActiveStatus.Error}">
+                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="{x:Static nodeEditor:EActiveStatus.Error}">
                                             <Setter Property="BorderBrush" Value="DarkRed"></Setter>
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="{x:Static nec:EActiveStatus.Done}">
+                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="{x:Static nodeEditor:EActiveStatus.Done}">
                                             <Setter Property="BorderBrush" Value="Green"></Setter>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -1620,7 +1621,7 @@
 			</Setter>
 		</Style>
 
-		<Style TargetType="{x:Type local:StartBlockNode}">
+		<Style TargetType="{x:Type nodeEditor:StartBlockNode}">
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
@@ -1628,13 +1629,13 @@
 							<Border.Style>
 								<Style TargetType="Border">
 									<Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="{x:Static nec:EActiveStatus.Disabled}">
+                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="{x:Static nodeEditor:EActiveStatus.Disabled}">
                                             <Setter Property="BorderBrush" Value="#FF494949"></Setter>
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="{x:Static nec:EActiveStatus.Active}">
+                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="{x:Static nodeEditor:EActiveStatus.Active}">
                                             <Setter Property="BorderBrush" Value="White"></Setter>
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="{x:Static nec:EActiveStatus.Error}">
+                                        <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="{x:Static nodeEditor:EActiveStatus.Error}">
                                             <Setter Property="BorderBrush" Value="DarkRed"></Setter>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -1677,7 +1678,7 @@
 		</Style>
 		
 		
-		<Style TargetType="{x:Type nec:GetConstantNodeBlock}">
+		<Style TargetType="{x:Type nodeEditor:GetConstantNodeBlock}">
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
@@ -1748,7 +1749,7 @@
 			</Setter>
 		</Style>
 
-		<Style TargetType="{x:Type nec:SetConstantNodeBlock}">
+		<Style TargetType="{x:Type nodeEditor:SetConstantNodeBlock}">
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
@@ -1970,7 +1971,7 @@
 		</Style>
 
 
-		<Style TargetType="{x:Type nec:ConditionalNodeBlock}">
+		<Style TargetType="{x:Type nodeEditor:ConditionalNodeBlock}">
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate>
@@ -2184,21 +2185,21 @@
 			</Setter>
 		</Style>
 
-		<Style TargetType="{x:Type nec:DialogueNodeBlock}">
+		<Style TargetType="{x:Type nodeEditor:DialogueNodeBlock}">
 			<Setter Property="Template">
 				<Setter.Value>
-					<ControlTemplate TargetType="{x:Type nec:DialogueNodeBlock}">
+					<ControlTemplate TargetType="{x:Type nodeEditor:DialogueNodeBlock}">
 						<Border Name="MainBorder"  CornerRadius="5" Background="#FF494949" BorderThickness="2">
 							<Border.Style>
 								<Style TargetType="Border">
 									<Style.Triggers>
-                      <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="{x:Static nec:EActiveStatus.Disabled}">
+                      <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Value="{x:Static nodeEditor:EActiveStatus.Disabled}">
                           <Setter Property="BorderBrush" Value="#FF494949"></Setter>
                       </DataTrigger>
-                      <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="{x:Static nec:EActiveStatus.Active}">
+                      <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="{x:Static nodeEditor:EActiveStatus.Active}">
                           <Setter Property="BorderBrush" Value="White"></Setter>
                       </DataTrigger>
-                      <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="{x:Static nec:EActiveStatus.Error}">
+                      <DataTrigger Binding="{Binding Path=ActiveStatus, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Value="{x:Static nodeEditor:EActiveStatus.Error}">
                           <Setter Property="BorderBrush" Value="DarkRed"></Setter>
                       </DataTrigger>
                   </Style.Triggers>

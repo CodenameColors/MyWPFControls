@@ -4,9 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NodeEditor_Tester"
-				xmlns:ne="clr-namespace:NodeEditor;assembly=NodeEditor"
+  
+        xmlns:ne="clr-namespace:BixBite.NodeEditor;assembly=NodeEditor"
 				xmlns:err ="clr-namespace:OutputLog;assembly=OutputLog"
-        mc:Ignorable="d" Background="Black"
+				xmlns:nodeEditor="clr-namespace:NodeEditor;assembly=NodeEditor"
+				mc:Ignorable="d" Background="Black"
 				Loaded="Window_Loaded"	
         Title="MainWindow" Height="693" Width="800">
 	<Grid >
@@ -18,7 +20,7 @@
 		</Grid.RowDefinitions>
 		
 		<TextBlock Grid.Row="0" Text="Node Editor:" Foreground="White"/>
-		<ne:BlockNodeEditor Grid.Row="0" x:Name="NodeEditor" AllowNodeDeletion="True" Margin="10,27,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="#FFBDBDBD" BorderThickness="2"/>
+		<nodeEditor:BlockNodeEditor Grid.Row="0" x:Name="NodeEditor" AllowNodeDeletion="True" Margin="10,27,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="#FFBDBDBD" BorderThickness="2"/>
 
 
 		<Button Grid.Row="1" x:Name="BaseNode_BTN" Margin="444,0,245,-0" Content="Add Dia" Click="BaseNode_BTN_Click" HorizontalAlignment="Right" VerticalAlignment="Top"/>

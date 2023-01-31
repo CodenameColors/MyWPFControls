@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BixBite.NodeEditor;
-using NodeEditor.Components;
 
-namespace NodeEditor.Resources
+namespace BixBite.Resources
 {
 	interface IStateMachineTraversal
 	{

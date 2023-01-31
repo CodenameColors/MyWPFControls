@@ -14,8 +14,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using BixBite.NodeEditor;
 using NodeEditor;
-using NodeEditor.Components;
+using NodeEditor.Properties;
 
 namespace NodeEditor_Tester
 {
