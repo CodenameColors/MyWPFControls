@@ -22,12 +22,12 @@
 			<ScrollViewer x:Name="grid_sv" HorizontalAlignment="Stretch" VerticalScrollBarVisibility="Auto">
 				<Grid x:Name="Property_Grid">
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="30*"/>
-						<ColumnDefinition Width="70*"/>
+						<ColumnDefinition Width="0*"/>
+						<ColumnDefinition Width="1*"/>
 					</Grid.ColumnDefinitions>
 					<Grid.RowDefinitions>
-						<RowDefinition Height="40" MouseRightButtonDown="OpenClearCM"/>
-						<RowDefinition Height="10"/>
+						<RowDefinition Height="0" MouseRightButtonDown="OpenClearCM"/>
+						<RowDefinition Height="0"/>
 						<RowDefinition Height="*"/>
 					</Grid.RowDefinitions>
 				
@@ -40,8 +40,8 @@
 				<GridSplitter x:Name="gridSplitterHori" Grid.ColumnSpan="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="3"  Background="#FF868686" />
 					<Grid x:Name="InnerPropGrid" Grid.Row="2" Grid.ColumnSpan="2">
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="30*"/>
-						<ColumnDefinition Width="70*"/>
+						<ColumnDefinition Width="0*"/>
+						<ColumnDefinition Width="1*"/>
 					</Grid.ColumnDefinitions>
 					<Grid.RowDefinitions>
 					</Grid.RowDefinitions>

@@ -38,11 +38,13 @@ namespace CollapsedPropertyGridTest
 			tb = new TextBox() { IsEnabled = true }; tb.KeyDown += sendtest;
 			bb1.Properties.Add(new Tuple<string, object, Control>("test", "behhh", tb));
 			bb1.Properties.Add(new Tuple<string, object, Control>("ComboBox", new List<String>() { "1", "2", "3" }, new ComboBox()));
+			bb1.Properties.Add(new Tuple<string, object, Control>("Button", null, new Button() { Content = "Button Text" }));
+
 			bb1.Properties.Add(new Tuple<string, object, Control>("CheckBox", false, new CheckBox()));
 			bb1.Properties.Add(new Tuple<string, object, Control>("Custom", null, new DropDownCustomColorPicker.CustomColorPicker()));
 
 			bags.Add(bb); bags.Add(bb1);
-
+			//Cpgrid.ItemsSource = bags;
 		}
 
 		public void sendtest(object sender, EventArgs e)

@@ -31,7 +31,6 @@ namespace PropertyGridEditor
 		public ObservableDictionary<String, object> PropDictionary = new ObservableDictionary<string, object>();
 		public String CurrentProp = "";
 
-
 		public IEnumerable ItemsSource
 		{
 			get { return (IEnumerable)GetValue(ItemsSourceProperty); }
@@ -331,12 +330,26 @@ namespace PropertyGridEditor
 					Grid.SetColumn(ctype, 1);
 					ctype.BringIntoView();
 					ctype.Tag = PropName; //used for EZ dictionary access later
-					((CheckBox)ctype).Click += Ctype_Click;
+					((CheckBox) ctype).Click += Ctype_Click;
 
 					if (data is Boolean)
-						((CheckBox)ctype).IsChecked = (bool)data;
+						((CheckBox) ctype).IsChecked = (bool) data;
 					InnerPropGrid.Children.Add(ctype); //add the desired control type.
 				}
+			}
+			else if (ctype is Button)
+			{
+				ctype.HorizontalAlignment = HorizontalAlignment.Left;
+				ctype.VerticalAlignment = VerticalAlignment.Center;
+				ctype.Margin = new Thickness(10, 2, 10, 2);
+				ctype.Height = 30;
+
+				Grid.SetRow(ctype, num);
+				Grid.SetColumn(ctype, 1);
+				ctype.BringIntoView();
+				ctype.Tag = PropName; //used for EZ dictionary access later
+				((Button) ctype).Click += Cbutton_Click;
+				InnerPropGrid.Children.Add(ctype); //add the desired control type.
 			}
 			//else if (ctype is CustomColorPicker)
 			//{
@@ -459,6 +472,12 @@ namespace PropertyGridEditor
 		{
 			Console.WriteLine("Clicked Checkbox");
 			PropDictionary[((CheckBox)sender).Tag.ToString()] = ((CheckBox)sender).IsChecked;
+		}
+
+		private void Cbutton_Click(object sender, RoutedEventArgs e)
+		{
+			Console.WriteLine("Clicked Button");
+			//PropDictionary[((Button)sender).Tag.ToString()] = ((Button)sender).Content;
 		}
 
 		private void Ctype_KeyDown(object sender, KeyEventArgs e)

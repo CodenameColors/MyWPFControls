@@ -257,6 +257,22 @@
 		<Button x:Name="PlayerPause_BTN" Grid.Column="2" Content="Pause" Width="40"  Grid.Row="3" Margin="106,0,0,0" HorizontalAlignment="Left" Click="PlayerPause_BTN_Click"/>
 		<Button x:Name="PlayTimeline_BTN" Grid.Column="2" Content="Play"  Width="40"  Grid.Row="3" Margin="156,0,0,0" HorizontalAlignment="Left" Click="PlayTimeline_BTN_Click" Height="25" VerticalAlignment="Top"/>
 		<Button x:Name="Test_BTN" Grid.Column="2" Content="Test"  Width="40"  Grid.Row="3" Margin="209,0,0,0" HorizontalAlignment="Left" Click="Test_BTN_Click" Height="25" VerticalAlignment="Top" Visibility="Hidden"/>
+
+		<TextBlock Grid.Row="3" Grid.Column="2" Text="Elapsed Time:" Foreground="White" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="3,0,100,3"/>
+		<TextBox Grid.Row="3" Grid.Column="2" Width="80" Background="#FF9B9B9B" Foreground="Black" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="3,0,10,3">
+			<TextBox.Style>
+				<Style TargetType="TextBox">
+					<Setter Property="Text" Value="{Binding Path=ElapsedTime,UpdateSourceTrigger=PropertyChanged, Mode= TwoWay}"/>
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding Path=ElapsedTime, UpdateSourceTrigger=PropertyChanged, Mode= TwoWay}" Value="{x:Null}">
+							<Setter Property="Text" Value="0.0"/>
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</TextBox.Style>
+		</TextBox>
+
+
 		<GridSplitter Grid.Row="2" Grid.ColumnSpan="4" Background="#FF9B9B9B" ResizeDirection="Columns" HorizontalAlignment="Stretch"/>
 	</Grid>
 </UserControl>

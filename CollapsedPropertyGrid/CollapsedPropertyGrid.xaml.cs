@@ -65,7 +65,11 @@ namespace CollapsedPropertyGrid
 					if(PropertyHasValue(o, "Properties") != null)
 					{
 						ObservableCollection<Tuple<String, object, Control>> obs = (ObservableCollection < Tuple<String, object, Control> > )PropertyHasValue(o, "Properties");
-						PropertyGridEditor.PropGrid pgrid = new PropGrid() { HorizontalAlignment = HorizontalAlignment.Stretch, Width = PGrid_TreeView.ActualWidth - 50};
+						PropertyGridEditor.PropGrid pgrid = null;
+						if (PGrid_TreeView.ActualWidth >= 50)
+							pgrid = new PropGrid() { HorizontalAlignment = HorizontalAlignment.Stretch, Width = PGrid_TreeView.ActualWidth - 50 };
+						else
+							pgrid = new PropGrid() { HorizontalAlignment = HorizontalAlignment.Stretch, Width = this.MinWidth };
 						foreach (Tuple<String, object, Control> t in obs)
 						{
 							pgrid.AddProperty(t.Item1, t.Item3, t.Item2);
@@ -96,7 +100,12 @@ namespace CollapsedPropertyGrid
 					if (PropertyHasValue(o, "Properties") != null)
 					{
 						ObservableCollection<Tuple<String, object, Control>> obs = (ObservableCollection<Tuple<String, object, Control>>)PropertyHasValue(o, "Properties");
-						PropertyGridEditor.PropGrid pgrid = new PropGrid() { HorizontalAlignment = HorizontalAlignment.Stretch, Width = PGrid_TreeView.ActualWidth - 50 };
+						PropertyGridEditor.PropGrid pgrid = null;
+						if (PGrid_TreeView.ActualWidth >= 50)
+							pgrid = new PropGrid() { HorizontalAlignment = HorizontalAlignment.Stretch, Width = PGrid_TreeView.ActualWidth - 50 };
+						else
+							pgrid = new PropGrid() { HorizontalAlignment = HorizontalAlignment.Stretch, Width = this.MinWidth };
+
 						foreach (Tuple<String, object, Control> t in obs)
 						{
 							pgrid.AddProperty(t.Item1, t.Item3, t.Item2);
@@ -131,7 +140,11 @@ namespace CollapsedPropertyGrid
 					if (PropertyHasValue(o, "Properties") != null)
 					{
 						ObservableCollection<Tuple<String, object, Control>> obs = (ObservableCollection<Tuple<String, object, Control>>)PropertyHasValue(o, "Properties");
-						PropertyGridEditor.PropGrid pgrid = new PropGrid() { HorizontalAlignment = HorizontalAlignment.Stretch, Width = PGrid_TreeView.ActualWidth - 50 };
+						PropertyGridEditor.PropGrid pgrid = null;
+						if (PGrid_TreeView.ActualWidth >= 50)
+							pgrid = new PropGrid() { HorizontalAlignment = HorizontalAlignment.Stretch, Width = PGrid_TreeView.ActualWidth - 50 };
+						else
+							pgrid = new PropGrid() { HorizontalAlignment = HorizontalAlignment.Stretch, Width = this.MinWidth };
 						foreach (Tuple<String, object, Control> t in obs)
 						{
 							pgrid.AddProperty(t.Item1, t.Item3, t.Item2);
@@ -159,7 +172,16 @@ namespace CollapsedPropertyGrid
       InitializeComponent();
     }
 
-
+		public void RefreshWidth(int Width)
+		{
+			foreach (var VARIABLE in PGrid_TreeView.Items)
+			{
+				if (VARIABLE is TreeViewItem tvi)
+				{
+					tvi.Width = Width - 50;
+				}
+			}
+		}
 
 
 		public static object PropertyHasValue(object obj, string propertyName)

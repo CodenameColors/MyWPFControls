@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.452
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.757
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyGridEditor", "PropertyGridEditor.csproj", "{4A4FC4F0-7007-46B7-9401-BD5D405C6362}"
 EndProject
@@ -44,6 +44,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutputLog", "..\OutputLog\OutputLog.csproj", "{A76B8058-F9FC-4308-A49B-66409BC0D437}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutputLog_Tester", "..\OutputLog_Tester\OutputLog_Tester.csproj", "{D796A340-28D5-42A7-A2C4-114DC3EECD7C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bixbite", "Bixbite", "{A181BC1F-58E8-40E4-8E0B-51586B208902}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BixBite", "..\Bixbite\BixBite.csproj", "{D50DEEF5-20BE-4A57-B0F8-6CB460F71D82}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -107,6 +111,10 @@ Global
 		{D796A340-28D5-42A7-A2C4-114DC3EECD7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D796A340-28D5-42A7-A2C4-114DC3EECD7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D796A340-28D5-42A7-A2C4-114DC3EECD7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D50DEEF5-20BE-4A57-B0F8-6CB460F71D82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D50DEEF5-20BE-4A57-B0F8-6CB460F71D82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D50DEEF5-20BE-4A57-B0F8-6CB460F71D82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D50DEEF5-20BE-4A57-B0F8-6CB460F71D82}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -126,6 +134,7 @@ Global
 		{CB78DC00-1921-4C1A-846C-FF7D40489D2C} = {1097DD01-1985-4897-B4C1-91AA20D56B58}
 		{A76B8058-F9FC-4308-A49B-66409BC0D437} = {2C1E0F1F-F805-4041-84CB-9039F09F6E8A}
 		{D796A340-28D5-42A7-A2C4-114DC3EECD7C} = {2C1E0F1F-F805-4041-84CB-9039F09F6E8A}
+		{D50DEEF5-20BE-4A57-B0F8-6CB460F71D82} = {A181BC1F-58E8-40E4-8E0B-51586B208902}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {944647FF-FCD4-486E-AE17-184A72BEBF87}

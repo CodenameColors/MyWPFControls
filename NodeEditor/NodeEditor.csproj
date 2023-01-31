@@ -31,6 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -43,9 +46,9 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Resources\IStateMachineTraversal.cs" />
@@ -54,21 +57,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="Components\Arithmetic\AddBlock.cs" />
-    <Compile Include="Components\Arithmetic\BaseArithmeticBlock.cs" />
-    <Compile Include="Components\Arithmetic\DivisionBlock.cs" />
-    <Compile Include="Components\Arithmetic\ModuloBlock.cs" />
-    <Compile Include="Components\Arithmetic\MultiplyBlock.cs" />
-    <Compile Include="Components\Arithmetic\SubtractBlock.cs" />
-    <Compile Include="Components\BaseNodeBlock.cs" />
-    <Compile Include="Components\ConstantNodeBlock.cs" />
-    <Compile Include="Components\DialogueNodeBlock.cs" />
-    <Compile Include="Components\ConnectionNode.cs" />
-    <Compile Include="Components\ConditionalNodeBlock.cs" />
-    <Compile Include="Components\Logic\ANDBlock.cs" />
-    <Compile Include="Components\Logic\BaseLogicNodeBlock.cs" />
-    <Compile Include="Components\Logic\NOTBlock.cs" />
-    <Compile Include="Components\Logic\ORBlock.cs" />
     <Compile Include="BlockNodeEditor.xaml.cs">
       <DependentUpon>BlockNodeEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -101,6 +89,10 @@
     <Folder Include="Forms\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Bixbite\BixBite.csproj">
+      <Project>{d50deef5-20be-4a57-b0f8-6cb460f71d82}</Project>
+      <Name>BixBite</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OutputLog\OutputLog.csproj">
       <Project>{a76b8058-f9fc-4308-a49b-66409bc0d437}</Project>
       <Name>OutputLog</Name>

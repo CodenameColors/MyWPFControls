@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -64,8 +66,20 @@ namespace TimelinePlayer
 	/// <summary>
 	/// Interaction logic for UserControl1.xaml
 	/// </summary>
-	public partial class TimelinePlayer : UserControl
+	public partial class TimelinePlayer : UserControl, INotifyPropertyChanged
   {
+	  public event PropertyChangedEventHandler PropertyChanged;
+
+	  public void OnPropertyChanged(string name)
+	  {
+		  PropertyChangedEventHandler handler = PropertyChanged;
+		  if (handler != null)
+		  {
+			  handler(this, new PropertyChangedEventArgs(name));
+		  }
+	  }
+
+
 		#region delegates
 		public delegate void SyncFunction_Hook();
 		public SyncFunction_Hook TimeBlockSync = null;
@@ -109,6 +123,19 @@ namespace TimelinePlayer
 		private Point pointToAdd = new Point();
 
 		//public object SelectedControl = new object();
+
+
+		private Stopwatch tStopwatch = null;
+		private float _elapsedTime = 0.0f;
+		public float ElapsedTime
+		{
+			get => _elapsedTime;
+			set
+			{
+				_elapsedTime = value;
+				OnPropertyChanged("ElapsedTime");
+			}
+		}
 
 		public object SelectedControl
 		{
@@ -320,6 +347,9 @@ namespace TimelinePlayer
 		public TimelinePlayer()
     {
 			InitializeComponent();
+
+			this.DataContext = this;
+
 			SelectedControl = new object();
 			Console.WriteLine("init");
 			PlayerTimer.Tick += PlayTimer_Tick;
@@ -721,6 +751,7 @@ namespace TimelinePlayer
 			if (Timelines_Grid.ActualWidth - 5 > PlayLine.X1)
 			{
 				PlayLine.X1 += 1; PlayLine.X2 += 1; PlayLine.BringIntoView(new Rect(PlayLine.X1, PlayLine.Y1, 2, 100));
+				ElapsedTime = tStopwatch.ElapsedMilliseconds / 1000.0f;
 			}
 			else { PlayerTimer.Stop(); ActiveTBblocks.Clear(); }
 			
@@ -766,6 +797,7 @@ namespace TimelinePlayer
 
 		private void PlayerReset_BTN_Click(object sender, RoutedEventArgs e)
 		{
+			tStopwatch.Reset();
 			ResetTimeline();
 		}
 
@@ -778,6 +810,7 @@ namespace TimelinePlayer
 
 		private void PlayerStop_BTN_Click(object sender, RoutedEventArgs e)
 		{
+			tStopwatch.Reset();
 			StopTimeline();
 		}
 
@@ -788,6 +821,7 @@ namespace TimelinePlayer
 
 		private void PlayerPause_BTN_Click(object sender, RoutedEventArgs e)
 		{
+			tStopwatch.Stop();
 			PauseTimeline();
 		}
 
@@ -818,6 +852,11 @@ namespace TimelinePlayer
 
 		private void PlayTimeline_BTN_Click(object sender, RoutedEventArgs e)
 		{
+			//Set up the stop watch
+			if(tStopwatch == null) tStopwatch = Stopwatch.StartNew();
+			tStopwatch.Start();
+			ElapsedTime = tStopwatch.ElapsedMilliseconds / 1000.0f;
+
 			PlayTimeline();
 		}
 
