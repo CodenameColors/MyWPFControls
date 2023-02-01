@@ -38,7 +38,7 @@ namespace BixBite.NodeEditor.Logic
 
 
 		private ECOnnectionType dtype;
-		public ECOnnectionType DType
+		public new ECOnnectionType DType
 		{
 			get { return dtype; }
 			set

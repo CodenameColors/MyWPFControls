@@ -55,7 +55,7 @@ namespace BixBite.NodeEditor
 
 	}
 
-	public abstract class BaseNodeBlock : System.Windows.Controls.Button, INotifyPropertyChanged, IStateMachineTraversal
+	public abstract partial class BaseNodeBlock : System.Windows.Controls.Button, INotifyPropertyChanged, IStateMachineTraversal
 	{
 		public String Header { get; set; }
 		public new String Name { get; set; }
