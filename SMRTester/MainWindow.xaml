@@ -10,7 +10,6 @@
 	<Grid>
 		<Canvas x:Name="BackCanvas" Background="Black" MouseDown="Canvas_MouseLeftButtonDown" >
 			<SMR:SMRControl x:Name="SMRCon" Width="200" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center" Canvas.Left="169" Canvas.Top="93">
-				<TextBox/>
 			</SMR:SMRControl>
 			<SMR:SMRControl x:Name="SMRCon1" Width="200" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center" Canvas.Left="522" Canvas.Top="207">
 			</SMR:SMRControl>

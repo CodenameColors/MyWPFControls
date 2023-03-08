@@ -54,6 +54,8 @@
     </Page>
     <Compile Include="Components\CropAdorner.cs" />
     <Compile Include="Components\CropService.cs" />
+    <Compile Include="Components\ResizeAdorner.cs" />
+    <Compile Include="Components\ResizeService.cs" />
     <Compile Include="Components\State\CompleteState.cs" />
     <Compile Include="Components\State\CreateState.cs" />
     <Compile Include="Components\State\DragState.cs" />

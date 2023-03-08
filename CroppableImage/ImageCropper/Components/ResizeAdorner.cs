@@ -3,165 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Documents;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Controls;
 
-namespace SMRControl
+namespace ImageCropper.Components
 {
-    /// <summary>
-    /// Interaction logic for UserControl1.xaml
-		/// ITS IMPORTANT THAT THIS CONTROL IS ONLY USED FOR CANVASES
-    /// </summary>
-    public partial class SMRControl : UserControl
-    {
 
-		bool isDown, isDragging, isSelected;
-		UIElement selectedElement = null;
-		double originalLeft, originalTop;
-		Point startPoint;
-
-    public SMRControl()
-    {
-      InitializeComponent();
-			this.Loaded += SMRControl_Loaded;
-    }
-
-		AdornerLayer adornerLayer;
-
-		private void SMRControl_Loaded(object sender, RoutedEventArgs e)
-		{
-			Console.WriteLine("loaded");
-
-			//registering mouse events
-			this.MouseLeftButtonDown += MainWindow_MouseLeftButtonDown;
-			this.MouseLeftButtonUp += MainWindow_MouseLeftButtonUp;
-			this.MouseMove += MainWindow_MouseMove;
-			this.MouseLeave += MainWindow_MouseLeave;
-
-			((Canvas)this.Parent).PreviewMouseLeftButtonDown += MyCanvas_PreviewMouseLeftButtonDown;
-			((Canvas)this.Parent).PreviewMouseLeftButtonUp += MyCanvas_PreviewMouseLeftButtonUp;
-		}
-
-
-		private void StopDragging()
-		{
-			if (isDown)
-			{
-				isDown = isDragging = false;
-			}
-		}
-
-
-		private void MyCanvas_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-		{
-			StopDragging();
-			e.Handled = true;
-		}
-
-		private void MyCanvas_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-		{
-			//removing selected element
-			if (isSelected)
-			{
-				isSelected = false;
-				if (selectedElement != null)
-				{
-					adornerLayer.Remove(adornerLayer.GetAdorners(selectedElement)[0]);
-					selectedElement = null;
-				}
-			}
-
-			// select element if any element is clicked other then canvas
-			if (e.Source != ((Canvas)this.Parent))
-			{
-				isDown = true;
-				startPoint = e.GetPosition(((Canvas)this.Parent));
-
-				selectedElement = e.Source as UIElement;
-
-				originalLeft = Canvas.GetLeft(selectedElement);
-				originalTop = Canvas.GetTop(selectedElement);
-
-				//adding adorner on selected element
-				adornerLayer = AdornerLayer.GetAdornerLayer(selectedElement);
-				adornerLayer.Add(new BorderAdorner(selectedElement));
-				isSelected = true;
-				e.Handled = true;
-			}
-		}
-
-		private void MainWindow_MouseMove(object sender, MouseEventArgs e)
-		{
-			//handling mouse move event and setting canvas top and left value based on mouse movement
-			if (isDown)
-			{
-				if ((!isDragging) &&
-						((Math.Abs(e.GetPosition(((Canvas)this.Parent)).X - startPoint.X) > SystemParameters.MinimumHorizontalDragDistance) ||
-						(Math.Abs(e.GetPosition(((Canvas)this.Parent)).Y - startPoint.Y) > SystemParameters.MinimumVerticalDragDistance)))
-					isDragging = true;
-
-				if (isDragging)
-				{
-					Point position = Mouse.GetPosition(((Canvas)this.Parent));
-					Canvas.SetTop(selectedElement, position.Y - (startPoint.Y - originalTop));
-					Canvas.SetLeft(selectedElement, position.X - (startPoint.X - originalLeft));
-				}
-			}
-		}
-
-		private void MainWindow_MouseLeave(object sender, MouseEventArgs e)
-		{
-			//stop dragging on mouse leave
-			StopDragging();
-			Console.WriteLine("MoveUp_leave");
-			e.Handled = true;
-		}
-
-		private void MainWindow_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-		{
-			//stop dragging on mouse left button up
-			StopDragging();
-			Console.WriteLine("MoveUp");
-			e.Handled = true;
-		}
-
-		private void MainWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-		{
-			//remove selected element on mouse down
-			if (isSelected)
-			{
-				isSelected = false;
-				if (selectedElement != null)
-				{
-					adornerLayer.Remove(adornerLayer.GetAdorners(selectedElement)[0]);
-					selectedElement = null;
-				}
-			}
-		}
-
-		public void SetVisibility(Visibility visibility)
-		{
-			this.adornerLayer.Visibility = Visibility;
-		}
-
-	}
-
-		public class BorderAdorner : Adorner
+	public class ResizeAdorner : Adorner
 	{
+		public delegate void ResizeHook(int width, int height);
+		public ResizeHook Resize_Hook;
+
 		//use thumb for resizing elements
 		Thumb topLeft, topRight, bottomLeft, bottomRight;
 		//visual child collection for adorner
 		VisualCollection visualChilderns;
 
-		public BorderAdorner(UIElement element) : base(element)
+		public ResizeAdorner(UIElement element) : base(element)
 		{
 			visualChilderns = new VisualCollection(this);
 
@@ -196,6 +58,9 @@ namespace SMRControl
 
 				adornedElement.Width = newWidth;
 				adornedElement.Height = newHeight;
+
+				if (Resize_Hook != null)
+					Resize_Hook((int)newWidth, (int)newHeight);
 			}
 		}
 
@@ -219,6 +84,10 @@ namespace SMRControl
 				double newTop = oldTop - (newHeight - oldHeight);
 				adornedElement.Height = newHeight;
 				Canvas.SetTop(adornedElement, newTop);
+
+				if (Resize_Hook != null)
+					Resize_Hook((int)newWidth, (int)newHeight);
+
 			}
 		}
 
@@ -246,6 +115,9 @@ namespace SMRControl
 				double newTop = oldTop - (newHeight - oldHeight);
 				adornedElement.Height = newHeight;
 				Canvas.SetTop(adornedElement, newTop);
+
+				if (Resize_Hook != null)
+					Resize_Hook((int)newWidth, (int)newHeight);
 			}
 		}
 
@@ -270,6 +142,9 @@ namespace SMRControl
 				Canvas.SetLeft(adornedElement, newLeft);
 
 				adornedElement.Height = newHeight;
+
+				if (Resize_Hook != null)
+					Resize_Hook((int)newWidth, (int)newHeight);
 			}
 		}
 

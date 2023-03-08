@@ -87,7 +87,7 @@ namespace CroppableImageTester
 			Canvas c = sender as Canvas;
 			if (c != null)
 			{
-				ClearAdorners(c);
+				//ClearAdorners(c);
 				CroppableImage.bHasFocus = false;
 			}
 		}

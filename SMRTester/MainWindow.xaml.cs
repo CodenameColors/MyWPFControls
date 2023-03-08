@@ -24,6 +24,7 @@ namespace SMRTester
 		{
 			InitializeComponent();
 			SMRCon.MouseUp += SMRCon_MouseUp;
+			SMRCon1.MouseUp += SMRCon_MouseUp;
 		}
 
 		private void SMRCon_MouseUp(object sender, MouseButtonEventArgs e)
