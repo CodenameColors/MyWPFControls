@@ -40,7 +40,6 @@ namespace ImageCropper.Components
 			bottomRight.DragDelta += BottomRight_DragDelta;
 		}
 
-
 		private void BottomRight_DragDelta(object sender, DragDeltaEventArgs e)
 		{
 			FrameworkElement adornedElement = this.AdornedElement as FrameworkElement;

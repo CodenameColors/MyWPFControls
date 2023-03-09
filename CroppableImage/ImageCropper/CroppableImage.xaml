@@ -4,12 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ImageCropper"
-             mc:Ignorable="d"  Loaded="UserControl_Loaded"
+             mc:Ignorable="d"  Loaded="UserControl_Loaded" MouseLeftButtonDown="UserControl_MouseLeftButtonDown"
+						 MouseLeftButtonUp="UserControl_MouseLeftButtonUp" MouseMove="UserControl_MouseMove"
+						 MouseLeave="UserControl_MouseLeave"
              Height="64" Width="64">
 	<UserControl.Resources>
 		<ContextMenu x:Key="CroppableImage_CM">
 			<MenuItem Header="Reset Crop" Click="ResetCropSize_OnClick"/>
 			<MenuItem Header="Crop Image" Click="CropImage_OnClick" />
+			<LineBreak/>
+			<MenuItem x:Name="ConfirmCrop_BTN" Header="Confirm Crop" IsEnabled="True" Click="ConfirmCrop_BTN_Click"/>
 			<!--<MenuItem Header="Add Gameobject Layer" Click="GameObjectLayer_Click" />-->
 		</ContextMenu>
 	</UserControl.Resources>

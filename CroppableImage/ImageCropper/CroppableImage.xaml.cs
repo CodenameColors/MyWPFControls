@@ -26,6 +26,14 @@ namespace ImageCropper
 		public CropService CropService { get; private set; }
 		public ResizeService ResizeService { get; private set; }
 		private BitmapImage _baseImage = new BitmapImage();
+		private CroppedBitmap _croppedImage = null;
+		bool _bCanDrag = false;
+		bool _bIsDragging = false;
+		int _xMouseOffset = 0;
+		int _yMouseOffset = 0;
+
+		double xscale = 1.0f;
+		double yscale = 1.0f;
 
 		private bool _bHasFocus = false;
 
@@ -35,12 +43,13 @@ namespace ImageCropper
 			set
 			{
 				_bHasFocus = value;
-				if (!_bHasFocus)
+				if (!_bHasFocus && !_bCanDrag)
 				{
 					CropService?.ClearAdorners(this);
-					if (CropService == null)
+					ResizeService?.ClearAdorners(this);
+					if (CropService != null)
 						CropService = null;
-					if (ResizeService == null)
+					if (ResizeService != null)
 						ResizeService = null;
 				}
 			}
@@ -51,6 +60,7 @@ namespace ImageCropper
 			InitializeComponent();
 			CropService = null;
 			ResizeService = null;
+			IsHitTestVisible = true;
 		}
 
 		private void UserControl_Loaded(object sender, RoutedEventArgs e)
@@ -80,33 +90,28 @@ namespace ImageCropper
 
 		public void SetImage(String bitmapImagePath, bool bChangeSize)
 		{
+			_baseImage = new BitmapImage();
 			_baseImage.BeginInit();
 			_baseImage.UriSource = new Uri(bitmapImagePath, UriKind.Absolute);
 			_baseImage.EndInit();
 
 
 			SourceImage.Source = _baseImage;
+			SourceImage.Stretch = Stretch.Fill;
 			if (bChangeSize)
 			{
-				if (CropService == null)
-					CropService = new CropService(this);
-
-				this.Width = _baseImage.Width;
-				this.Height = _baseImage.Height;
-				CropService.Adorner.Width = this.Width;
-				CropService.Adorner.Height = this.Height;
-				//ImageBorder.Width = this.Width;
-				//ImageBorder.Height = this.Height;
-
-				RootGrid.Height = _baseImage.Height;
-				RootGrid.Width = _baseImage.Width;
+				if (ResizeService == null)
+					ResizeService = new ResizeService(this);
 
 				this.UpdateLayout();
-				CropService.ClearAdorners(this);
+				CropService?.ClearAdorners(this);
+				ResizeService?.ClearAdorners(this);
 				CropService = new CropService(this);
-				CropService.Adorner.UpdateLayout();
-				UpdateDefaultStyle();
-
+				ResizeService = new ResizeService(this);
+				(ResizeService.Adorner as ResizeAdorner).Resize_Hook = ResizeImage;
+				_croppedImage = null;
+				xscale = 1.0f;
+				yscale = 1.0f;
 			}
 		}
 
@@ -116,7 +121,7 @@ namespace ImageCropper
 			if (CropService != null)
 				CropService = null;
 			CropService = new CropService(this);
-
+			
 
 		}
 
@@ -146,29 +151,45 @@ namespace ImageCropper
 			//	_dragAdorner = new DragAdorner(this);
 			//	adornerLayer?.Add(_dragAdorner);
 			//}
-			ResizeService = new ResizeService(this);
-			(ResizeService.Adorner as ResizeAdorner).Resize_Hook = ResizeImage;
+			if (ResizeService == null)
+			{
+				ResizeService?.ClearAdorners(this);
+				ResizeService = new ResizeService(this);
+				(ResizeService.Adorner as ResizeAdorner).Resize_Hook = ResizeImage;
+				(ResizeService).MoveParent_hook = MoveControl;
+			}
 
 		}
 
 		private void ResizeImage(int width, int height)
 		{
+			xscale = (double)width / _baseImage.PixelWidth;
+			yscale = (double)height / _baseImage.PixelHeight;
+			if (_croppedImage != null)
+			{
+				var bitmap = new TransformedBitmap(_croppedImage,
+					new ScaleTransform(xscale, yscale));
 
-			var bitmap = new TransformedBitmap(_baseImage,
-				new ScaleTransform(
-				(double)width / _baseImage.PixelWidth,
-				(double)height / _baseImage.PixelHeight));
+				SourceImage.Source = bitmap;
+			}
+			else
+			{
+				var bitmap = new TransformedBitmap(_baseImage,
+					new ScaleTransform(xscale, yscale));
 
-			SourceImage.Source = bitmap;
-			//this.Width = width;
-			//this.Height = height;
+				SourceImage.Source = bitmap;
+			}
+
+		}
+
+		private void MoveControl(int x, int y)
+		{
 			
-			//ImageBorder.Width = width;
-			//ImageBorder.Height = height;
-
-			//RootGrid.Height = width;
-			//RootGrid.Width = height;
-
+			if(this.Parent is Canvas parentCanvas)
+			{
+				Canvas.SetTop(this, y);
+				Canvas.SetLeft(this, x);
+			}
 		}
 
 		private static BitmapFrame CreateResizedImage(ImageSource source, int width, int height, int margin)
@@ -192,6 +213,92 @@ namespace ImageCropper
 			return BitmapFrame.Create(resizedImage);
 		}
 
+		private void UserControl_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			if (Parent is Canvas parentCanvas)
+			{
+				_bCanDrag = true;
+
+				// let's get the mouse position and find the offset from top left to mouse.
+				_bCanDrag = true;
+				int xMousePos = (int)e.GetPosition(parentCanvas).X;
+				int yMousePos = (int)e.GetPosition(parentCanvas).Y;
+
+				int xRenderPos = (int)Canvas.GetLeft(this);
+				int yRenderPos = (int)Canvas.GetTop(this);
+
+				_xMouseOffset = xMousePos - xRenderPos;
+				_yMouseOffset = yMousePos - yRenderPos;
+			}
+		}
+
+		private void UserControl_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+		{
+			_bCanDrag = false;
+			_bIsDragging = false;
+
+			_xMouseOffset = 0;
+			_yMouseOffset = 0;
+		}
+
+		private void UserControl_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (_bCanDrag)
+			{
+				if (Parent is Canvas parentCanvas)
+				{
+					_bIsDragging = true;
+
+					int xrenderPos = (int)e.GetPosition(parentCanvas).X - _xMouseOffset;
+					int yrenderPos = (int)e.GetPosition(parentCanvas).Y - _yMouseOffset;
+
+					// Is this out of bounds?
+					if (xrenderPos < 0)
+						xrenderPos = 0;
+					if (yrenderPos < 0)
+						yrenderPos = 0;
+
+					Canvas.SetTop(this, yrenderPos);
+					Canvas.SetLeft(this, xrenderPos);
+
+					Canvas.SetTop(SourceImage, yrenderPos);
+					Canvas.SetLeft(SourceImage, xrenderPos);
+
+					Canvas.SetTop(RootGrid, yrenderPos);
+					Canvas.SetLeft(RootGrid, xrenderPos);
+				}
+			}
+		}
+
+		private void UserControl_MouseLeave(object sender, MouseEventArgs e)
+		{
+			if(_bIsDragging)
+			{
+				_bCanDrag = false;
+			}
+		}
+
+		private void ConfirmCrop_BTN_Click(object sender, RoutedEventArgs e)
+		{
+			// Crop the image
+			if(CropService != null)
+			{
+				int xstart = (int)(CropService.GetCroppedArea().CroppedRectAbsolute.Left / xscale);
+				int ystart = (int)(CropService.GetCroppedArea().CroppedRectAbsolute.Top / yscale);
+				int width = (int)(CropService.GetCroppedArea().CroppedRectAbsolute.Width / xscale);
+				int height = (int)(CropService.GetCroppedArea().CroppedRectAbsolute.Height / yscale);
+
+				CropService?.ClearAdorners(this);
+				ResizeService?.ClearAdorners(this);
+				CropService = new CropService(this);
+				ResizeService = new ResizeService(this);
+				(ResizeService.Adorner as ResizeAdorner).Resize_Hook = ResizeImage;
+
+				_croppedImage = new CroppedBitmap(_baseImage, new Int32Rect(xstart, ystart, width, height));
+
+				SourceImage.Source = _croppedImage;
+			}
+		}
 	}
 
 }
