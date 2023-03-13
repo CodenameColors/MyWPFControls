@@ -110,8 +110,13 @@ namespace ImageCropper
 				ResizeService = new ResizeService(this);
 				(ResizeService.Adorner as ResizeAdorner).Resize_Hook = ResizeImage;
 				_croppedImage = null;
-				xscale = 1.0f;
-				yscale = 1.0f;
+
+				xscale = SourceImage.Width / _baseImage.PixelWidth;
+				yscale = SourceImage.Height / _baseImage.PixelHeight;
+
+				// Reset the cropped data
+				_croppedImage = new CroppedBitmap(_baseImage, new Int32Rect(0, 0, (int)_baseImage.Width, (int)_baseImage.Height));
+
 			}
 		}
 
@@ -127,7 +132,27 @@ namespace ImageCropper
 
 		private void ResetCropSize_OnClick(object sender, RoutedEventArgs e)
 		{
-			throw new NotImplementedException();
+			SourceImage.Source = _baseImage;
+			SourceImage.Stretch = Stretch.Fill;
+
+			if (ResizeService == null)
+				ResizeService = new ResizeService(this);
+
+			this.UpdateLayout();
+			CropService?.ClearAdorners(this);
+			ResizeService?.ClearAdorners(this);
+			CropService = new CropService(this);
+			ResizeService = new ResizeService(this);
+			(ResizeService.Adorner as ResizeAdorner).Resize_Hook = ResizeImage;
+			_croppedImage = null;
+
+			xscale = SourceImage.Width / _baseImage.PixelWidth;
+			yscale = SourceImage.Height / _baseImage.PixelHeight;
+
+			// Reset the cropped data
+			_croppedImage = new CroppedBitmap(_baseImage, new Int32Rect(0, 0, (int)_baseImage.Width, (int)_baseImage.Height));
+
+			
 		}
 
 		private void ImageBorder_OnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
@@ -283,6 +308,9 @@ namespace ImageCropper
 			// Crop the image
 			if(CropService != null)
 			{
+				if (ResizeService == null)
+					ResizeService = new ResizeService(this);
+
 				int xstart = (int)(CropService.GetCroppedArea().CroppedRectAbsolute.Left / xscale);
 				int ystart = (int)(CropService.GetCroppedArea().CroppedRectAbsolute.Top / yscale);
 				int width = (int)(CropService.GetCroppedArea().CroppedRectAbsolute.Width / xscale);
@@ -290,13 +318,27 @@ namespace ImageCropper
 
 				CropService?.ClearAdorners(this);
 				ResizeService?.ClearAdorners(this);
-				CropService = new CropService(this);
-				ResizeService = new ResizeService(this);
+				
 				(ResizeService.Adorner as ResizeAdorner).Resize_Hook = ResizeImage;
 
-				_croppedImage = new CroppedBitmap(_baseImage, new Int32Rect(xstart, ystart, width, height));
+				_croppedImage = new CroppedBitmap(_croppedImage, new Int32Rect(xstart, ystart, width, height));
 
 				SourceImage.Source = _croppedImage;
+
+				//Crop the control to the cropped image dimensions
+				this.Width = (int)CropService.GetCroppedArea().CroppedRectAbsolute.Width;
+				this.Height = (int)CropService.GetCroppedArea().CroppedRectAbsolute.Height;
+				this.UpdateLayout();
+
+				// Now we need to move the starting drawing point!
+				if (this.Parent is Canvas parentCanvas)
+				{
+					Canvas.SetLeft(this, (Canvas.GetLeft(this) + (int)CropService.GetCroppedArea().CroppedRectAbsolute.Left));
+					Canvas.SetTop(this, (Canvas.GetTop(this) + (int)CropService.GetCroppedArea().CroppedRectAbsolute.Top));
+				}
+
+				CropService = new CropService(this);
+				ResizeService = new ResizeService(this);
 			}
 		}
 	}

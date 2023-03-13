@@ -21,6 +21,6 @@
 	      MouseRightButtonUp="ImageBorder_OnMouseRightButtonUp">
 
 		<Image x:Name="SourceImage" MouseLeftButtonDown="SourceImage_MouseLeftButtonDown" 
-			       HorizontalAlignment="Left"  VerticalAlignment="Top"/>
+			       HorizontalAlignment="Left"  VerticalAlignment="Top" Stretch="Uniform"/>
 	</Grid>
 </UserControl>

@@ -51,15 +51,29 @@ namespace ImageCropper.Components
 
 				double oldWidth = adornedElement.Width;
 				double oldHeight = adornedElement.Height;
+				double ratio = oldWidth / oldHeight;
 
 				double newWidth = Math.Max(adornedElement.Width + e.HorizontalChange, bottomRightCorner.DesiredSize.Width);
 				double newHeight = Math.Max(e.VerticalChange + adornedElement.Height, bottomRightCorner.DesiredSize.Height);
+				if(Keyboard.IsKeyDown(Key.LeftShift))
+				{
 
-				adornedElement.Width = newWidth;
-				adornedElement.Height = newHeight;
 
-				if (Resize_Hook != null)
-					Resize_Hook((int)newWidth, (int)newHeight);
+
+					adornedElement.Width = newWidth;
+					adornedElement.Height = newWidth / ratio;
+					if (Resize_Hook != null)
+						Resize_Hook((int)newWidth, (int)(newWidth / ratio));
+				}
+				else
+				{
+					adornedElement.Width = newWidth;
+					adornedElement.Height = newHeight;
+					if (Resize_Hook != null)
+						Resize_Hook((int)newWidth, (int)newHeight);
+				}
+
+				
 			}
 		}
 
