@@ -104,15 +104,20 @@ namespace ImageCropper
 					ResizeService = new ResizeService(this);
 
 				this.UpdateLayout();
-				CropService?.ClearAdorners(this);
+
+				xscale = SourceImage.Source.Width / _baseImage.PixelWidth;
+				yscale = SourceImage.Source.Height / _baseImage.PixelHeight;
+
+				this.Width = _baseImage.Width;
+				this.Height = _baseImage.Height;
+
 				ResizeService?.ClearAdorners(this);
 				CropService = new CropService(this);
+				CropService?.ClearAdorners(this);
+
 				ResizeService = new ResizeService(this);
 				(ResizeService.Adorner as ResizeAdorner).Resize_Hook = ResizeImage;
 				_croppedImage = null;
-
-				xscale = SourceImage.Width / _baseImage.PixelWidth;
-				yscale = SourceImage.Height / _baseImage.PixelHeight;
 
 				// Reset the cropped data
 				_croppedImage = new CroppedBitmap(_baseImage, new Int32Rect(0, 0, (int)_baseImage.Width, (int)_baseImage.Height));
@@ -139,15 +144,20 @@ namespace ImageCropper
 				ResizeService = new ResizeService(this);
 
 			this.UpdateLayout();
-			CropService?.ClearAdorners(this);
+
+			xscale = SourceImage.Source.Width / _baseImage.PixelWidth;
+			yscale = SourceImage.Source.Height / _baseImage.PixelHeight;
+
+			this.Width = _baseImage.Width;
+			this.Height = _baseImage.Height;
+
 			ResizeService?.ClearAdorners(this);
 			CropService = new CropService(this);
+			CropService?.ClearAdorners(this);
+
 			ResizeService = new ResizeService(this);
 			(ResizeService.Adorner as ResizeAdorner).Resize_Hook = ResizeImage;
 			_croppedImage = null;
-
-			xscale = SourceImage.Width / _baseImage.PixelWidth;
-			yscale = SourceImage.Height / _baseImage.PixelHeight;
 
 			// Reset the cropped data
 			_croppedImage = new CroppedBitmap(_baseImage, new Int32Rect(0, 0, (int)_baseImage.Width, (int)_baseImage.Height));
@@ -306,7 +316,7 @@ namespace ImageCropper
 		private void ConfirmCrop_BTN_Click(object sender, RoutedEventArgs e)
 		{
 			// Crop the image
-			if(CropService != null)
+			if (CropService != null)
 			{
 				if (ResizeService == null)
 					ResizeService = new ResizeService(this);
@@ -315,6 +325,12 @@ namespace ImageCropper
 				int ystart = (int)(CropService.GetCroppedArea().CroppedRectAbsolute.Top / yscale);
 				int width = (int)(CropService.GetCroppedArea().CroppedRectAbsolute.Width / xscale);
 				int height = (int)(CropService.GetCroppedArea().CroppedRectAbsolute.Height / yscale);
+
+				if (width < 0 || height < 0)
+				{ 
+					Console.WriteLine("WTF negative height?!?");
+					return;
+				}
 
 				CropService?.ClearAdorners(this);
 				ResizeService?.ClearAdorners(this);
