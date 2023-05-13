@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ImageCropper"
-             mc:Ignorable="d"  Loaded="UserControl_Loaded" MouseLeftButtonDown="UserControl_MouseLeftButtonDown"
+             mc:Ignorable="d"  MouseLeftButtonDown="UserControl_MouseLeftButtonDown"
 						 MouseLeftButtonUp="UserControl_MouseLeftButtonUp" MouseMove="UserControl_MouseMove"
 						 MouseLeave="UserControl_MouseLeave"
              Height="64" Width="64">
@@ -18,7 +18,7 @@
 		</ContextMenu>
 	</UserControl.Resources>
 	<Grid x:Name="RootGrid" MouseLeftButtonDown="RootGrid_OnMouseLeftButtonDown" MouseLeftButtonUp="RootGrid_MouseLeftButtonUp" Loaded="RootGrid_Loaded" LostFocus="RootGrid_OnLostFocus"
-	      MouseRightButtonUp="ImageBorder_OnMouseRightButtonUp">
+	      MouseRightButtonUp="ImageBorder_OnMouseRightButtonUp" PreviewMouseDown="RootGrid_PreviewMouseDown">
 
 		<Image x:Name="SourceImage" MouseLeftButtonDown="SourceImage_MouseLeftButtonDown" 
 			       HorizontalAlignment="Left"  VerticalAlignment="Top" Stretch="Uniform"/>

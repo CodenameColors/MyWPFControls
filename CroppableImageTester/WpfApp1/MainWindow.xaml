@@ -19,7 +19,7 @@
 		<Button HorizontalAlignment="Right" Margin="0,0,100,0" Content="Browse" Click="ImportNewImage_BTN_Click"/>
 		<Button HorizontalAlignment="Right" Margin="0,0,40,0" Content="Print Area" Click="PrintOutAreaToLog_BTN_Click"/>
 
-			<Canvas Grid.Row="1" MouseLeftButtonDown="Canvas_On_Click">
+			<Canvas x:Name="RootCanvas" Grid.Row="1" MouseLeftButtonDown="Canvas_On_Click">
 				<Canvas.Background>
 					<VisualBrush x:Name="SpritesheetEditor_VB" TileMode="Tile" Stretch="Uniform" Viewport="0,0,40,40" ViewportUnits="Absolute" >
 						<VisualBrush.Visual>

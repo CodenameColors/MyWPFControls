@@ -27,6 +27,7 @@ namespace ImageCropper
 		public ResizeService ResizeService { get; private set; }
 		private BitmapImage _baseImage = new BitmapImage();
 		private CroppedBitmap _croppedImage = null;
+		private  FrameworkElement _parentFrameworkElement = null;
 		bool _bCanDrag = false;
 		bool _bIsDragging = false;
 		int _xMouseOffset = 0;
@@ -45,8 +46,16 @@ namespace ImageCropper
 				_bHasFocus = value;
 				if (!_bHasFocus && !_bCanDrag)
 				{
-					CropService?.ClearAdorners(this);
-					ResizeService?.ClearAdorners(this);
+					if (_parentFrameworkElement != null)
+					{
+						CropService?.ClearAdorners(_parentFrameworkElement);
+						ResizeService?.ClearAdorners(_parentFrameworkElement);
+					}
+					else
+					{
+						CropService?.ClearAdorners(this);
+						ResizeService?.ClearAdorners(this);
+					}
 					if (CropService != null)
 						CropService = null;
 					if (ResizeService != null)
@@ -63,10 +72,32 @@ namespace ImageCropper
 			IsHitTestVisible = true;
 		}
 
+		public CroppableImage(FrameworkElement frameworkElement)
+		{
+			InitializeComponent();
+			_parentFrameworkElement = frameworkElement;
+			CropService = null;
+			ResizeService = null;
+			IsHitTestVisible = true;
+		}
+
 		private void UserControl_Loaded(object sender, RoutedEventArgs e)
 		{
 
 			var image = new BitmapImage(new Uri("Resources/defaultimage.jpg", UriKind.Relative));
+
+			if (!IsLoaded)
+			{
+				// The control has not been added to the visual tree yet, wait until it is loaded
+				Loaded += UserControl_Loaded;
+				return;
+			}
+
+			if (_parentFrameworkElement != null)
+			{
+				CropService = new CropService(_parentFrameworkElement);
+				ResizeService = new ResizeService(_parentFrameworkElement);
+			}
 			_baseImage = image;
 			SourceImage.Source = image;
 
@@ -80,6 +111,8 @@ namespace ImageCropper
 		private void RootGrid_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
 		{
 			CropService?.Adorner.RaiseEvent(e);
+
+			
 		}
 
 		private void RootGrid_Loaded(object sender, RoutedEventArgs e)
@@ -88,7 +121,14 @@ namespace ImageCropper
 
 		}
 
-		public void SetImage(String bitmapImagePath, bool bChangeSize)
+		public String GetImagePath()
+		{
+			if(_baseImage.UriSource.IsAbsoluteUri)
+				return (_baseImage?.UriSource.AbsolutePath);
+			return null;
+		}
+
+		public void SetImage(String bitmapImagePath, bool bChangeSize, FrameworkElement parent = null)
 		{
 			_baseImage = new BitmapImage();
 			_baseImage.BeginInit();
@@ -101,7 +141,14 @@ namespace ImageCropper
 			if (bChangeSize)
 			{
 				if (ResizeService == null)
-					ResizeService = new ResizeService(this);
+				{
+					if(_parentFrameworkElement == null)
+						ResizeService = new ResizeService(this);
+					else
+						ResizeService = new ResizeService(_parentFrameworkElement);
+
+				}
+
 
 				this.UpdateLayout();
 
@@ -111,11 +158,24 @@ namespace ImageCropper
 				this.Width = _baseImage.Width;
 				this.Height = _baseImage.Height;
 
-				ResizeService?.ClearAdorners(this);
-				CropService = new CropService(this);
-				CropService?.ClearAdorners(this);
+				if (_parentFrameworkElement == null)
+				{
+					ResizeService?.ClearAdorners(this);
+					CropService = new CropService(this);
+					CropService?.ClearAdorners(this);
 
-				ResizeService = new ResizeService(this);
+					ResizeService = new ResizeService(this);
+				}
+				else
+				{
+					ResizeService?.ClearAdorners(_parentFrameworkElement);
+					CropService = new CropService(_parentFrameworkElement);
+					CropService?.ClearAdorners(_parentFrameworkElement);
+
+					ResizeService = new ResizeService(_parentFrameworkElement);
+				}
+
+				
 				(ResizeService.Adorner as ResizeAdorner).Resize_Hook = ResizeImage;
 				_croppedImage = null;
 
@@ -265,6 +325,14 @@ namespace ImageCropper
 				_xMouseOffset = xMousePos - xRenderPos;
 				_yMouseOffset = yMousePos - yRenderPos;
 			}
+
+			// Capture the mouse events to allow the child control to continue to receive them
+			(sender as UIElement).CaptureMouse();
+
+			// Handle the mouse down event on the child control here
+			// Make sure to set e.Handled = true to prevent the event from bubbling up to the parent control
+			e.Handled = true;
+
 		}
 
 		private void UserControl_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -274,10 +342,14 @@ namespace ImageCropper
 
 			_xMouseOffset = 0;
 			_yMouseOffset = 0;
+
+			// Release the captured mouse events
+			(sender as UIElement).ReleaseMouseCapture();
 		}
 
 		private void UserControl_MouseMove(object sender, MouseEventArgs e)
 		{
+			Console.WriteLine("moving");
 			if (_bCanDrag)
 			{
 				if (Parent is Canvas parentCanvas)
@@ -355,7 +427,14 @@ namespace ImageCropper
 
 				CropService = new CropService(this);
 				ResizeService = new ResizeService(this);
+				// e.Handled = true;
+
 			}
+		}
+
+		private void RootGrid_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+		{
+			// e.Handled = true;
 		}
 	}
 

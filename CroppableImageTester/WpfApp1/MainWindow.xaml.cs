@@ -53,6 +53,9 @@ namespace CroppableImageTester
 			//DIALOGUE SCENE HOOKS
 
 			CroppableImage.SetImage(dlg.FileName, true);
+			CroppableImage.Visibility = Visibility.Visible;
+
+			CroppableImage = new CroppableImage(RootCanvas);
 
 			//Rectangle r = new Rectangle()
 			//{
@@ -89,6 +92,7 @@ namespace CroppableImageTester
 			{
 				//ClearAdorners(c);
 				CroppableImage.bHasFocus = false;
+				CroppableImage.Visibility = Visibility.Hidden;
 			}
 		}
 
