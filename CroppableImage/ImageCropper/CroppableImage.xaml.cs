@@ -81,6 +81,11 @@ namespace ImageCropper
 			IsHitTestVisible = true;
 		}
 
+		public void SetParentControl(FrameworkElement frameworkElement)
+		{
+			_parentFrameworkElement = frameworkElement;
+		}
+
 		private void UserControl_Loaded(object sender, RoutedEventArgs e)
 		{
 
@@ -163,7 +168,6 @@ namespace ImageCropper
 					ResizeService?.ClearAdorners(this);
 					CropService = new CropService(this);
 					CropService?.ClearAdorners(this);
-
 					ResizeService = new ResizeService(this);
 				}
 				else
@@ -171,7 +175,6 @@ namespace ImageCropper
 					ResizeService?.ClearAdorners(_parentFrameworkElement);
 					CropService = new CropService(_parentFrameworkElement);
 					CropService?.ClearAdorners(_parentFrameworkElement);
-
 					ResizeService = new ResizeService(_parentFrameworkElement);
 				}
 
@@ -266,6 +269,11 @@ namespace ImageCropper
 					new ScaleTransform(xscale, yscale));
 
 				SourceImage.Source = bitmap;
+				this.MaxWidth = width;
+				this.MaxHeight = height;
+
+				this.Width = this.MaxWidth;
+				this.Height = this.MaxHeight;
 			}
 			else
 			{
@@ -273,6 +281,11 @@ namespace ImageCropper
 					new ScaleTransform(xscale, yscale));
 
 				SourceImage.Source = bitmap;
+				this.MaxWidth = width;
+				this.MaxHeight = height;
+
+				this.Width = this.MaxWidth;
+				this.Height = this.MaxHeight;
 			}
 
 		}
