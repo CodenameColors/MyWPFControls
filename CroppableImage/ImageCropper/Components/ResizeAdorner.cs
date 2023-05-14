@@ -15,7 +15,7 @@ namespace ImageCropper.Components
 
 	public class ResizeAdorner : Adorner
 	{
-		public delegate void ResizeHook(int width, int height);
+		public delegate void ResizeHook(double width, double height);
 		public ResizeHook Resize_Hook;
 
 		//use thumb for resizing elements
@@ -63,14 +63,14 @@ namespace ImageCropper.Components
 					adornedElement.Width = newWidth;
 					adornedElement.Height = newWidth / ratio;
 					if (Resize_Hook != null)
-						Resize_Hook((int)newWidth, (int)(newWidth / ratio));
+						Resize_Hook(newWidth, (newWidth / ratio));
 				}
 				else
 				{
 					adornedElement.Width = newWidth;
 					adornedElement.Height = newHeight;
 					if (Resize_Hook != null)
-						Resize_Hook((int)newWidth, (int)newHeight);
+						Resize_Hook(newWidth, newHeight);
 				}
 
 				
@@ -99,7 +99,7 @@ namespace ImageCropper.Components
 				Canvas.SetTop(adornedElement, newTop);
 
 				if (Resize_Hook != null)
-					Resize_Hook((int)newWidth, (int)newHeight);
+					Resize_Hook(newWidth, newHeight);
 
 			}
 		}
@@ -130,7 +130,7 @@ namespace ImageCropper.Components
 				Canvas.SetTop(adornedElement, newTop);
 
 				if (Resize_Hook != null)
-					Resize_Hook((int)newWidth, (int)newHeight);
+					Resize_Hook(newWidth, newHeight);
 			}
 		}
 
@@ -157,7 +157,7 @@ namespace ImageCropper.Components
 				adornedElement.Height = newHeight;
 
 				if (Resize_Hook != null)
-					Resize_Hook((int)newWidth, (int)newHeight);
+					Resize_Hook(newWidth, newHeight);
 			}
 		}
 

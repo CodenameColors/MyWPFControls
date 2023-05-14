@@ -81,6 +81,11 @@ namespace ImageCropper
 			IsHitTestVisible = true;
 		}
 
+		public CroppedBitmap GetCroppedBitmap()
+		{
+			return _croppedImage;
+		}
+
 		public void SetParentControl(FrameworkElement frameworkElement)
 		{
 			_parentFrameworkElement = frameworkElement;
@@ -133,7 +138,7 @@ namespace ImageCropper
 			return null;
 		}
 
-		public void SetImage(String bitmapImagePath, bool bChangeSize, FrameworkElement parent = null)
+		public void SetImage(String bitmapImagePath, bool bChangeSize, Int32Rect croppedRect = new Int32Rect(), FrameworkElement parent = null)
 		{
 			_baseImage = new BitmapImage();
 			_baseImage.BeginInit();
@@ -147,7 +152,7 @@ namespace ImageCropper
 			{
 				if (ResizeService == null)
 				{
-					if(_parentFrameworkElement == null)
+					if (_parentFrameworkElement == null)
 						ResizeService = new ResizeService(this);
 					else
 						ResizeService = new ResizeService(_parentFrameworkElement);
@@ -178,13 +183,19 @@ namespace ImageCropper
 					ResizeService = new ResizeService(_parentFrameworkElement);
 				}
 
-				
+
 				(ResizeService.Adorner as ResizeAdorner).Resize_Hook = ResizeImage;
 				_croppedImage = null;
 
 				// Reset the cropped data
-				_croppedImage = new CroppedBitmap(_baseImage, new Int32Rect(0, 0, (int)_baseImage.Width, (int)_baseImage.Height));
-
+				if (croppedRect == Int32Rect.Empty)
+					_croppedImage = new CroppedBitmap(_baseImage, new Int32Rect(0, 0, (int)_baseImage.Width, (int)_baseImage.Height));
+				else
+				{
+					_croppedImage = new CroppedBitmap(_baseImage, croppedRect);
+					SourceImage.Source = _croppedImage;
+					SourceImage.Stretch = Stretch.Fill;
+				}
 			}
 		}
 
@@ -259,7 +270,7 @@ namespace ImageCropper
 
 		}
 
-		private void ResizeImage(int width, int height)
+		private void ResizeImage(double width, double height)
 		{
 			xscale = (double)width / _baseImage.PixelWidth;
 			yscale = (double)height / _baseImage.PixelHeight;
