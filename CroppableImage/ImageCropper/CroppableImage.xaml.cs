@@ -23,6 +23,9 @@ namespace ImageCropper
 	/// </summary>
 	public partial class CroppableImage : UserControl
 	{
+		public delegate void UpdateSizeLocation_Hook(double x, double y, double w, double h);
+		public UpdateSizeLocation_Hook updateSizeLocation_Hook;
+
 		public CropService CropService { get; private set; }
 		public ResizeService ResizeService { get; private set; }
 		private BitmapImage _baseImage = new BitmapImage();
@@ -33,6 +36,8 @@ namespace ImageCropper
 		int _xMouseOffset = 0;
 		int _yMouseOffset = 0;
 
+		double XPos = 0.0f;
+		double YPos = 0.0f;
 		double xscale = 1.0f;
 		double yscale = 1.0f;
 
@@ -297,8 +302,16 @@ namespace ImageCropper
 
 				this.Width = this.MaxWidth;
 				this.Height = this.MaxHeight;
+				
 			}
 
+			if (updateSizeLocation_Hook != null)
+			{
+				int xRenderPos = (int)Canvas.GetLeft(this);
+				int yRenderPos = (int)Canvas.GetTop(this);
+
+				updateSizeLocation_Hook(xRenderPos, yRenderPos, this.Width, this.Height);
+			}
 		}
 
 		private void MoveControl(int x, int y)
@@ -308,6 +321,14 @@ namespace ImageCropper
 			{
 				Canvas.SetTop(this, y);
 				Canvas.SetLeft(this, x);
+
+				this.XPos = x;
+				this.YPos = y;
+
+				if(updateSizeLocation_Hook != null)
+				{
+					updateSizeLocation_Hook(x, y, this.Width, this.Height);
+				}
 			}
 		}
 
@@ -389,6 +410,9 @@ namespace ImageCropper
 					if (yrenderPos < 0)
 						yrenderPos = 0;
 
+					XPos = xrenderPos;
+					YPos = yrenderPos;
+
 					Canvas.SetTop(this, yrenderPos);
 					Canvas.SetLeft(this, xrenderPos);
 
@@ -397,6 +421,11 @@ namespace ImageCropper
 
 					Canvas.SetTop(RootGrid, yrenderPos);
 					Canvas.SetLeft(RootGrid, xrenderPos);
+
+					if (updateSizeLocation_Hook != null)
+					{
+						updateSizeLocation_Hook(xrenderPos, yrenderPos, this.Width, this.Height);
+					}
 				}
 			}
 		}
@@ -407,6 +436,16 @@ namespace ImageCropper
 			{
 				_bCanDrag = false;
 			}
+		}
+
+		public void ShowBorder()
+		{
+			CroppableImage_Border.Visibility = Visibility.Visible;
+		}
+
+		public void HideBorder()
+		{
+			CroppableImage_Border.Visibility = Visibility.Hidden;
 		}
 
 		private void ConfirmCrop_BTN_Click(object sender, RoutedEventArgs e)
@@ -433,24 +472,31 @@ namespace ImageCropper
 				
 				(ResizeService.Adorner as ResizeAdorner).Resize_Hook = ResizeImage;
 
-				_croppedImage = new CroppedBitmap(_croppedImage, new Int32Rect(xstart, ystart, width, height));
-
-				SourceImage.Source = _croppedImage;
-
-				//Crop the control to the cropped image dimensions
-				this.Width = (int)CropService.GetCroppedArea().CroppedRectAbsolute.Width;
-				this.Height = (int)CropService.GetCroppedArea().CroppedRectAbsolute.Height;
-				this.UpdateLayout();
-
-				// Now we need to move the starting drawing point!
-				if (this.Parent is Canvas parentCanvas)
+				try
 				{
-					Canvas.SetLeft(this, (Canvas.GetLeft(this) + (int)CropService.GetCroppedArea().CroppedRectAbsolute.Left));
-					Canvas.SetTop(this, (Canvas.GetTop(this) + (int)CropService.GetCroppedArea().CroppedRectAbsolute.Top));
-				}
+					_croppedImage = new CroppedBitmap(_croppedImage, new Int32Rect(xstart, ystart, width, height));
+					SourceImage.Source = _croppedImage;
 
-				CropService = new CropService(this);
-				ResizeService = new ResizeService(this);
+					//Crop the control to the cropped image dimensions
+					this.Width = (int) CropService.GetCroppedArea().CroppedRectAbsolute.Width;
+					this.Height = (int) CropService.GetCroppedArea().CroppedRectAbsolute.Height;
+					this.UpdateLayout();
+
+					// Now we need to move the starting drawing point!
+					if (this.Parent is Canvas parentCanvas)
+					{
+						Canvas.SetLeft(this, (Canvas.GetLeft(this) + (int) CropService.GetCroppedArea().CroppedRectAbsolute.Left));
+						Canvas.SetTop(this, (Canvas.GetTop(this) + (int) CropService.GetCroppedArea().CroppedRectAbsolute.Top));
+					}
+
+					CropService = new CropService(this);
+					ResizeService = new ResizeService(this);
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine("Invalid Crop region given");
+				}
+				
 				// e.Handled = true;
 
 			}
@@ -459,6 +505,21 @@ namespace ImageCropper
 		private void RootGrid_PreviewMouseDown(object sender, MouseButtonEventArgs e)
 		{
 			// e.Handled = true;
+		}
+
+		private void CroppableImage_KeyDown(object sender, KeyEventArgs e)
+		{
+
+			if (ResizeService == null)
+			{
+				Console.WriteLine("Nothing Selected");
+			}
+			else
+			{
+				Console.WriteLine(" Selected");
+
+			}
+
 		}
 	}
 

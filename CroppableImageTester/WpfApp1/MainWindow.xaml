@@ -6,7 +6,7 @@
 				xmlns:local="clr-namespace:CroppableImageTester"
 				xmlns:cropImage="clr-namespace:ImageCropper;assembly=ImageCropper"
 				xmlns:outLog="clr-namespace:OutputLog;assembly=OutputLog"
-        mc:Ignorable="d"
+        mc:Ignorable="d"  KeyDown="Window_KeyDown"
         Title="MainWindow" Height="600" Width="600">
     <Grid Background="Black" x:Name="root_grid">
 

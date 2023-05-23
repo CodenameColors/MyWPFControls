@@ -57,9 +57,6 @@ namespace ImageCropper.Components
 				double newHeight = Math.Max(e.VerticalChange + adornedElement.Height, bottomRightCorner.DesiredSize.Height);
 				if(Keyboard.IsKeyDown(Key.LeftShift))
 				{
-
-
-
 					adornedElement.Width = newWidth;
 					adornedElement.Height = newWidth / ratio;
 					if (Resize_Hook != null)
@@ -72,8 +69,6 @@ namespace ImageCropper.Components
 					if (Resize_Hook != null)
 						Resize_Hook(newWidth, newHeight);
 				}
-
-				
 			}
 		}
 

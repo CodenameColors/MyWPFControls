@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:ImageCropper"
              mc:Ignorable="d"  MouseLeftButtonDown="UserControl_MouseLeftButtonDown"
 						 MouseLeftButtonUp="UserControl_MouseLeftButtonUp" MouseMove="UserControl_MouseMove"
-						 MouseLeave="UserControl_MouseLeave"
+						 MouseLeave="UserControl_MouseLeave" PreviewKeyDown="CroppableImage_KeyDown"
              Height="64" Width="64">
 	<UserControl.Resources>
 		<ContextMenu x:Key="CroppableImage_CM">
@@ -18,9 +18,32 @@
 		</ContextMenu>
 	</UserControl.Resources>
 	<Grid x:Name="RootGrid" MouseLeftButtonDown="RootGrid_OnMouseLeftButtonDown" MouseLeftButtonUp="RootGrid_MouseLeftButtonUp" Loaded="RootGrid_Loaded" LostFocus="RootGrid_OnLostFocus"
-	      MouseRightButtonUp="ImageBorder_OnMouseRightButtonUp" PreviewMouseDown="RootGrid_PreviewMouseDown">
-
-		<Image x:Name="SourceImage" MouseLeftButtonDown="SourceImage_MouseLeftButtonDown" 
+	      MouseRightButtonUp="ImageBorder_OnMouseRightButtonUp" PreviewMouseDown="RootGrid_PreviewMouseDown" PreviewKeyDown="CroppableImage_KeyDown">
+		<Border x:Name="CroppableImage_Border" Visibility="Visible" BorderThickness="1,1,1,1" >
+			<Border.Style>
+				<Style>
+					
+				</Style>
+				<Border.BorderBrush>
+					<DrawingBrush Viewport="0,0,8,8" ViewportUnits="Absolute" TileMode="Tile">
+						<DrawingBrush.Drawing>
+							<DrawingGroup>
+								<GeometryDrawing Brush="GreenYellow">
+									<GeometryDrawing.Geometry>
+										<GeometryGroup>
+											<RectangleGeometry Rect="0,0,50,50" />
+											<RectangleGeometry Rect="50,50,50,50" />
+										</GeometryGroup>
+									</GeometryDrawing.Geometry>
+								</GeometryDrawing>
+							</DrawingGroup>
+						</DrawingBrush.Drawing>
+					</DrawingBrush>
+				</Border.BorderBrush>
+			</Border.Style>
+			<!-- Content within the border -->
+			<Image x:Name="SourceImage" MouseLeftButtonDown="SourceImage_MouseLeftButtonDown" 
 			       HorizontalAlignment="Left"  VerticalAlignment="Top" Stretch="Uniform"/>
+		</Border>
 	</Grid>
 </UserControl>

@@ -104,5 +104,13 @@ namespace CroppableImageTester
 			foreach (var adorner in adornersOfStackPanel)
 				adornerLayer.Remove(adorner);
 		}
+
+		private void Window_KeyDown(object sender, KeyEventArgs e)
+		{
+			if(CroppableImage.Visibility == Visibility.Visible && CroppableImage.ResizeService != null)
+				Console.WriteLine("Keydown");
+
+
+		}
 	}
 }
