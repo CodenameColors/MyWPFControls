@@ -26,6 +26,9 @@ namespace ImageCropper
 		public delegate void UpdateSizeLocation_Hook(double x, double y, double w, double h);
 		public UpdateSizeLocation_Hook updateSizeLocation_Hook;
 
+		public delegate void UpdateCropLocation_Hook(double cx, double cy);
+		public UpdateCropLocation_Hook updateCropLocation_Hook;
+
 		public CropService CropService { get; private set; }
 		public ResizeService ResizeService { get; private set; }
 		private BitmapImage _baseImage = new BitmapImage();
@@ -167,11 +170,11 @@ namespace ImageCropper
 
 				this.UpdateLayout();
 
-				xscale = SourceImage.Source.Width / _baseImage.PixelWidth;
-				yscale = SourceImage.Source.Height / _baseImage.PixelHeight;
+				xscale = SourceImage.DesiredSize.Width / _baseImage.PixelWidth;
+				yscale = SourceImage.DesiredSize.Height / _baseImage.PixelHeight;
 
-				this.Width = _baseImage.Width;
-				this.Height = _baseImage.Height;
+				this.Width = _baseImage.PixelWidth;
+				this.Height = _baseImage.PixelHeight;
 
 				if (_parentFrameworkElement == null)
 				{
@@ -194,7 +197,7 @@ namespace ImageCropper
 
 				// Reset the cropped data
 				if (croppedRect == Int32Rect.Empty)
-					_croppedImage = new CroppedBitmap(_baseImage, new Int32Rect(0, 0, (int)_baseImage.Width, (int)_baseImage.Height));
+					_croppedImage = new CroppedBitmap(_baseImage, new Int32Rect(0, 0, (int)_baseImage.PixelWidth, (int)_baseImage.PixelHeight));
 				else
 				{
 					_croppedImage = new CroppedBitmap(_baseImage, croppedRect);
@@ -227,8 +230,8 @@ namespace ImageCropper
 			xscale = SourceImage.Source.Width / _baseImage.PixelWidth;
 			yscale = SourceImage.Source.Height / _baseImage.PixelHeight;
 
-			this.Width = _baseImage.Width;
-			this.Height = _baseImage.Height;
+			this.Width = _baseImage.PixelWidth;
+			this.Height = _baseImage.PixelHeight;
 
 			ResizeService?.ClearAdorners(this);
 			CropService = new CropService(this);
@@ -239,7 +242,7 @@ namespace ImageCropper
 			_croppedImage = null;
 
 			// Reset the cropped data
-			_croppedImage = new CroppedBitmap(_baseImage, new Int32Rect(0, 0, (int)_baseImage.Width, (int)_baseImage.Height));
+			_croppedImage = new CroppedBitmap(_baseImage, new Int32Rect(0, 0, (int)_baseImage.PixelWidth, (int)_baseImage.PixelHeight));
 
 			
 		}
@@ -476,6 +479,12 @@ namespace ImageCropper
 				{
 					_croppedImage = new CroppedBitmap(_croppedImage, new Int32Rect(xstart, ystart, width, height));
 					SourceImage.Source = _croppedImage;
+
+					// Update controls that are binded
+					if (updateCropLocation_Hook != null)
+					{
+						updateCropLocation_Hook(xstart, ystart);
+					}
 
 					//Crop the control to the cropped image dimensions
 					this.Width = (int) CropService.GetCroppedArea().CroppedRectAbsolute.Width;
