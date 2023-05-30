@@ -23,6 +23,9 @@ namespace ImageCropper
 	/// </summary>
 	public partial class CroppableImage : UserControl
 	{
+		public delegate void SetRenderPoint_Hook(int x, int y);
+		public SetRenderPoint_Hook setRenderPoint_Hook;
+
 		public delegate void UpdateSizeLocation_Hook(double x, double y, double w, double h);
 		public UpdateSizeLocation_Hook updateSizeLocation_Hook;
 
@@ -31,6 +34,8 @@ namespace ImageCropper
 
 		public CropService CropService { get; private set; }
 		public ResizeService ResizeService { get; private set; }
+		public RenderPointService RenderPointService { get; private set; }
+
 		private BitmapImage _baseImage = new BitmapImage();
 		private CroppedBitmap _croppedImage = null;
 		private  FrameworkElement _parentFrameworkElement = null;
@@ -58,16 +63,20 @@ namespace ImageCropper
 					{
 						CropService?.ClearAdorners(_parentFrameworkElement);
 						ResizeService?.ClearAdorners(_parentFrameworkElement);
+						RenderPointService?.ClearAdorners(_parentFrameworkElement);
 					}
 					else
 					{
 						CropService?.ClearAdorners(this);
 						ResizeService?.ClearAdorners(this);
+						RenderPointService?.ClearAdorners(this);
 					}
 					if (CropService != null)
 						CropService = null;
 					if (ResizeService != null)
 						ResizeService = null;
+					if (RenderPointService != null)
+						RenderPointService = null;
 				}
 			}
 		}
@@ -77,6 +86,7 @@ namespace ImageCropper
 			InitializeComponent();
 			CropService = null;
 			ResizeService = null;
+			RenderPointService = null;
 			IsHitTestVisible = true;
 		}
 
@@ -86,6 +96,7 @@ namespace ImageCropper
 			_parentFrameworkElement = frameworkElement;
 			CropService = null;
 			ResizeService = null;
+			RenderPointService = null;
 			IsHitTestVisible = true;
 		}
 
@@ -115,6 +126,7 @@ namespace ImageCropper
 			{
 				CropService = new CropService(_parentFrameworkElement);
 				ResizeService = new ResizeService(_parentFrameworkElement);
+				RenderPointService = new RenderPointService(_parentFrameworkElement);
 			}
 			_baseImage = image;
 			SourceImage.Source = image;
@@ -164,6 +176,14 @@ namespace ImageCropper
 						ResizeService = new ResizeService(this);
 					else
 						ResizeService = new ResizeService(_parentFrameworkElement);
+				}
+
+				if (RenderPointService == null)
+				{
+					if (_parentFrameworkElement == null)
+						RenderPointService = new RenderPointService(this);
+					else
+						RenderPointService = new RenderPointService(_parentFrameworkElement);
 
 				}
 
@@ -213,8 +233,6 @@ namespace ImageCropper
 			if (CropService != null)
 				CropService = null;
 			CropService = new CropService(this);
-			
-
 		}
 
 		private void ResetCropSize_OnClick(object sender, RoutedEventArgs e)
@@ -236,9 +254,9 @@ namespace ImageCropper
 			ResizeService?.ClearAdorners(this);
 			CropService = new CropService(this);
 			CropService?.ClearAdorners(this);
-
 			ResizeService = new ResizeService(this);
 			(ResizeService.Adorner as ResizeAdorner).Resize_Hook = ResizeImage;
+
 			_croppedImage = null;
 
 			// Reset the cropped data
@@ -472,7 +490,8 @@ namespace ImageCropper
 
 				CropService?.ClearAdorners(this);
 				ResizeService?.ClearAdorners(this);
-				
+				RenderPointService?.ClearAdorners(this);
+
 				(ResizeService.Adorner as ResizeAdorner).Resize_Hook = ResizeImage;
 
 				try
@@ -500,6 +519,7 @@ namespace ImageCropper
 
 					CropService = new CropService(this);
 					ResizeService = new ResizeService(this);
+					RenderPointService = new RenderPointService(this);
 				}
 				catch (Exception ex)
 				{
@@ -530,6 +550,27 @@ namespace ImageCropper
 			}
 
 		}
-	}
 
+		private void SetRenderPoint_MI_Click(object sender, RoutedEventArgs e)
+		{
+			RenderPointService?.ClearAdorners(this);
+			if (RenderPointService != null)
+				RenderPointService = null;
+			RenderPointService = new RenderPointService(this);
+			RenderPointService.SetRenderPoint_hook = SetRenderPoint_ToControls;
+		}
+
+		// We have found the renderpoint we need. So let's stop the service
+		private void SetRenderPoint_ToControls(int x, int y)
+		{
+			// Kill the adorners. kill the service.
+			RenderPointService?.ClearAdorners(this);
+			if (RenderPointService != null)
+				RenderPointService = null;
+
+			if (this.setRenderPoint_Hook != null)
+				setRenderPoint_Hook(x, y);
+		}
+
+	}
 }

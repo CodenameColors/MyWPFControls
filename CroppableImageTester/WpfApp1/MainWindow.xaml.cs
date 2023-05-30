@@ -56,6 +56,7 @@ namespace CroppableImageTester
 			CroppableImage.Visibility = Visibility.Visible;
 
 			CroppableImage = new CroppableImage(RootCanvas);
+			CroppableImage.setRenderPoint_Hook += SetRenderPoint;
 
 			//Rectangle r = new Rectangle()
 			//{
@@ -75,6 +76,11 @@ namespace CroppableImageTester
 			//CC.MouseRightButtonDown += ContentControl_MouseLeftButtonDown;
 			//((Rectangle)CC.Content).Fill = new ImageBrush(img.Source);
 			//LevelEditor_Canvas.Children.Add(CC);
+		}
+
+		private void SetRenderPoint(int x, int y)
+		{
+			Console.WriteLine(String.Format("X:{0}, Y:{1}", x, y));
 		}
 
 		private void PrintOutAreaToLog_BTN_Click(object sender, RoutedEventArgs e)

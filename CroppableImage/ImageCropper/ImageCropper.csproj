@@ -54,6 +54,8 @@
     </Page>
     <Compile Include="Components\CropAdorner.cs" />
     <Compile Include="Components\CropService.cs" />
+    <Compile Include="Components\RenderPointAdorner.cs" />
+    <Compile Include="Components\RenderPointService.cs" />
     <Compile Include="Components\ResizeAdorner.cs" />
     <Compile Include="Components\ResizeService.cs" />
     <Compile Include="Components\State\CompleteState.cs" />
@@ -63,6 +65,7 @@
     <Compile Include="Components\State\Position.cs" />
     <Compile Include="Components\Tools\CropShape.cs" />
     <Compile Include="Components\Tools\CropTool.cs" />
+    <Compile Include="Components\Tools\RenderPointTool.cs" />
     <Compile Include="Components\Tools\ShadeTool.cs" />
     <Compile Include="Components\Tools\TextTool.cs" />
     <Compile Include="Components\Tools\ThumbTool.cs" />

@@ -12,6 +12,7 @@
 		<ContextMenu x:Key="CroppableImage_CM">
 			<MenuItem Header="Reset Crop" Click="ResetCropSize_OnClick"/>
 			<MenuItem Header="Crop Image" Click="CropImage_OnClick" />
+			<MenuItem Header="Set Render Point" Click="SetRenderPoint_MI_Click" />
 			<LineBreak/>
 			<MenuItem x:Name="ConfirmCrop_BTN" Header="Confirm Crop" IsEnabled="True" Click="ConfirmCrop_BTN_Click"/>
 			<!--<MenuItem Header="Add Gameobject Layer" Click="GameObjectLayer_Click" />-->

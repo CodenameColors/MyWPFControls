@@ -80,7 +80,7 @@ namespace CroppingImageLibrary.Services
                 {
                     Stroke = Brushes.White,
                     StrokeDashArray = new DoubleCollection(new double[] { 4, 4 })
-                }
+                }, false
             );
             _cropTool = new CropTool(_canvas);
             _createState = new CreateState(_cropTool, _canvas);

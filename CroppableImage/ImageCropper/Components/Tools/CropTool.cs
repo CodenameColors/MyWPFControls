@@ -31,7 +31,7 @@ namespace CroppingImageLibrary.Services.Tools
                 new Rectangle {
                     Stroke = Brushes.White,
                     StrokeDashArray = new DoubleCollection(new double[] { 4, 4 })
-                });
+                }, false);
 
             _shadeService = new ShadeTool(canvas, this);
             _thumbService = new ThumbTool(canvas, this);
